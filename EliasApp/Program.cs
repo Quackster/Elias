@@ -6,7 +6,7 @@ namespace EliasApp
     class Program
     {
         private static string FFDEC_PATH = @"C:\Program Files (x86)\FFDec\ffdec.jar";
-        private static string OUTPUT_PATH = @"C:\Users\Alex\source\repos\Elias\EliasApp\bin\Debug\temp";
+        private static string OUTPUT_PATH = @"C:\Users\Alex\Documents\GitHub\Elias\EliasApp\bin\Debug\temp";
 
         static void Main(string[] args)
         {
@@ -34,7 +34,7 @@ namespace EliasApp
                     goto exit;
                 }
 
-                var elias = new EliasLibrary.Elias(false, fullFileName, 1, 1, FFDEC_PATH, OUTPUT_PATH);
+                var elias = new EliasLibrary.Elias(args[3] == "32", fullFileName, int.Parse(args[1]), int.Parse(args[2]), FFDEC_PATH, OUTPUT_PATH);
                 elias.Parse();
             }
             catch (Exception ex)

@@ -9,8 +9,10 @@ namespace EliasLibrary
     {
         private Elias elias;
         private XmlNode node;
-        private bool IsIcon;
-        
+
+        public bool IsIcon;
+        public bool IsShadow;
+
         public string FlashAssetName;
         public string ShockwaveAssetName;
 
@@ -39,6 +41,12 @@ namespace EliasLibrary
                 if (attribute.InnerText.Contains("_icon_"))
                 {
                     IsIcon = true;
+                    break;
+                }
+
+                if (attribute.InnerText.Contains("_sd_"))
+                {
+                    IsShadow = true;
                     break;
                 }
             }
@@ -78,6 +86,9 @@ namespace EliasLibrary
             if (IsIcon)
                 return;
 
+            if (IsShadow)
+                return;
+
             if (!string.IsNullOrEmpty(FlashSourceAliasName))
                 return;
 
@@ -89,6 +100,9 @@ namespace EliasLibrary
         public void ParseRecPointNames()
         {
             if (IsIcon)
+                return;
+
+            if (IsShadow)
                 return;
 
             int x = -1;
@@ -120,6 +134,9 @@ namespace EliasLibrary
         public void WriteRegPointData()
         {
             if (IsIcon)
+                return;
+
+            if (IsShadow)
                 return;
 
 

@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -31,6 +33,8 @@ namespace EliasLibrary
             get { return Path.Combine(CAST_PATH, "images"); }
         }
 
+        private List<EliasAsset> Assets;
+
         public Elias(bool smallCast, string fileName, int X, int Y, string FFDEC_PATH, string OUTPUT_PATH)
         {
             this.smallCast = smallCast;
@@ -40,6 +44,7 @@ namespace EliasLibrary
             this.FileDirectory = new FileInfo(this.FullFileName).DirectoryName;
             this.FFDEC_PATH = FFDEC_PATH;
             this.OUTPUT_PATH = OUTPUT_PATH;
+            this.Assets = new List<EliasAsset>();
         }
 
         public void Parse()
@@ -47,6 +52,7 @@ namespace EliasLibrary
             this.TryCleanup();
             this.ExtractAssets();
             this.GenerateAliases();
+            this.CreateMemberalias();
         }
 
         private void TryCleanup()
@@ -112,6 +118,49 @@ namespace EliasLibrary
                 eliasAlias.ParseRecPointNames();
                 eliasAlias.WriteImageNames();
                 eliasAlias.WriteRegPointData();
+
+                Assets.Add(eliasAlias);
+            }
+        }
+
+        private void CreateMemberalias()
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+
+            foreach (var eliasAsset in Assets)
+            {
+                if (eliasAsset.IsShadow)
+                    continue;
+
+                if (eliasAsset.IsIcon)
+                    continue;
+
+                if (eliasAsset.ShockwaveSourceAliasName != null)
+                {
+                    SafetyCheckAsset(eliasAsset.ShockwaveSourceAliasName);
+
+                    stringBuilder.Append(eliasAsset.ShockwaveAssetName);
+                    stringBuilder.Append("=");
+                    stringBuilder.Append(eliasAsset.ShockwaveSourceAliasName);
+                    stringBuilder.Append("*");
+                    stringBuilder.Append(Environment.NewLine);
+                }
+            }
+
+            File.WriteAllText(Path.Combine(CAST_PATH, "memberalias.index"), stringBuilder.ToString());
+        }
+
+        /// <summary>
+        /// Create blank PNG if not exists
+        /// </summary>
+        /// <param name="shockwaveSourceAliasName"></param>
+        private void SafetyCheckAsset(string shockwaveSourceAliasName)
+        {
+            if (!File.Exists(Path.Combine(IMAGE_PATH, shockwaveSourceAliasName + ".png")))
+            {
+                Bitmap bmp = new Bitmap(1, 1);
+                bmp.Save(shockwaveSourceAliasName + ".png", ImageFormat.Png);
+                File.WriteAllText(Path.Combine(IMAGE_PATH, shockwaveSourceAliasName + ".txt"), "0,0");
             }
         }
     }

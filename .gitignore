@@ -1,0 +1,7 @@
+
+*.user
+*.ide-shm
+*.ide
+*.lock
+*.ide-wal
+.vs/Elias/v16/.suo
