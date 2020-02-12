@@ -16,6 +16,10 @@ namespace Elias.Utilities
             {
                 if (Path.GetFileNameWithoutExtension(file).Contains(fileNameContains))
                 {
+                    var text = File.ReadAllText(file);
+                    text = text.Replace("\n<?xml", "<?xml");
+                    File.WriteAllText(file, text);
+
                     XmlDocument xmlDoc = new XmlDocument();
                     xmlDoc.Load(file);
 

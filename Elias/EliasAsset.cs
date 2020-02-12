@@ -74,20 +74,18 @@ namespace EliasLibrary
                 {
                     this.FlashAssetName = attribute.InnerText;
                     this.ShockwaveAssetName = AssetUtil.ConvertFlashName(this.elias, attribute.InnerText, elias.X, elias.Y);
+
+                    if (ImageAssetUtil.SolveFile(elias.OUTPUT_PATH, FlashAssetName) == null)
+                    {
+                        Bitmap bmp = new Bitmap(1, 1);
+                        bmp.Save(Path.Combine(elias.OUTPUT_PATH, "images", FlashAssetName + ".png"), ImageFormat.Png);
+                    }
                 }
 
                 if (attribute.Name == "source")
                 {
                     this.FlashSourceAliasName = attribute.InnerText;
                     this.ShockwaveSourceAliasName = AssetUtil.ConvertFlashName(this.elias, attribute.InnerText, elias.X, elias.Y);
-
-
-                    if (ImageAssetUtil.SolveFile(elias.OUTPUT_PATH, FlashSourceAliasName) == null)
-                    {
-                        Console.WriteLine(Path.Combine(elias.OUTPUT_PATH, "images", FlashSourceAliasName + ".png"));
-                        Bitmap bmp = new Bitmap(1, 1);
-                        bmp.Save(Path.Combine(elias.OUTPUT_PATH, "images", FlashSourceAliasName + ".png"), ImageFormat.Png);
-                    }
                 }
             }
         }
