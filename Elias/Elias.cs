@@ -13,7 +13,8 @@ namespace EliasLibrary
 {
     public class Elias
     {
-        public bool smallCast;
+        public string Sprite;
+        public bool IsSmallFurni;
         public int X;
         public int Y; 
 
@@ -35,9 +36,10 @@ namespace EliasLibrary
 
         private List<EliasAsset> Assets;
 
-        public Elias(bool smallCast, string fileName, int X, int Y, string FFDEC_PATH, string OUTPUT_PATH)
+        public Elias(string sprite, bool IsSmallFurni, string fileName, int X, int Y, string FFDEC_PATH, string OUTPUT_PATH)
         {
-            this.smallCast = smallCast;
+            this.Sprite = sprite;
+            this.IsSmallFurni = IsSmallFurni;
             this.FullFileName = fileName;
             this.X = X;
             this.Y = Y;
@@ -102,12 +104,12 @@ namespace EliasLibrary
                     continue;
                 }
 
-                if (smallCast && node.OuterXml.Contains("_64_"))
+                if (IsSmallFurni && node.OuterXml.Contains("_64_"))
                 {
                     continue;
                 }
 
-                if (!smallCast && node.OuterXml.Contains("_32_"))
+                if (!IsSmallFurni && node.OuterXml.Contains("_32_"))
                 {
                     continue;
                 }

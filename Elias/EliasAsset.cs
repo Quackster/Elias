@@ -1,5 +1,7 @@
 ﻿using Elias.Utilities;
 using System;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Xml;
 
@@ -56,6 +58,9 @@ namespace EliasLibrary
             if (IsIcon)
                 return;
 
+            if (IsShadow)
+                return;
+
             for (int i = 0; i < node.Attributes.Count; i++)
             {
                 var attribute = node.Attributes.Item(i);
@@ -68,15 +73,19 @@ namespace EliasLibrary
                 if (attribute.Name == "name")
                 {
                     this.FlashAssetName = attribute.InnerText;
-                    this.ShockwaveAssetName = AssetUtil.ConvertFlashName(attribute.InnerText, elias.X, elias.Y);
+                    this.ShockwaveAssetName = AssetUtil.ConvertFlashName(this.elias, attribute.InnerText, elias.X, elias.Y);
 
-                    Console.WriteLine(this.ShockwaveAssetName);
+                    if (ImageAssetUtil.SolveFile(elias.OUTPUT_PATH, FlashAssetName) == null)
+                    {
+                        Bitmap bmp = new Bitmap(1, 1);
+                        bmp.Save(Path.Combine(elias.OUTPUT_PATH, "images", FlashAssetName + ".png"), ImageFormat.Png);
+                    }
                 }
 
                 if (attribute.Name == "source")
                 {
                     this.FlashSourceAliasName = attribute.InnerText;
-                    this.ShockwaveSourceAliasName = AssetUtil.ConvertFlashName(attribute.InnerText, elias.X, elias.Y);
+                    this.ShockwaveSourceAliasName = AssetUtil.ConvertFlashName(this.elias, attribute.InnerText, elias.X, elias.Y);
                 }
             }
         }
@@ -105,8 +114,8 @@ namespace EliasLibrary
             if (IsShadow)
                 return;
 
-            int x = -1;
-            int y = -1;
+            int x = 0;
+            int y = 0;
 
             for (int i = 0; i < node.Attributes.Count; i++)
             {
