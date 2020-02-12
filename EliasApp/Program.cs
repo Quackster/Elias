@@ -6,7 +6,7 @@ namespace EliasApp
     class Program
     {
         private static string FFDEC_PATH = @"C:\Program Files (x86)\FFDec\ffdec.jar";
-        private static string OUTPUT_PATH = @"C:\swf_temp\temp";
+        private static string OUTPUT_PATH = @"C:\Users\alexm\Documents\GitHub\Elias\EliasDirector\temp";
 
         static void Main(string[] args)
         {

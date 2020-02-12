@@ -74,24 +74,31 @@ namespace EliasLibrary
                 {
                     this.FlashAssetName = attribute.InnerText;
                     this.ShockwaveAssetName = AssetUtil.ConvertFlashName(this.elias, attribute.InnerText, elias.X, elias.Y);
-
-                    if (ImageAssetUtil.SolveFile(elias.OUTPUT_PATH, FlashAssetName) == null)
-                    {
-                        Bitmap bmp = new Bitmap(1, 1);
-                        bmp.Save(Path.Combine(elias.OUTPUT_PATH, "images", FlashAssetName + ".png"), ImageFormat.Png);
-                    }
                 }
 
                 if (attribute.Name == "source")
                 {
                     this.FlashSourceAliasName = attribute.InnerText;
                     this.ShockwaveSourceAliasName = AssetUtil.ConvertFlashName(this.elias, attribute.InnerText, elias.X, elias.Y);
+
+
+                    if (ImageAssetUtil.SolveFile(elias.OUTPUT_PATH, FlashSourceAliasName) == null)
+                    {
+                        Console.WriteLine(Path.Combine(elias.OUTPUT_PATH, "images", FlashSourceAliasName + ".png"));
+                        Bitmap bmp = new Bitmap(1, 1);
+                        bmp.Save(Path.Combine(elias.OUTPUT_PATH, "images", FlashSourceAliasName + ".png"), ImageFormat.Png);
+                    }
                 }
             }
         }
 
         public void WriteImageNames()
         {
+            if (FlashAssetName == "usva_chair_64_a_6_0")
+            {
+                return;
+            }
+
             if (IsIcon)
                 return;
 
@@ -114,8 +121,8 @@ namespace EliasLibrary
             if (IsShadow)
                 return;
 
-            int x = 0;
-            int y = 0;
+            int x = -1;
+            int y = -1;
 
             for (int i = 0; i < node.Attributes.Count; i++)
             {
@@ -134,7 +141,11 @@ namespace EliasLibrary
             }
 
             if (x == -1 || y == -1)
+            {
+                this.FlashRectanglePoint = new int[] { 0, 0 };
+                this.ShockwaveRectanglePoint = new int[] { 0, 0 };
                 return;
+            }
 
             this.FlashRectanglePoint = new int[] { x, y };
             this.ShockwaveRectanglePoint = new int[] { x - 32, y };

@@ -55,6 +55,8 @@ namespace EliasLibrary
             this.ExtractAssets();
             this.GenerateAliases();
             this.CreateMemberalias();
+
+            File.WriteAllText(Path.Combine(OUTPUT_PATH, "sprite.name"), this.Sprite);
         }
 
         private void TryCleanup()
@@ -117,8 +119,8 @@ namespace EliasLibrary
                 var eliasAlias = new EliasAsset(this, node);
 
                 eliasAlias.ParseAssetNames();
-                eliasAlias.ParseRecPointNames();
                 eliasAlias.WriteImageNames();
+                eliasAlias.ParseRecPointNames();
                 eliasAlias.WriteRegPointData();
 
                 Assets.Add(eliasAlias);
