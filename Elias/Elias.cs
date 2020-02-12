@@ -143,7 +143,7 @@ namespace EliasLibrary
                     stringBuilder.Append("=");
                     stringBuilder.Append(eliasAsset.ShockwaveSourceAliasName);
                     stringBuilder.Append("*");
-                    stringBuilder.Append(Environment.NewLine);
+                    stringBuilder.Append("\r");
                 }
             }
 
