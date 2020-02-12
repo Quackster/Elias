@@ -58,26 +58,35 @@ namespace EliasLibrary
             this.GenerateAliases();
             this.CreateMemberalias();
             this.RunEliasDirector();
-
-            File.WriteAllText(Path.Combine(OUTPUT_PATH, "sprite.name"), this.Sprite);
         }
 
         private void TryCleanup()
         {
-            if (Directory.Exists(this.OUTPUT_PATH))
-                Directory.Delete(this.OUTPUT_PATH, true);
+            try
+            {
+                if (Directory.Exists(this.OUTPUT_PATH))
+                    Directory.Delete(this.OUTPUT_PATH, true);
 
-            Directory.CreateDirectory(this.OUTPUT_PATH);
+                Directory.CreateDirectory(this.OUTPUT_PATH);
 
-            if (Directory.Exists(this.CAST_PATH))
-                Directory.Delete(this.CAST_PATH, true);
+                if (Directory.Exists(this.CAST_PATH))
+                    Directory.Delete(this.CAST_PATH, true);
 
-            Directory.CreateDirectory(this.CAST_PATH);
+                Directory.CreateDirectory(this.CAST_PATH);
 
-            if (Directory.Exists(this.IMAGE_PATH))
-                Directory.Delete(this.IMAGE_PATH, true);
+                if (Directory.Exists(this.IMAGE_PATH))
+                    Directory.Delete(this.IMAGE_PATH, true);
 
-            Directory.CreateDirectory(this.IMAGE_PATH);
+                Directory.CreateDirectory(this.IMAGE_PATH);
+            }
+            catch
+            {
+
+            }
+            finally
+            {
+                File.WriteAllText(Path.Combine(CAST_PATH, "sprite.name"), this.Sprite);
+            }
         }
 
         private void ExtractAssets()
