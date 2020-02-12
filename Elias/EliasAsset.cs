@@ -92,11 +92,6 @@ namespace EliasLibrary
 
         public void WriteImageNames()
         {
-            if (FlashAssetName == "usva_chair_64_a_6_0")
-            {
-                return;
-            }
-
             if (IsIcon)
                 return;
 
