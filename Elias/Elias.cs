@@ -23,6 +23,7 @@ namespace EliasLibrary
 
         public string FFDEC_PATH;
         public string OUTPUT_PATH;
+        public string DIRECTOR_PATH;
 
         public string CAST_PATH
         {
@@ -36,7 +37,7 @@ namespace EliasLibrary
 
         private List<EliasAsset> Assets;
 
-        public Elias(string sprite, bool IsSmallFurni, string fileName, int X, int Y, string FFDEC_PATH, string OUTPUT_PATH)
+        public Elias(string sprite, bool IsSmallFurni, string fileName, int X, int Y, string FFDEC_PATH, string OUTPUT_PATH, string DIRECTOR_PATH)
         {
             this.Sprite = sprite;
             this.IsSmallFurni = IsSmallFurni;
@@ -46,6 +47,7 @@ namespace EliasLibrary
             this.FileDirectory = new FileInfo(this.FullFileName).DirectoryName;
             this.FFDEC_PATH = FFDEC_PATH;
             this.OUTPUT_PATH = OUTPUT_PATH;
+            this.DIRECTOR_PATH = DIRECTOR_PATH;
             this.Assets = new List<EliasAsset>();
         }
 
@@ -55,6 +57,7 @@ namespace EliasLibrary
             this.ExtractAssets();
             this.GenerateAliases();
             this.CreateMemberalias();
+            this.RunEliasDirector();
 
             File.WriteAllText(Path.Combine(OUTPUT_PATH, "sprite.name"), this.Sprite);
         }
@@ -84,8 +87,17 @@ namespace EliasLibrary
             p.StartInfo.Arguments = string.Format("-jar \"" + FFDEC_PATH + "\" -export \"binaryData,image\" \"{0}\" \"{1}\"", OUTPUT_PATH, this.FullFileName);
             p.Start();
             p.WaitForExit();
-        } 
-        
+        }
+
+        private void RunEliasDirector()
+        {
+            var p = new Process();
+            p.StartInfo.WorkingDirectory = new FileInfo(DIRECTOR_PATH).DirectoryName;
+            p.StartInfo.FileName = DIRECTOR_PATH;
+            p.Start();
+            p.WaitForExit();
+        }
+
         private void GenerateAliases()
         {
             var xmlData = BinaryDataUtil.SolveFile(this.OUTPUT_PATH, "assets");
