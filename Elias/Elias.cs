@@ -276,7 +276,7 @@ namespace EliasLibrary
 
             var totalStates = 0;
             var states = "";
-            var visualisation = xmlData.SelectNodes("//visualizationData/visualization[@size='64']/animations/animation");
+            var visualisation = xmlData.SelectNodes("//visualizationData/visualization[@size='" + (IsSmallFurni ? "32" : "64") + "']/animations/animation");
 
             for (int i = 0; i < visualisation.Count; i++)
             {
