@@ -58,6 +58,8 @@ namespace EliasLibrary
             this.GenerateAliases();
             this.CreateMemberalias();
             this.GenerateProps();
+            this.GenerateAssetIndex();
+            this.GenerateAnimations();
             this.RunEliasDirector();
         }
 
@@ -245,7 +247,21 @@ namespace EliasLibrary
                 sections.Add(string.Format(firstSection, secondSection));
             }
 
-            Console.WriteLine("[" + string.Join(", ", sections) + "]");
+            File.WriteAllText(Path.Combine(CAST_PATH, ((this.IsSmallFurni ? "s_" : "") + this.Sprite) + ".props"), "[" + string.Join(", ", sections) + "]");
         }
+
+        private void GenerateAnimations()
+        {
+
+
+        }
+
+        private void GenerateAssetIndex()
+        {
+            // [#id: "s_tv_flat", #classes: ["Active Object Class",  "Active Object Extension Class"]]
+            File.WriteAllText(Path.Combine(CAST_PATH, "asset.index"), "[#id: \"" + ((this.IsSmallFurni ? "s_" : "") + this.Sprite) + "\", #classes: [\"Active Object Class\",  \"Active Object Extension Class\"]]");
+        }
+
+
     }
 }
