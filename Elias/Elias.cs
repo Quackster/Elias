@@ -35,16 +35,6 @@ namespace EliasLibrary
             get { return Path.Combine(CAST_PATH, "images"); }
         }
 
-        public string JPEXES_DIR1
-        {
-            get { return Path.Combine(OUTPUT_PATH, "images"); }
-        }
-
-        public string JPEXES_DIR2
-        {
-            get { return Path.Combine(OUTPUT_PATH, "binaryData"); }
-        }
-
         private List<EliasAsset> Assets;
 
         public Elias(string sprite, bool IsSmallFurni, string fileName, int X, int Y, string FFDEC_PATH, string OUTPUT_PATH, string DIRECTOR_PATH)
