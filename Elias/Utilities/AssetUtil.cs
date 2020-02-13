@@ -14,7 +14,8 @@
             string rotate = data[1];
             string frame = data[2];
 
-            return (elias.IsSmallFurni ? "s_" : "") + elias.Sprite + "_" + layerLetter + "_0_" + x + "_" + y + "_" + rotate + "_" + frame;
+            string newName = (elias.IsSmallFurni ? "s_" : "") + elias.Sprite + "_" + layerLetter + "_0_" + x + "_" + y + "_" + rotate + "_" + frame;
+            return newName;
         }
     }
 }

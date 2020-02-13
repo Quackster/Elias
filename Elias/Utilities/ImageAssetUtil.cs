@@ -14,7 +14,7 @@ namespace Elias.Utilities
         {
             foreach (var file in Directory.GetFiles(Path.Combine(outputDirectory, "images"), "*"))
             {
-                if (Path.GetFileNameWithoutExtension(file).Contains(fileNameContains))
+                if (Path.GetFileNameWithoutExtension(file).EndsWith(fileNameContains))
                 {
                     return file;
                 }
