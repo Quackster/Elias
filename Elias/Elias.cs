@@ -226,7 +226,7 @@ namespace EliasLibrary
 
                 char letter = alphabet[int.Parse(node.Attributes.GetNamedItem("id").InnerText)];
 
-                string firstSection = "[\"" + letter + "\": [{0}]]";
+                string firstSection = "\"" + letter + "\": [{0}]";
                 string secondSection = "";
 
                 if (node.Attributes.GetNamedItem("z") != null)
@@ -362,7 +362,7 @@ namespace EliasLibrary
 
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.Append("[\r");
-            stringBuilder.Append("states:[" + states.TrimEnd(", ".ToCharArray()) + "],\r");
+            stringBuilder.Append("states:[" + states.TrimEnd(",".ToCharArray()) + "],\r");
             stringBuilder.Append("layers:[\r");
 
             foreach (var animation in sections)
@@ -372,7 +372,9 @@ namespace EliasLibrary
                     continue;
                 }
 
-                stringBuilder.Append(animation.Key + ": [ "); 
+                stringBuilder.Append(animation.Key + ": [ ");
+
+                int i = 0;
                 foreach (var frames in animation.Value.Frames)
                 {
                     // loop: 0, delay: 4, 
@@ -390,7 +392,17 @@ namespace EliasLibrary
 
                     stringBuilder.Append("frames:[ ");
                     stringBuilder.Append(string.Join(",", frames.Value));
-                    stringBuilder.Append(" ] ] ");
+
+                    if (animation.Value.Frames.Count - 1 > i)
+                    {
+                        stringBuilder.Append(" ] ], ");
+                    }
+                    else
+                    {
+                        stringBuilder.Append(" ] ] ");
+                    }
+
+                    i++;
                 }
 
                 stringBuilder.Append("],\r");
