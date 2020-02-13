@@ -259,7 +259,8 @@ namespace EliasLibrary
         private void GenerateAssetIndex()
         {
             // [#id: "s_tv_flat", #classes: ["Active Object Class",  "Active Object Extension Class"]]
-            File.WriteAllText(Path.Combine(CAST_PATH, "asset.index"), "[#id: \"" + ((this.IsSmallFurni ? "s_" : "") + this.Sprite) + "\", #classes: [\"Active Object Class\",  \"Active Object Extension Class\"]]");
+            File.WriteAllText(Path.Combine(CAST_PATH, "asset.index"), 
+                "[#id: \"" + ((this.IsSmallFurni ? "s_" : "") + this.Sprite) + "\", #classes: [\"Active Object Class\",  \"Active Object Extension Class\"]]");
         }
 
 
