@@ -253,7 +253,109 @@ namespace EliasLibrary
         private void GenerateAnimations()
         {
 
+            char[] alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToLower().ToCharArray();
+            var xmlData = BinaryDataUtil.SolveFile(this.OUTPUT_PATH, "visualization");
 
+            Dictionary<string, Dictionary<int, List<string>>> sections = new Dictionary<string, Dictionary<int, List<string>>>();
+
+            if (xmlData == null)
+            {
+                return;
+            }
+
+            var totalStates = 0;
+            var states = "";
+            var visualisation = xmlData.SelectSingleNode("//visualizationData/graphics/visualization/animations");
+
+            for (int i = 0; i < visualisation.ChildNodes.Count; i++)
+            {
+                var node = visualisation.ChildNodes.Item(i);
+
+                if (node == null)
+                {
+                    continue;
+                }
+
+                int id = int.Parse(node.Attributes.GetNamedItem("id").InnerText);
+                states += (id + 1) + ", ";
+                
+                if ((id + 1) > totalStates)
+                {
+                    totalStates = id + 1;
+                }
+
+                for (int j = 0; j < node.ChildNodes.Count; j++)
+                {
+                    var layer = node.ChildNodes.Item(j);
+
+                    if (layer == null)
+                    {
+                        continue;
+                    }
+
+                    int layerId = int.Parse(layer.Attributes.GetNamedItem("id").InnerText);
+                    var layerLetter = Convert.ToString(alphabet[layerId]);
+
+                    for (int k = 0; k < layer.ChildNodes.Count; k++)
+                    {
+                        var frame = layer.ChildNodes.Item(k);
+
+                        if (frame == null || frame.ChildNodes.Count == 0)
+                        {
+                            continue;
+                        }
+
+                        if (!sections.ContainsKey(layerLetter))
+                        {
+                            sections.Add(layerLetter, new Dictionary<int, List<string>>());
+                        }
+
+
+                        if (!sections[layerLetter].ContainsKey(id))
+                        {
+                            sections[layerLetter].Add(id, new List<string>());
+                        }
+
+                        sections[layerLetter][id].Add(frame.ChildNodes.Item(0).Attributes.GetNamedItem("id").InnerText);
+
+                        //Console.WriteLine(frame.ChildNodes.Item(0).Attributes.GetNamedItem("id").InnerText);
+                        //sections[layerLetter].Add(frame.ChildNodes.Item(0).Attributes.GetNamedItem("id").InnerText);
+                    }
+                }
+            }
+
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.Append("[\r");
+            stringBuilder.Append("states:[" + states.TrimEnd(", ".ToCharArray()) + "],\r");
+            stringBuilder.Append("layers:[\r");
+
+            foreach (var animation in sections)
+            {
+                stringBuilder.Append(animation.Key + ": [ ");
+
+                for (int i = 0; i < totalStates; i++)
+                {
+                    stringBuilder.Append("[ frames:[ ");
+                    stringBuilder.Append(string.Join(",", animation.Value[i]));
+
+                    if (totalStates > i + 1)
+                    {
+                        stringBuilder.Append(" ] ], ");
+                    }
+                    else
+                    {
+                        stringBuilder.Append(" ] ] ");
+                    }
+                  
+                }
+
+                stringBuilder.Append("]\r");
+            }
+
+            stringBuilder.Append("]\r");
+            stringBuilder.Append("]\r");
+
+            File.WriteAllText(Path.Combine(CAST_PATH, ((this.IsSmallFurni ? "s_" : "") + this.Sprite) + ".data"), stringBuilder.ToString());
         }
 
         private void GenerateAssetIndex()
