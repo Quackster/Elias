@@ -16,7 +16,7 @@ namespace EliasLibrary
         public string Sprite;
         public bool IsSmallFurni;
         public int X;
-        public int Y; 
+        public int Y;
 
         public string FullFileName;
         public string FileDirectory;
@@ -57,6 +57,7 @@ namespace EliasLibrary
             this.ExtractAssets();
             this.GenerateAliases();
             this.CreateMemberalias();
+            this.GenerateProps();
             this.RunEliasDirector();
         }
 
@@ -85,7 +86,7 @@ namespace EliasLibrary
             }
             finally
             {
-                File.WriteAllText(Path.Combine(CAST_PATH, "sprite.data"), 
+                File.WriteAllText(Path.Combine(CAST_PATH, "sprite.data"),
                     string.Format("{0}|{1}", this.Sprite, (this.IsSmallFurni ? "small" : "large")));
             }
         }
@@ -103,9 +104,10 @@ namespace EliasLibrary
         {
             try
             {
-                Directory.Delete(Path.Combine(OUTPUT_PATH, "images"), true);
-                Directory.Delete(Path.Combine(OUTPUT_PATH, "binaryData"), true);
-            } catch { }
+                //Directory.Delete(Path.Combine(OUTPUT_PATH, "images"), true);
+                //Directory.Delete(Path.Combine(OUTPUT_PATH, "binaryData"), true);
+            }
+            catch { }
 
             var p = new Process();
             p.StartInfo.WorkingDirectory = new FileInfo(DIRECTOR_PATH).DirectoryName;
@@ -184,6 +186,66 @@ namespace EliasLibrary
             }
 
             File.WriteAllText(Path.Combine(CAST_PATH, "memberalias.index"), stringBuilder.ToString());
+        }
+
+        private void GenerateProps()
+        {
+            char[] alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToLower().ToCharArray();
+            var xmlData = BinaryDataUtil.SolveFile(this.OUTPUT_PATH, "visualization");
+
+            List<string> sections = new List<string>();
+
+            if (xmlData == null)
+            {
+                return;
+            }
+
+            var visualisation = xmlData.SelectSingleNode("//visualizationData/graphics/visualization/layers");
+
+            for (int i = 0; i < visualisation.ChildNodes.Count; i++)
+            {
+                var node = visualisation.ChildNodes.Item(i);
+
+                if (node == null)
+                {
+                    continue;
+                }
+
+                if (node.Name != "layer")
+                {
+                    continue;
+                }
+
+                char letter = alphabet[int.Parse(node.Attributes.GetNamedItem("id").InnerText)];
+
+                string firstSection = "[\"" + letter + "\": [{0}]]";
+                string secondSection = "";
+
+                if (node.Attributes.GetNamedItem("z") != null)
+                {
+                    secondSection += "#zshift: [" + node.Attributes.GetNamedItem("z").InnerText + "], ";
+                }
+
+                if (node.Attributes.GetNamedItem("alpha") != null)
+                {
+                    double alphaValue = double.Parse(node.Attributes.GetNamedItem("alpha").InnerText);
+                    double newValue = (double)((alphaValue / 255) * 100);
+                    secondSection += "#ink: " + (int)newValue + ", ";
+                }
+
+                if (secondSection.Length > 0)
+                {
+                    secondSection = secondSection.TrimEnd(", ".ToCharArray());
+                }
+                else
+                {
+                    secondSection = ":";
+                }
+
+                sections.Add(string.Format(firstSection, secondSection));
+            }
+
+            Console.WriteLine("[" + string.Join(", ", sections) + "]");
         }
     }
 }
