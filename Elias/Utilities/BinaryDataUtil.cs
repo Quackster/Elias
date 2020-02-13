@@ -24,6 +24,13 @@ namespace Elias.Utilities
                         File.WriteAllText(file, text);
                     }
 
+                    if (text.Contains("<graphics>"))
+                    {
+                        text = text.Replace("<graphics>", "");
+                        text = text.Replace("</graphics>", "");
+                        File.WriteAllText(file, text);
+                    }
+
                     XmlDocument xmlDoc = new XmlDocument();
                     xmlDoc.Load(file);
 

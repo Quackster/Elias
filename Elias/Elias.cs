@@ -276,16 +276,11 @@ namespace EliasLibrary
 
             var totalStates = 0;
             var states = "";
-            var visualisation = xmlData.SelectSingleNode("//visualizationData/graphics/visualization/animations");
+            var visualisation = xmlData.SelectNodes("//visualizationData/visualization[@size='64']/animations/animation");
 
-            if (visualisation == null)
+            for (int i = 0; i < visualisation.Count; i++)
             {
-                visualisation = xmlData.SelectSingleNode("//visualizationData/visualization/animations");
-            }
-
-            for (int i = 0; i < visualisation.ChildNodes.Count; i++)
-            {
-                var node = visualisation.ChildNodes.Item(i);
+                var node = visualisation.Item(i);
 
                 if (node == null)
                 {
@@ -426,7 +421,7 @@ namespace EliasLibrary
             stringBuilder.Append("]\r");
             stringBuilder.Append("]\r");
 
-            File.WriteAllText(Path.Combine(CAST_PATH, ((this.IsSmallFurni ? "s_" : "") + this.Sprite) + ".data"), stringBuilder.ToString());;
+            File.WriteAllText(Path.Combine(CAST_PATH, ((this.IsSmallFurni ? "s_" : "") + this.Sprite) + ".data"), stringBuilder.ToString());
         }
 
         private void GenerateAssetIndex()
