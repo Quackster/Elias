@@ -85,7 +85,8 @@ namespace EliasLibrary
             }
             finally
             {
-                File.WriteAllText(Path.Combine(CAST_PATH, "sprite.name"), this.Sprite);
+                File.WriteAllText(Path.Combine(CAST_PATH, "sprite.data"), 
+                    string.Format("{0}|{1}", this.Sprite, (this.IsSmallFurni ? "small" : "large")));
             }
         }
 
