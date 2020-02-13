@@ -14,6 +14,7 @@ namespace EliasLibrary
 
         public bool IsIcon;
         public bool IsShadow;
+        public bool IsFlipped;
 
         public string FlashAssetName;
         public string ShockwaveAssetName;
@@ -75,43 +76,42 @@ namespace EliasLibrary
                     this.FlashAssetName = attribute.InnerText;
                     this.ShockwaveAssetName = AssetUtil.ConvertFlashName(this.elias, attribute.InnerText, elias.X, elias.Y);
 
-                    if (ImageAssetUtil.SolveFile(elias.OUTPUT_PATH, FlashAssetName) == null)
-                    {
-                        /*var firstRot = ImageAssetUtil.SolveFile(elias.OUTPUT_PATH, AssetUtil.NextRotation(FlashAssetName, 0));
-                        var secondRot = ImageAssetUtil.SolveFile(elias.OUTPUT_PATH, AssetUtil.NextRotation(FlashAssetName, 2));
-                        var thirdRot = ImageAssetUtil.SolveFile(elias.OUTPUT_PATH, AssetUtil.NextRotation(FlashAssetName, 4));
-                        var fourthRot = ImageAssetUtil.SolveFile(elias.OUTPUT_PATH, AssetUtil.NextRotation(FlashAssetName, 6));
+                    var flashFile = ImageAssetUtil.SolveFile(elias.OUTPUT_PATH, FlashAssetName);
 
-                        if (firstRot != null)
+                    if (flashFile == null)
+                    {
+                        var symbolData = ImageAssetUtil.SolveSymbolReference(elias, FlashAssetName);
+
+                        var symbolID = symbolData.Item1;
+                        var symbolReference = symbolData.Item2;
+
+                        var symbolFileName = Path.GetFileName(symbolReference);
+
+                        if (symbolReference != null)
                         {
-                            this.FlashSourceAliasName = Path.GetFileNameWithoutExtension(firstRot);
-                            this.ShockwaveSourceAliasName = AssetUtil.ConvertFlashFileName(this.elias, this.FlashSourceAliasName, elias.X, elias.Y);
-                        }
-                        else if (secondRot != null)
-                        {
-                            this.FlashSourceAliasName = Path.GetFileNameWithoutExtension(secondRot);
-                            this.ShockwaveSourceAliasName = AssetUtil.ConvertFlashFileName(this.elias, this.FlashSourceAliasName, elias.X, elias.Y);
-                        }
-                        else if (thirdRot != null)
-                        {
-                            this.FlashSourceAliasName = Path.GetFileNameWithoutExtension(thirdRot);
-                            this.ShockwaveSourceAliasName = AssetUtil.ConvertFlashFileName(this.elias, this.FlashSourceAliasName, elias.X, elias.Y);
-                        }
-                        else if (fourthRot != null)
-                        {
-                            this.FlashSourceAliasName = Path.GetFileNameWithoutExtension(fourthRot);
-                            this.ShockwaveSourceAliasName = AssetUtil.ConvertFlashFileName(this.elias, this.FlashSourceAliasName, elias.X, elias.Y);
+                            // Copy it over
+                            if ((symbolFileName.Contains("_32_") && !elias.IsSmallFurni) || (symbolFileName.Contains("_64_") && elias.IsSmallFurni))
+                            {
+                                File.Copy(symbolReference, Path.Combine(elias.OUTPUT_PATH, "images", FlashAssetName + ".png"));
+                            }
+                            else
+                            {
+                                this.IsFlipped = false; 
+                                this.FlashSourceAliasName = symbolFileName.Replace(symbolID + "_" + elias.Sprite + "_", "");
+                                this.ShockwaveSourceAliasName = AssetUtil.ConvertFlashName(this.elias, this.FlashSourceAliasName, elias.X, elias.Y);
+                            }
                         }
                         else
-                        {*/
+                        {
                             Bitmap bmp = new Bitmap(1, 1);
                             bmp.Save(Path.Combine(elias.OUTPUT_PATH, "images", FlashAssetName + ".png"), ImageFormat.Png);
-                        //}
+                        }
                     }
                 }
 
                 if (attribute.Name == "source")
                 {
+                    this.IsFlipped = true;
                     this.FlashSourceAliasName = attribute.InnerText;
                     this.ShockwaveSourceAliasName = AssetUtil.ConvertFlashName(this.elias, attribute.InnerText, elias.X, elias.Y);
                 }

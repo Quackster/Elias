@@ -17,10 +17,6 @@ namespace EliasApp
                 goto exit;
             }
 
-#if DEBUG
-            OUTPUT_PATH = @"..\..\..\EliasDirector\temp";
-#endif
-
             try
             {
                 string fullFileName = args[0];

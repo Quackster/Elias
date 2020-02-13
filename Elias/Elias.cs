@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 using System.Xml.Serialization;
 
 namespace EliasLibrary
@@ -25,6 +26,8 @@ namespace EliasLibrary
         public string FFDEC_PATH;
         public string OUTPUT_PATH;
         public string DIRECTOR_PATH;
+
+        public Dictionary<int, List<string>> Symbols;
 
         public string CAST_PATH
         {
@@ -50,12 +53,14 @@ namespace EliasLibrary
             this.OUTPUT_PATH = OUTPUT_PATH;
             this.DIRECTOR_PATH = DIRECTOR_PATH;
             this.Assets = new List<EliasAsset>();
+            this.Symbols = new Dictionary<int, List<string>>();
         }
 
         public void Parse()
         {
             this.TryCleanup();
             this.ExtractAssets();
+            this.RunSwfmill();
             this.GenerateAliases();
             this.CreateMemberalias();
             this.GenerateProps();
@@ -96,11 +101,53 @@ namespace EliasLibrary
 
         private void ExtractAssets()
         {
+
             var p = new Process();
             p.StartInfo.FileName = "java";
             p.StartInfo.Arguments = string.Format("-jar \"" + FFDEC_PATH + "\" -export \"binaryData,image\" \"{0}\" \"{1}\"", OUTPUT_PATH, this.FullFileName);
             p.Start();
             p.WaitForExit();
+        }
+
+        private void RunSwfmill()
+        {
+            var p = new Process();
+            p.StartInfo.FileName = Path.Combine(Environment.CurrentDirectory, "swfmill\\swfmill.exe");
+            p.StartInfo.Arguments = "swf2xml \"" + this.FullFileName + "\" \"" + Path.Combine(OUTPUT_PATH, Sprite + ".xml") + "\"";
+            Console.WriteLine(p.StartInfo.Arguments);
+            p.Start();
+            p.WaitForExit();
+
+            ReadSymbolClass();
+        }
+
+        private void ReadSymbolClass()
+        {
+            var xmlPath = Path.Combine(OUTPUT_PATH, Sprite + ".xml");
+
+            XmlDocument xmlDoc = new XmlDocument();
+            xmlDoc.Load(xmlPath);
+
+            var nodes = xmlDoc.SelectNodes("//swf/Header/tags/SymbolClass/symbols/Symbol");
+
+            for (int i = 0; i < nodes.Count; i++)
+            {
+                var symbol = nodes.Item(i);
+
+                if (symbol == null)
+                {
+                    continue;
+                }
+
+                int objectID = int.Parse(symbol.Attributes.GetNamedItem("objectID").InnerText);
+                string name = symbol.Attributes.GetNamedItem("name").InnerText;
+
+                if (!Symbols.ContainsKey(objectID))
+                    Symbols.Add(objectID, new List<string>());
+
+                Symbols[objectID].Add(name);
+            }
+
         }
 
         private void RunEliasDirector()
@@ -183,7 +230,12 @@ namespace EliasLibrary
                     stringBuilder.Append(eliasAsset.ShockwaveAssetName);
                     stringBuilder.Append("=");
                     stringBuilder.Append(eliasAsset.ShockwaveSourceAliasName);
-                    stringBuilder.Append("*");
+
+                    if (eliasAsset.IsFlipped)
+                    {
+                        stringBuilder.Append("*");
+                    }
+
                     stringBuilder.Append("\r");
                 }
             }
@@ -274,7 +326,7 @@ namespace EliasLibrary
                 return;
             }
       
-           var frames = xmlData.SelectNodes("//visualizationData/visualization[@size='" + (IsSmallFurni ? "32" : "64") + "']/animations/animation/animationLayer/frameSequence/frame");
+            var frames = xmlData.SelectNodes("//visualizationData/visualization[@size='" + (IsSmallFurni ? "32" : "64") + "']/animations/animation/animationLayer/frameSequence/frame");
 
             for (int i = 0; i < frames.Count; i++)
             {
