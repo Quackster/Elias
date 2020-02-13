@@ -298,19 +298,19 @@ namespace EliasLibrary
 
                 if (!sections.ContainsKey(animationLetter))
                 {
-                    var eliasAnimation = new EliasAnimation();
-                    sections.Add(animationLetter, eliasAnimation);//new Dictionary<int, List<string>>());
-
-                    if (animationLayer.Attributes.GetNamedItem("loopCount") != null)
-                        eliasAnimation.Loop = int.Parse(animationLayer.Attributes.GetNamedItem("loopCount").InnerText);
-
-                    if (animationLayer.Attributes.GetNamedItem("frameRepeat") != null)
-                        eliasAnimation.FramesPerSecond = int.Parse(animationLayer.Attributes.GetNamedItem("frameRepeat").InnerText);
+                    sections.Add(animationLetter, new EliasAnimation());//new Dictionary<int, List<string>>());
                 }
 
                 if (!sections[animationLetter].States.ContainsKey(animationId))
                 {
-                    sections[animationLetter].States.Add(animationId, new EliasFrame());
+                    var frameClass = new EliasFrame();
+                    sections[animationLetter].States.Add(animationId, frameClass);
+
+                    if (animationLayer.Attributes.GetNamedItem("loopCount") != null)
+                        frameClass.Loop = int.Parse(animationLayer.Attributes.GetNamedItem("loopCount").InnerText);
+
+                    if (animationLayer.Attributes.GetNamedItem("frameRepeat") != null)
+                        frameClass.FramesPerSecond = int.Parse(animationLayer.Attributes.GetNamedItem("frameRepeat").InnerText);
                 }
 
                 sections[animationLetter].States[animationId].Frames.Add(frame.Attributes.GetNamedItem("id").InnerText);
@@ -344,14 +344,14 @@ namespace EliasLibrary
                     // loop: 0, delay: 4, 
                     stringBuilder.Append("[ ");
 
-                    if (animation.Value.Loop != -1)
+                    if (f.Value.Loop != -1)
                     {
-                        stringBuilder.Append("loop: " + animation.Value.Loop + ", ");
+                        stringBuilder.Append("loop: " + f.Value.Loop + ", ");
                     }
 
-                    if (animation.Value.FramesPerSecond != -1)
+                    if (f.Value.FramesPerSecond != -1)
                     {
-                        stringBuilder.Append("delay: " + animation.Value.FramesPerSecond + ", ");
+                        stringBuilder.Append("delay: " + f.Value.FramesPerSecond + ", ");
                     }
 
                     stringBuilder.Append("frames:[ ");
