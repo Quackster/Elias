@@ -77,8 +77,26 @@ namespace EliasLibrary
 
                     if (ImageAssetUtil.SolveFile(elias.OUTPUT_PATH, FlashAssetName) == null)
                     {
-                        Bitmap bmp = new Bitmap(1, 1);
-                        bmp.Save(Path.Combine(elias.OUTPUT_PATH, "images", FlashAssetName + ".png"), ImageFormat.Png);
+                        if (ShockwaveAssetName.EndsWith("_0"))
+                        {
+                            var tryNext = FlashAssetName.TrimEnd("_0".ToCharArray()) + "_1";
+                            var tryFile = ImageAssetUtil.SolveFile(elias.OUTPUT_PATH, tryNext);
+
+                            if (tryFile != null)
+                            {
+                                File.Copy(tryFile, tryFile.Replace("_1.png", "_0.png"));
+                            }
+                            else
+                            {
+                                Bitmap bmp = new Bitmap(1, 1);
+                                bmp.Save(Path.Combine(elias.OUTPUT_PATH, "images", FlashAssetName + ".png"), ImageFormat.Png);
+                            }
+                        }
+                        else
+                        {
+                            Bitmap bmp = new Bitmap(1, 1);
+                            bmp.Save(Path.Combine(elias.OUTPUT_PATH, "images", FlashAssetName + ".png"), ImageFormat.Png);
+                        }
                     }
                 }
 
