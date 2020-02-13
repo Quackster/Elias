@@ -288,7 +288,7 @@ namespace EliasLibrary
                 }
 
                 int id = int.Parse(node.Attributes.GetNamedItem("id").InnerText);
-                states += (id + 1) + ", ";
+                //states += (id + 1) + ", ";
                 
                 if ((id + 1) > totalStates)
                 {
@@ -355,6 +355,11 @@ namespace EliasLibrary
                 }
             }
 
+            for (int i = 0; i < totalStates; i++)
+            {
+                states += (i + 1) + ", ";
+            }
+
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.Append("[\r");
             stringBuilder.Append("states:[" + states.TrimEnd(", ".ToCharArray()) + "],\r");
@@ -362,18 +367,28 @@ namespace EliasLibrary
 
             foreach (var animation in sections)
             {
-                stringBuilder.Append(animation.Key + ": [ ");
-
                 if (animation.Value.Frames.Count == 0)
                 {
-                    animation.Value.Frames.Add(0, new List<string>(){ "0" });
+                    continue;
                 }
 
-                int i = 0;
-                //for (int i = 0; i < animation.Value.Frames.; i++)
+                stringBuilder.Append(animation.Key + ": [ "); 
                 foreach (var frames in animation.Value.Frames)
                 {
-                    stringBuilder.Append("[ frames:[ ");
+                    // loop: 0, delay: 4, 
+                    stringBuilder.Append("[ ");
+
+                    if (animation.Value.Loop != -1)
+                    {
+                        stringBuilder.Append("loop: " + animation.Value.Loop + ", ");
+                    }
+
+                    if (animation.Value.FramesPerSecond != -1)
+                    {
+                        stringBuilder.Append("delay: " + animation.Value.FramesPerSecond + ", ");
+                    }
+
+                    stringBuilder.Append("frames:[ ");
                     stringBuilder.Append(string.Join(",", frames.Value));
                     stringBuilder.Append(" ] ] ");
                 }
