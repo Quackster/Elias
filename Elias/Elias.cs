@@ -224,7 +224,12 @@ namespace EliasLibrary
                     continue;
                 }
 
-                char letter = alphabet[int.Parse(node.Attributes.GetNamedItem("id").InnerText)];
+                if (node.Attributes.GetNamedItem("z") == null && node.Attributes.GetNamedItem("alpha") == null)
+                {
+                    continue;
+                }
+
+                    char letter = alphabet[int.Parse(node.Attributes.GetNamedItem("id").InnerText)];
 
                 string firstSection = "\"" + letter + "\": [{0}]";
                 string secondSection = "";
@@ -253,7 +258,7 @@ namespace EliasLibrary
                 sections.Add(string.Format(firstSection, secondSection));
             }
 
-            File.WriteAllText(Path.Combine(CAST_PATH, ((this.IsSmallFurni ? "s_" : "") + this.Sprite) + ".props"), "[" + string.Join(", ", sections) + "]");
+            File.WriteAllText(Path.Combine(CAST_PATH, ((this.IsSmallFurni ? "s_" : "") + this.Sprite) + ".props"), sections.Count > 0 ? "[" + string.Join(", ", sections) + "]" : "");
         }
 
         private void GenerateAnimations()
@@ -357,7 +362,7 @@ namespace EliasLibrary
 
             for (int i = 0; i < totalStates; i++)
             {
-                states += (i + 1) + ", ";
+                states += (i + 1) + ",";
             }
 
             StringBuilder stringBuilder = new StringBuilder();
@@ -365,6 +370,7 @@ namespace EliasLibrary
             stringBuilder.Append("states:[" + states.TrimEnd(",".ToCharArray()) + "],\r");
             stringBuilder.Append("layers:[\r");
 
+            int e = 0;
             foreach (var animation in sections)
             {
                 if (animation.Value.Frames.Count == 0)
@@ -405,13 +411,22 @@ namespace EliasLibrary
                     i++;
                 }
 
-                stringBuilder.Append("],\r");
+                if (sections.Count - 1 > e)
+                {
+                    stringBuilder.Append("],\r");
+                }
+                else
+                {
+                    stringBuilder.Append("]\r");
+                }
+
+                e++;
             }
 
             stringBuilder.Append("]\r");
             stringBuilder.Append("]\r");
 
-            File.WriteAllText(Path.Combine(CAST_PATH, ((this.IsSmallFurni ? "s_" : "") + this.Sprite) + ".data"), stringBuilder.ToString());
+            File.WriteAllText(Path.Combine(CAST_PATH, ((this.IsSmallFurni ? "s_" : "") + this.Sprite) + ".data"), stringBuilder.ToString());;
         }
 
         private void GenerateAssetIndex()
