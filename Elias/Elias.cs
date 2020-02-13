@@ -243,7 +243,7 @@ namespace EliasLibrary
                 {
                     double alphaValue = double.Parse(node.Attributes.GetNamedItem("alpha").InnerText);
                     double newValue = (double)((alphaValue / 255) * 100);
-                    secondSection += "#ink: " + (int)newValue + ", ";
+                    secondSection += "#blend: " + (int)newValue + ", ";
                 }
 
                 if (secondSection.Length > 0)
@@ -324,65 +324,69 @@ namespace EliasLibrary
             }
 
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.Append("[\r");
-            stringBuilder.Append("states:[" + states.TrimEnd(",".ToCharArray()) + "],\r");
-            stringBuilder.Append("layers:[\r");
 
-            int e = 0;
-            foreach (var animation in sections)
+            if (animations.Count > 0)
             {
-                if (animation.Value.States.Count == 0)
+                stringBuilder.Append("[\r");
+                stringBuilder.Append("states:[" + states.TrimEnd(",".ToCharArray()) + "],\r");
+                stringBuilder.Append("layers:[\r");
+
+                int e = 0;
+                foreach (var animation in sections)
                 {
-                    continue;
-                }
-
-                stringBuilder.Append(animation.Key + ": [ ");
-
-                int i = 0;
-                foreach (var f in animation.Value.States)
-                {
-                    // loop: 0, delay: 4, 
-                    stringBuilder.Append("[ ");
-
-                    if (f.Value.Loop != -1)
+                    if (animation.Value.States.Count == 0)
                     {
-                        stringBuilder.Append("loop: " + f.Value.Loop + ", ");
+                        continue;
                     }
 
-                    if (f.Value.FramesPerSecond != -1)
+                    stringBuilder.Append(animation.Key + ": [ ");
+
+                    int i = 0;
+                    foreach (var f in animation.Value.States)
                     {
-                        stringBuilder.Append("delay: " + f.Value.FramesPerSecond + ", ");
+                        // loop: 0, delay: 4, 
+                        stringBuilder.Append("[ ");
+
+                        if (f.Value.Loop != -1)
+                        {
+                            stringBuilder.Append("loop: " + f.Value.Loop + ", ");
+                        }
+
+                        if (f.Value.FramesPerSecond != -1)
+                        {
+                            stringBuilder.Append("delay: " + f.Value.FramesPerSecond + ", ");
+                        }
+
+                        stringBuilder.Append("frames:[ ");
+                        stringBuilder.Append(string.Join(",", f.Value.Frames));
+
+                        if (animation.Value.States.Count - 1 > i)
+                        {
+                            stringBuilder.Append(" ] ], ");
+                        }
+                        else
+                        {
+                            stringBuilder.Append(" ] ] ");
+                        }
+
+                        i++;
                     }
 
-                    stringBuilder.Append("frames:[ ");
-                    stringBuilder.Append(string.Join(",", f.Value.Frames));
-
-                    if (animation.Value.States.Count - 1 > i)
+                    if (sections.Count - 1 > e)
                     {
-                        stringBuilder.Append(" ] ], ");
+                        stringBuilder.Append("],\r");
                     }
                     else
                     {
-                        stringBuilder.Append(" ] ] ");
+                        stringBuilder.Append("]\r");
                     }
 
-                    i++;
+                    e++;
                 }
 
-                if (sections.Count - 1 > e)
-                {
-                    stringBuilder.Append("],\r");
-                }
-                else
-                {
-                    stringBuilder.Append("]\r");
-                }
-
-                e++;
+                stringBuilder.Append("]\r");
+                stringBuilder.Append("]\r");
             }
-
-            stringBuilder.Append("]\r");
-            stringBuilder.Append("]\r");
 
             File.WriteAllText(Path.Combine(CAST_PATH, ((this.IsSmallFurni ? "s_" : "") + this.Sprite) + ".data"), stringBuilder.ToString());
         }
