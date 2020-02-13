@@ -274,90 +274,53 @@ namespace EliasLibrary
                 return;
             }
 
-            var totalStates = 0;
+            List<int> animations = new List<int>();
+
             var states = "";
-            var visualisation = xmlData.SelectNodes("//visualizationData/visualization[@size='" + (IsSmallFurni ? "32" : "64") + "']/animations/animation");
+            //var visualisation = xmlData.SelectNodes("//visualizationData/visualization[@size='" + (IsSmallFurni ? "32" : "64") + "']/animations/animation");
 
-            for (int i = 0; i < visualisation.Count; i++)
+            var frames = xmlData.SelectNodes("//visualizationData/visualization[@size='" + (IsSmallFurni ? "32" : "64") + "']/animations/animation/animationLayer/frameSequence/frame");
+
+            for (int i = 0; i < frames.Count; i++)
             {
-                var node = visualisation.Item(i);
+                var frame = frames.Item(i);
 
-                if (node == null)
+                var animationLayer = frame.ParentNode.ParentNode;
+                var animationLetter = Convert.ToString(alphabet[int.Parse(animationLayer.Attributes.GetNamedItem("id").InnerText)]);
+
+                var animation = frame.ParentNode.ParentNode.ParentNode;
+                var animationId = int.Parse(animation.Attributes.GetNamedItem("id").InnerText);
+
+                if (!animations.Contains(animationId))
                 {
-                    continue;
+                    animations.Add(animationId);
                 }
 
-                int id = int.Parse(node.Attributes.GetNamedItem("id").InnerText);
-                //states += (id + 1) + ", ";
-                
-                if ((id + 1) > totalStates)
+                if (!sections.ContainsKey(animationLetter))
                 {
-                    totalStates = id + 1;
+                    var eliasAnimation = new EliasAnimation();
+                    sections.Add(animationLetter, eliasAnimation);//new Dictionary<int, List<string>>());
+
+                    if (animationLayer.Attributes.GetNamedItem("loopCount") != null)
+                        eliasAnimation.Loop = int.Parse(animationLayer.Attributes.GetNamedItem("loopCount").InnerText);
+
+                    if (animationLayer.Attributes.GetNamedItem("frameRepeat") != null)
+                        eliasAnimation.FramesPerSecond = int.Parse(animationLayer.Attributes.GetNamedItem("frameRepeat").InnerText);
                 }
 
-                for (int j = 0; j < node.ChildNodes.Count; j++)
+                if (!sections[animationLetter].Frames.ContainsKey(animationId))
                 {
-                    var layer = node.ChildNodes.Item(j);
-
-                    if (layer == null)
-                    {
-                        continue;
-                    }
-
-                    if (layer.Name != "animationLayer")
-                    {
-                        continue;
-                    }
-
-                    int layerId = int.Parse(layer.Attributes.GetNamedItem("id").InnerText);
-                    var layerLetter = Convert.ToString(alphabet[layerId]);
-
-                    if (!sections.ContainsKey(layerLetter))
-                    {
-                        var animation = new EliasAnimation();
-                        sections.Add(layerLetter, animation);//new Dictionary<int, List<string>>());
-
-                        if (layer.Attributes.GetNamedItem("loopCount") != null)
-                            animation.Loop = int.Parse(layer.Attributes.GetNamedItem("loopCount").InnerText);
-
-                        if (layer.Attributes.GetNamedItem("frameRepeat") != null)
-                            animation.FramesPerSecond = int.Parse(layer.Attributes.GetNamedItem("frameRepeat").InnerText);
-                    }
-
-
-                    for (int k = 0; k < layer.ChildNodes.Count; k++)
-                    {
-                        var frame = layer.ChildNodes.Item(k);
-
-                        if (frame == null || frame.ChildNodes.Count == 0)
-                        {
-                            continue;
-                        }
-
-                        if (!sections[layerLetter].Frames.ContainsKey(id))
-                        {
-                            sections[layerLetter].Frames.Add(id, new List<string>());
-                        }
-
-
-                        for (int l = 0; l < frame.ChildNodes.Count; l++)
-                        {
-                            var frameId = frame.ChildNodes.Item(l);
-
-                            if (frameId == null || frameId.Name != "frame")
-                            {
-                                continue;
-                            }
-
-                            sections[layerLetter].Frames[id].Add(frameId.Attributes.GetNamedItem("id").InnerText);
-                        }
-                    }
+                    sections[animationLetter].Frames.Add(animationId, new List<string>());
                 }
+
+                sections[animationLetter].Frames[animationId].Add(frame.Attributes.GetNamedItem("id").InnerText);
+
+                var a = 123;
             }
 
-            for (int i = 0; i < totalStates; i++)
+            foreach (int id in animations)
             {
-                states += (i + 1) + ",";
+                states += (id + 1) + ",";
             }
 
             StringBuilder stringBuilder = new StringBuilder();
@@ -376,7 +339,7 @@ namespace EliasLibrary
                 stringBuilder.Append(animation.Key + ": [ ");
 
                 int i = 0;
-                foreach (var frames in animation.Value.Frames)
+                foreach (var f in animation.Value.Frames)
                 {
                     // loop: 0, delay: 4, 
                     stringBuilder.Append("[ ");
@@ -392,7 +355,7 @@ namespace EliasLibrary
                     }
 
                     stringBuilder.Append("frames:[ ");
-                    stringBuilder.Append(string.Join(",", frames.Value));
+                    stringBuilder.Append(string.Join(",", f.Value));
 
                     if (animation.Value.Frames.Count - 1 > i)
                     {
