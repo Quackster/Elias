@@ -174,8 +174,6 @@ namespace EliasLibrary
 
                 if (eliasAsset.ShockwaveSourceAliasName != null)
                 {
-                    SafetyCheckAsset(eliasAsset.ShockwaveSourceAliasName);
-
                     stringBuilder.Append(eliasAsset.ShockwaveAssetName);
                     stringBuilder.Append("=");
                     stringBuilder.Append(eliasAsset.ShockwaveSourceAliasName);
@@ -185,20 +183,6 @@ namespace EliasLibrary
             }
 
             File.WriteAllText(Path.Combine(CAST_PATH, "memberalias.index"), stringBuilder.ToString());
-        }
-
-        /// <summary>
-        /// Create blank PNG if not exists
-        /// </summary>
-        /// <param name="shockwaveSourceAliasName"></param>
-        private void SafetyCheckAsset(string shockwaveSourceAliasName)
-        {
-            if (!File.Exists(Path.Combine(IMAGE_PATH, shockwaveSourceAliasName + ".png")))
-            {
-                Bitmap bmp = new Bitmap(1, 1);
-                bmp.Save(shockwaveSourceAliasName + ".png", ImageFormat.Png);
-                File.WriteAllText(Path.Combine(IMAGE_PATH, shockwaveSourceAliasName + ".txt"), "0,0");
-            }
         }
     }
 }
