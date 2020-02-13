@@ -6,11 +6,11 @@ namespace EliasLibrary
     {
         public int Loop = -1;
         public int FramesPerSecond = -1;
-        public Dictionary<int, List<string>> Frames;
+        public Dictionary<int, EliasFrame> States;
 
         public EliasAnimation()
         {
-            Frames = new Dictionary<int, List<string>>();
+            States = new Dictionary<int, EliasFrame>();
         }
     }
 }

@@ -308,12 +308,12 @@ namespace EliasLibrary
                         eliasAnimation.FramesPerSecond = int.Parse(animationLayer.Attributes.GetNamedItem("frameRepeat").InnerText);
                 }
 
-                if (!sections[animationLetter].Frames.ContainsKey(animationId))
+                if (!sections[animationLetter].States.ContainsKey(animationId))
                 {
-                    sections[animationLetter].Frames.Add(animationId, new List<string>());
+                    sections[animationLetter].States.Add(animationId, new EliasFrame());
                 }
 
-                sections[animationLetter].Frames[animationId].Add(frame.Attributes.GetNamedItem("id").InnerText);
+                sections[animationLetter].States[animationId].Frames.Add(frame.Attributes.GetNamedItem("id").InnerText);
 
                 var a = 123;
             }
@@ -331,7 +331,7 @@ namespace EliasLibrary
             int e = 0;
             foreach (var animation in sections)
             {
-                if (animation.Value.Frames.Count == 0)
+                if (animation.Value.States.Count == 0)
                 {
                     continue;
                 }
@@ -339,7 +339,7 @@ namespace EliasLibrary
                 stringBuilder.Append(animation.Key + ": [ ");
 
                 int i = 0;
-                foreach (var f in animation.Value.Frames)
+                foreach (var f in animation.Value.States)
                 {
                     // loop: 0, delay: 4, 
                     stringBuilder.Append("[ ");
@@ -355,9 +355,9 @@ namespace EliasLibrary
                     }
 
                     stringBuilder.Append("frames:[ ");
-                    stringBuilder.Append(string.Join(",", f.Value));
+                    stringBuilder.Append(string.Join(",", f.Value.Frames));
 
-                    if (animation.Value.Frames.Count - 1 > i)
+                    if (animation.Value.States.Count - 1 > i)
                     {
                         stringBuilder.Append(" ] ], ");
                     }
