@@ -263,23 +263,18 @@ namespace EliasLibrary
 
         private void GenerateAnimations()
         {
-
             char[] alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToLower().ToCharArray();
             var xmlData = BinaryDataUtil.SolveFile(this.OUTPUT_PATH, "visualization");
 
+            var animations = new List<int>();
             var sections = new Dictionary<string, EliasAnimation>();
 
             if (xmlData == null)
             {
                 return;
             }
-
-            List<int> animations = new List<int>();
-
-            var states = "";
-            //var visualisation = xmlData.SelectNodes("//visualizationData/visualization[@size='" + (IsSmallFurni ? "32" : "64") + "']/animations/animation");
-
-            var frames = xmlData.SelectNodes("//visualizationData/visualization[@size='" + (IsSmallFurni ? "32" : "64") + "']/animations/animation/animationLayer/frameSequence/frame");
+      
+           var frames = xmlData.SelectNodes("//visualizationData/visualization[@size='" + (IsSmallFurni ? "32" : "64") + "']/animations/animation/animationLayer/frameSequence/frame");
 
             for (int i = 0; i < frames.Count; i++)
             {
@@ -314,14 +309,12 @@ namespace EliasLibrary
                 }
 
                 sections[animationLetter].States[animationId].Frames.Add(frame.Attributes.GetNamedItem("id").InnerText);
-
-                var a = 123;
             }
+
+            var states = "";
 
             foreach (int id in animations)
-            {
                 states += (id + 1) + ",";
-            }
 
             StringBuilder stringBuilder = new StringBuilder();
 
