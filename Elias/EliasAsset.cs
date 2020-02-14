@@ -53,8 +53,12 @@ namespace EliasLibrary
                     break;
                 }
             }
-        }  
-        public void ParseAssetNames()
+
+            this.ParseAssetNames();
+            this.ParseRecPointNames();
+        }
+
+        public void WriteAssets()
         {
             if (IsIcon)
                 return;
@@ -108,6 +112,38 @@ namespace EliasLibrary
                             bmp.Save(Path.Combine(elias.OUTPUT_PATH, "images", FlashAssetName + ".png"), ImageFormat.Png);
                         }
                     }
+                }
+
+                if (attribute.Name == "source")
+                {
+                    this.IsFlipped = true;
+                    this.FlashSourceAliasName = attribute.InnerText;
+                    this.ShockwaveSourceAliasName = AssetUtil.ConvertFlashName(this.elias, attribute.InnerText, elias.X, elias.Y);
+                }
+            }
+        }
+
+        public void ParseAssetNames()
+        {
+            if (IsIcon)
+                return;
+
+            if (IsShadow)
+                return;
+
+            for (int i = 0; i < node.Attributes.Count; i++)
+            {
+                var attribute = node.Attributes.Item(i);
+
+                if (attribute == null)
+                {
+                    continue;
+                }
+
+                if (attribute.Name == "name")
+                {
+                    this.FlashAssetName = attribute.InnerText;
+                    this.ShockwaveAssetName = AssetUtil.ConvertFlashName(this.elias, attribute.InnerText, elias.X, elias.Y);
                 }
 
                 if (attribute.Name == "source")

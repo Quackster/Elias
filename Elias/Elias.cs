@@ -198,18 +198,19 @@ namespace EliasLibrary
 
                 var eliasAlias = new EliasAsset(this, node);
 
-                eliasAlias.ParseAssetNames();
-
                 if (eliasAlias.ShockwaveAssetName == null)
                 {
                     continue;
                 }
 
-                eliasAlias.WriteImageNames();
-                eliasAlias.ParseRecPointNames();
-                eliasAlias.WriteRegPointData();
-
                 Assets.Add(eliasAlias);
+            }
+
+            foreach (var eliasAlias in Assets)
+            {
+                eliasAlias.WriteAssets();
+                eliasAlias.WriteImageNames();
+                eliasAlias.WriteRegPointData();
             }
         }
 
