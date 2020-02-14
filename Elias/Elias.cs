@@ -340,8 +340,8 @@ namespace EliasLibrary
             char[] alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToLower().ToCharArray();
             var xmlData = BinaryDataUtil.SolveFile(this.OUTPUT_PATH, "visualization");
 
-            var animations = new List<int>();
-            var sections = new Dictionary<string, EliasAnimation>();
+            var animations = 0;
+            var sections = new SortedDictionary<string, EliasAnimation>();
 
             if (xmlData == null)
             {
@@ -349,6 +349,7 @@ namespace EliasLibrary
             }
       
             var frames = xmlData.SelectNodes("//visualizationData/visualization[@size='" + (IsSmallFurni ? "32" : "64") + "']/animations/animation/animationLayer/frameSequence/frame");
+            int highestAnimationLayer = 0;
 
             for (int i = 0; i < frames.Count; i++)
             {
@@ -357,12 +358,16 @@ namespace EliasLibrary
                 var animationLayer = frame.ParentNode.ParentNode;
                 var animationLetter = Convert.ToString(alphabet[int.Parse(animationLayer.Attributes.GetNamedItem("id").InnerText)]);
 
+                highestAnimationLayer = int.Parse(animationLayer.Attributes.GetNamedItem("id").InnerText) + 1;
+
                 var animation = frame.ParentNode.ParentNode.ParentNode;
                 var animationId = int.Parse(animation.Attributes.GetNamedItem("id").InnerText);
 
-                if (!animations.Contains(animationId))
+                var castAnimationId = animationId + 1;
+
+                if (castAnimationId > animations)
                 {
-                    animations.Add(animationId);
+                    animations = castAnimationId;
                 }
 
                 if (!sections.ContainsKey(animationLetter))
@@ -385,14 +390,36 @@ namespace EliasLibrary
                 sections[animationLetter].States[animationId].Frames.Add(frame.Attributes.GetNamedItem("id").InnerText);
             }
 
+            for (int i = 0; i < highestAnimationLayer; i++)
+            {
+                string letter = Convert.ToString(alphabet[i]);
+
+                if (!sections.ContainsKey(letter))
+                {
+                    var animation = new EliasAnimation();
+                    sections.Add(letter, animation);
+
+                    for (int j = 0; j < animations; j++)
+                    {
+                        if (!animation.States.ContainsKey(j))
+                        {
+                            var frame = new EliasFrame();
+                            frame.Frames.Add("0");
+
+                            animation.States.Add(j, frame);
+                        }
+                    }
+                }
+            }
+
             var states = "";
 
-            foreach (int id in animations)
-                states += (id + 1) + ",";
+            for (int i = 0; i < animations; i++)
+                states += (i + 1) + ",";
 
             StringBuilder stringBuilder = new StringBuilder();
 
-            if (animations.Count > 0)
+            if (animations > 0)
             {
                 stringBuilder.Append("[\r");
                 stringBuilder.Append("states:[" + states.TrimEnd(",".ToCharArray()) + "],\r");
@@ -401,9 +428,10 @@ namespace EliasLibrary
                 int e = 0;
                 foreach (var animation in sections)
                 {
-                    if (animation.Value.States.Count == 0)
+                    while (animation.Value.States.Count != animations)
                     {
-                        continue;
+                        animation.Value.States.Add(0, new EliasFrame());
+                        animation.Value.States[0].Frames.Add("0");
                     }
 
                     stringBuilder.Append(animation.Key + ": [ ");

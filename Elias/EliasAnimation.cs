@@ -4,11 +4,11 @@ namespace EliasLibrary
 {
     public class EliasAnimation
     {
-        public Dictionary<int, EliasFrame> States;
+        public SortedDictionary<int, EliasFrame> States;
 
         public EliasAnimation()
         {
-            States = new Dictionary<int, EliasFrame>();
+            States = new SortedDictionary<int, EliasFrame>();
         }
     }
 }
