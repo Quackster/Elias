@@ -6,15 +6,19 @@ namespace EliasApp
     class Program
     {
         private static string FFDEC_PATH = @"C:\Program Files (x86)\FFDec\ffdec.jar";
-        private static string OUTPUT_PATH = @"C:\Users\alexm\Documents\GitHub\Elias\EliasDirector\temp";
-        private static string DIRECTOR_PATH = @"C:\Users\alexm\Documents\GitHub\Elias\EliasDirector\elias_app.exe";
+        private static string OUTPUT_PATH = @"C:\Users\Alex\Documents\GitHub\Elias\EliasDirector\temp";
+        private static string DIRECTOR_PATH = @"C:\Users\Alex\Documents\GitHub\Elias\EliasDirector\elias_app.exe";
 
         static void Main(string[] args)
         {
             if (args.Length == 0)
             {
                 Console.WriteLine("No arguments supplied");
-                goto exit;
+
+#if DEBUG
+            Console.Read();
+#endif
+                return;
             }
 
             try
@@ -32,7 +36,11 @@ namespace EliasApp
                 if (fileExtension != ".swf")
                 {
                     WriteError("The input file is not a .swf file!");
-                    goto exit;
+
+#if DEBUG
+            Console.Read();
+#endif
+                    return;
                 }
 
                 var elias = new EliasLibrary.Elias(Path.GetFileNameWithoutExtension(fileName), 
@@ -46,7 +54,6 @@ namespace EliasApp
                 WriteError(ex.ToString());
             }
 
-            exit:
 #if DEBUG
             Console.Read();
 #endif

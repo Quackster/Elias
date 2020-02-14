@@ -184,16 +184,6 @@ namespace EliasLibrary
                                 Console.WriteLine("Copied: " + symbolFileName + " => " + FlashAssetName);
                                 File.Copy(symbolReference, Path.Combine(elias.OUTPUT_PATH, "images", FlashAssetName + ".png"));
                             }
-                            /*if ((symbolFileName.Contains("_32_") && !elias.IsSmallFurni) || (symbolFileName.Contains("_64_") && elias.IsSmallFurni))
-                            {
-                                File.Copy(symbolReference, Path.Combine(elias.OUTPUT_PATH, "images", FlashAssetName + ".png"));
-                            }
-                            else
-                            {
-                                this.IsFlipped = false; 
-                                this.FlashSourceAliasName = Path.GetFileNameWithoutExtension(symbolFileName.Replace(symbolID + "_" + elias.Sprite + "_", ""));
-                                this.ShockwaveSourceAliasName = AssetUtil.ConvertFlashName(this.elias, this.FlashSourceAliasName, elias.X, elias.Y);
-                            }*/
                         }
                         else
                         {
@@ -206,13 +196,6 @@ namespace EliasLibrary
                             }
                         }
                     }
-                }
-
-                if (attribute.Name == "source")
-                {
-                    this.IsFlipped = true;
-                    this.FlashSourceAliasName = attribute.InnerText;
-                    this.ShockwaveSourceAliasName = AssetUtil.ConvertFlashName(this.elias, attribute.InnerText, elias.X, elias.Y);
                 }
             }
         }

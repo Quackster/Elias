@@ -113,7 +113,6 @@ namespace EliasLibrary
             var p = new Process();
             p.StartInfo.FileName = Path.Combine(Environment.CurrentDirectory, "swfmill\\swfmill.exe");
             p.StartInfo.Arguments = "swf2xml \"" + this.FullFileName + "\" \"" + Path.Combine(OUTPUT_PATH, Sprite + ".xml") + "\"";
-            Console.WriteLine(p.StartInfo.Arguments);
             p.Start();
             p.WaitForExit();
 
