@@ -313,7 +313,7 @@ namespace EliasLibrary
                     secondSection += "#zshift: [" + node.Attributes.GetNamedItem("z").InnerText + "], ";
                 }
 
-                if (node.Attributes.GetNamedItem("alpha") != null)
+                if (node.Attributes.GetNamedItem("alpha") != null && node.Attributes.GetNamedItem("ink") == null)//if (node.Attributes.GetNamedItem("alpha") != null)
                 {
                     double alphaValue = double.Parse(node.Attributes.GetNamedItem("alpha").InnerText);
                     double newValue = (double)((alphaValue / 255) * 100);
