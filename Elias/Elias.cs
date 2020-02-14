@@ -224,7 +224,30 @@ namespace EliasLibrary
                 if (eliasAsset.IsIcon)
                     continue;
 
-                if (eliasAsset.ShockwaveSourceAliasName != null)
+                if (eliasAsset.ShockwaveSourceAliasName != null && eliasAsset.IsFlipped)
+                {
+                    stringBuilder.Append(eliasAsset.ShockwaveAssetName);
+                    stringBuilder.Append("=");
+                    stringBuilder.Append(eliasAsset.ShockwaveSourceAliasName);
+
+                    if (eliasAsset.IsFlipped)
+                    {
+                        stringBuilder.Append("*");
+                    }
+
+                    stringBuilder.Append("\r");
+                }
+            }
+
+            foreach (var eliasAsset in Assets)
+            {
+                if (eliasAsset.IsShadow)
+                    continue;
+
+                if (eliasAsset.IsIcon)
+                    continue;
+
+                if (eliasAsset.ShockwaveSourceAliasName != null && !eliasAsset.IsFlipped)
                 {
                     stringBuilder.Append(eliasAsset.ShockwaveAssetName);
                     stringBuilder.Append("=");
