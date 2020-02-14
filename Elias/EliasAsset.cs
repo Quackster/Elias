@@ -17,6 +17,7 @@ namespace EliasLibrary
         public bool IsIcon;
         public bool IsShadow;
         public bool IsFlipped;
+        public bool IsMemberAlias;
 
         public string FlashAssetName;
         public string ShockwaveAssetName;
@@ -86,6 +87,7 @@ namespace EliasLibrary
                 if (attribute.Name == "source")
                 {
                     this.IsFlipped = true;
+                    this.IsMemberAlias = true;
                     this.FlashSourceAliasName = attribute.InnerText;
                     this.ShockwaveSourceAliasName = AssetUtil.ConvertFlashName(this.elias, attribute.InnerText, elias.X, elias.Y);
                 }
@@ -169,6 +171,9 @@ namespace EliasLibrary
 
                             if (symbolAsset != null)
                             {
+                                Console.WriteLine("Cloned: " + symbolFileName + " => " + FlashAssetName);
+
+                                this.IsMemberAlias = true;
                                 this.IsFlipped = false;
                                 this.FlashSourceAliasName = symbolFileName;
                                 this.ShockwaveSourceAliasName = AssetUtil.ConvertFlashName(this.elias, this.FlashSourceAliasName, elias.X, elias.Y);
@@ -176,6 +181,7 @@ namespace EliasLibrary
                             else
                             {
                                 // Copy it over because different regpoints
+                                Console.WriteLine("Copied: " + symbolFileName + " => " + FlashAssetName);
                                 File.Copy(symbolReference, Path.Combine(elias.OUTPUT_PATH, "images", FlashAssetName + ".png"));
                             }
                             /*if ((symbolFileName.Contains("_32_") && !elias.IsSmallFurni) || (symbolFileName.Contains("_64_") && elias.IsSmallFurni))
@@ -191,8 +197,13 @@ namespace EliasLibrary
                         }
                         else
                         {
-                            Bitmap bmp = new Bitmap(1, 1);
-                            bmp.Save(Path.Combine(elias.OUTPUT_PATH, "images", FlashAssetName + ".png"), ImageFormat.Png);
+                            if (!IsMemberAlias)
+                            {
+                                Console.WriteLine("Create blank sprite for: " + FlashAssetName);
+
+                                Bitmap bmp = new Bitmap(1, 1);
+                                bmp.Save(Path.Combine(elias.OUTPUT_PATH, "images", FlashAssetName + ".png"), ImageFormat.Png);
+                            }
                         }
                     }
                 }
