@@ -207,6 +207,7 @@ namespace EliasLibrary
             foreach (var eliasAlias in Assets)
             {
                 eliasAlias.WriteAssets();
+                //eliasAlias.WriteFlippedAssets();
                 eliasAlias.WriteImageNames();
                 eliasAlias.WriteRegPointData();
             }
@@ -318,6 +319,11 @@ namespace EliasLibrary
                     double alphaValue = double.Parse(node.Attributes.GetNamedItem("alpha").InnerText);
                     double newValue = (double)((alphaValue / 255) * 100);
                     secondSection += "#blend: " + (int)newValue + ", ";
+                }
+
+                if (node.Attributes.GetNamedItem("ink") != null)//if (node.Attributes.GetNamedItem("alpha") != null)
+                {
+                    secondSection += "#ink: 33, ";
                 }
 
                 if (secondSection.Length > 0)
