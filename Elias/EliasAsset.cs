@@ -90,7 +90,8 @@ namespace EliasLibrary
                             var symbolFileName = Path.GetFileName(symbolReference);
 
                             // Copy it over
-                            if ((symbolFileName.Contains("_32_") && !elias.IsSmallFurni) || (symbolFileName.Contains("_64_") && elias.IsSmallFurni))
+                            File.Copy(symbolReference, Path.Combine(elias.OUTPUT_PATH, "images", FlashAssetName + ".png"));
+                            /*if ((symbolFileName.Contains("_32_") && !elias.IsSmallFurni) || (symbolFileName.Contains("_64_") && elias.IsSmallFurni))
                             {
                                 File.Copy(symbolReference, Path.Combine(elias.OUTPUT_PATH, "images", FlashAssetName + ".png"));
                             }
@@ -99,7 +100,7 @@ namespace EliasLibrary
                                 this.IsFlipped = false; 
                                 this.FlashSourceAliasName = Path.GetFileNameWithoutExtension(symbolFileName.Replace(symbolID + "_" + elias.Sprite + "_", ""));
                                 this.ShockwaveSourceAliasName = AssetUtil.ConvertFlashName(this.elias, this.FlashSourceAliasName, elias.X, elias.Y);
-                            }
+                            }*/
                         }
                         else
                         {

@@ -32,7 +32,7 @@ namespace Elias.Utilities
                 {
                     if (symbol.EndsWith(flashAssetName))
                     {
-                        return Tuple.Create<int, string>(symbols.Key, SolveSymbolImage(elias, symbols.Key));
+                        return Tuple.Create(symbols.Key, SolveSymbolImage(elias, symbols.Key));
                     }
                 }
             }
