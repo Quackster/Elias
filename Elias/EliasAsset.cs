@@ -169,7 +169,7 @@ namespace EliasLibrary
                             var symbolAsset = Elias.Assets.FirstOrDefault(asset => asset.FlashAssetName == symbolFileName && FlashRectanglePoint[0] == asset.FlashRectanglePoint[0]
                                 && FlashRectanglePoint[1] == asset.FlashRectanglePoint[1]);
 
-                            if (symbolAsset != null)
+                           if (symbolAsset != null)
                             {
                                 Console.WriteLine("Cloned: " + symbolFileName + " => " + FlashAssetName);
 
@@ -199,6 +199,62 @@ namespace EliasLibrary
                 }
             }
         }
+
+        public void WriteFlippedAssets()
+        {
+            if (IsIcon)
+                return;
+
+            if (IsShadow)
+                return;
+
+            if (FlashSourceAliasName != null)
+            {
+                var flashFile = ImageAssetUtil.SolveFile(Elias.OUTPUT_PATH, FlashSourceAliasName);
+
+                if (flashFile == null)
+                {
+                    var symbolData = ImageAssetUtil.SolveSymbolReference(Elias, FlashSourceAliasName);
+
+                    if (symbolData != null)
+                    {
+                        var symbolID = symbolData.Item1;
+                        var symbolReference = symbolData.Item2;
+                        var symbolFileName = Path.GetFileNameWithoutExtension(Path.GetFileName(symbolReference).Replace(symbolID + "_" + Elias.Sprite + "_", ""));
+
+                        var symbolAsset = Elias.Assets.FirstOrDefault(asset => asset.FlashSourceAliasName == symbolFileName && FlashRectanglePoint[0] == asset.FlashRectanglePoint[0]
+                            && FlashRectanglePoint[1] == asset.FlashRectanglePoint[1]);
+
+                        if (symbolAsset != null)
+                        {
+                            Console.WriteLine("FP Cloned: " + symbolFileName + " => " + FlashSourceAliasName);
+
+                            IsMemberAlias = true;
+                            IsFlipped = true;
+                            FlashSourceAliasName = symbolFileName;
+                            ShockwaveSourceAliasName = AssetUtil.ConvertFlashName(Elias, FlashSourceAliasName, Elias.X, Elias.Y);
+                        }
+                        else
+                        {
+                            // Copy it over because different regpoints
+                            Console.WriteLine("FP Copied: " + symbolFileName + " => " + FlashSourceAliasName);
+                            File.Copy(symbolReference, Path.Combine(Elias.OUTPUT_PATH, "images", FlashSourceAliasName + ".png"));
+                        }
+                    }
+                    else
+                    {
+                        if (!IsMemberAlias)
+                        {
+                            Console.WriteLine("Create blank sprite for: " + FlashSourceAliasName);
+
+                            Bitmap bmp = new Bitmap(1, 1);
+                            bmp.Save(Path.Combine(Elias.OUTPUT_PATH, "images", FlashSourceAliasName + ".png"), ImageFormat.Png);
+                        }
+                    }
+                }
+            }
+        }
+
 
         public void WriteImageNames()
         {
