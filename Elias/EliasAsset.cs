@@ -1,13 +1,15 @@
 ﻿using Elias.Utilities;
 using System;
+using System.Linq;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Xml;
+using System.Collections.Generic;
 
 namespace EliasLibrary
 {
-    internal class EliasAsset
+    public class EliasAsset
     {
         private Elias elias;
         private XmlNode node;
@@ -160,11 +162,22 @@ namespace EliasLibrary
                         {
                             var symbolID = symbolData.Item1;
                             var symbolReference = symbolData.Item2;
+                            var symbolFileName = Path.GetFileNameWithoutExtension(Path.GetFileName(symbolReference).Replace(symbolID + "_" + elias.Sprite + "_", ""));
 
-                            var symbolFileName = Path.GetFileName(symbolReference);
+                            var symbolAsset = elias.Assets.FirstOrDefault(asset => asset.FlashAssetName == symbolFileName && this.FlashRectanglePoint[0] == asset.FlashRectanglePoint[0]
+                                && this.FlashRectanglePoint[1] == asset.FlashRectanglePoint[1]);
 
-                            // Copy it over
-                            File.Copy(symbolReference, Path.Combine(elias.OUTPUT_PATH, "images", FlashAssetName + ".png"));
+                            if (symbolAsset != null)
+                            {
+                                this.IsFlipped = false;
+                                this.FlashSourceAliasName = symbolFileName;
+                                this.ShockwaveSourceAliasName = AssetUtil.ConvertFlashName(this.elias, this.FlashSourceAliasName, elias.X, elias.Y);
+                            }
+                            else
+                            {
+                                // Copy it over because different regpoints
+                                File.Copy(symbolReference, Path.Combine(elias.OUTPUT_PATH, "images", FlashAssetName + ".png"));
+                            }
                             /*if ((symbolFileName.Contains("_32_") && !elias.IsSmallFurni) || (symbolFileName.Contains("_64_") && elias.IsSmallFurni))
                             {
                                 File.Copy(symbolReference, Path.Combine(elias.OUTPUT_PATH, "images", FlashAssetName + ".png"));

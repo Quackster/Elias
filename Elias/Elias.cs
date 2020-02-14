@@ -28,6 +28,7 @@ namespace EliasLibrary
         public string DIRECTOR_PATH;
 
         public Dictionary<int, List<string>> Symbols;
+        public List<EliasAsset> Assets;
 
         public string CAST_PATH
         {
@@ -38,8 +39,6 @@ namespace EliasLibrary
         {
             get { return Path.Combine(CAST_PATH, "images"); }
         }
-
-        private List<EliasAsset> Assets;
 
         public Elias(string sprite, bool IsSmallFurni, string fileName, int X, int Y, string FFDEC_PATH, string OUTPUT_PATH, string DIRECTOR_PATH)
         {
