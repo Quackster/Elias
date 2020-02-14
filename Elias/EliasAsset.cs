@@ -97,7 +97,7 @@ namespace EliasLibrary
                             else
                             {
                                 this.IsFlipped = false; 
-                                this.FlashSourceAliasName = symbolFileName.Replace(symbolID + "_" + elias.Sprite + "_", "");
+                                this.FlashSourceAliasName = Path.GetFileNameWithoutExtension(symbolFileName.Replace(symbolID + "_" + elias.Sprite + "_", ""));
                                 this.ShockwaveSourceAliasName = AssetUtil.ConvertFlashName(this.elias, this.FlashSourceAliasName, elias.X, elias.Y);
                             }
                         }
