@@ -82,13 +82,13 @@ namespace EliasLibrary
                     {
                         var symbolData = ImageAssetUtil.SolveSymbolReference(elias, FlashAssetName);
 
-                        var symbolID = symbolData.Item1;
-                        var symbolReference = symbolData.Item2;
-
-                        var symbolFileName = Path.GetFileName(symbolReference);
-
-                        if (symbolReference != null)
+                        if (symbolData != null)
                         {
+                            var symbolID = symbolData.Item1;
+                            var symbolReference = symbolData.Item2;
+
+                            var symbolFileName = Path.GetFileName(symbolReference);
+
                             // Copy it over
                             if ((symbolFileName.Contains("_32_") && !elias.IsSmallFurni) || (symbolFileName.Contains("_64_") && elias.IsSmallFurni))
                             {
