@@ -58,6 +58,76 @@ namespace EliasLibrary
             this.ParseRecPointNames();
         }
 
+        public void ParseAssetNames()
+        {
+            if (IsIcon)
+                return;
+
+            if (IsShadow)
+                return;
+
+            for (int i = 0; i < node.Attributes.Count; i++)
+            {
+                var attribute = node.Attributes.Item(i);
+
+                if (attribute == null)
+                {
+                    continue;
+                }
+
+                if (attribute.Name == "name")
+                {
+                    this.FlashAssetName = attribute.InnerText;
+                    this.ShockwaveAssetName = AssetUtil.ConvertFlashName(this.elias, attribute.InnerText, elias.X, elias.Y);
+                }
+
+                if (attribute.Name == "source")
+                {
+                    this.IsFlipped = true;
+                    this.FlashSourceAliasName = attribute.InnerText;
+                    this.ShockwaveSourceAliasName = AssetUtil.ConvertFlashName(this.elias, attribute.InnerText, elias.X, elias.Y);
+                }
+            }
+        }
+
+        public void ParseRecPointNames()
+        {
+            if (IsIcon)
+                return;
+
+            if (IsShadow)
+                return;
+
+            int x = -1;
+            int y = -1;
+
+            for (int i = 0; i < node.Attributes.Count; i++)
+            {
+                var attribute = node.Attributes.Item(i);
+
+                if (attribute == null)
+                {
+                    continue;
+                }
+
+                if (attribute.Name == "x")
+                    x = int.Parse(attribute.InnerText);
+
+                if (attribute.Name == "y")
+                    y = int.Parse(attribute.InnerText);
+            }
+
+            if (x == -1 || y == -1)
+            {
+                this.FlashRectanglePoint = new int[] { 0, 0 };
+                this.ShockwaveRectanglePoint = new int[] { 0, 0 };
+                return;
+            }
+
+            this.FlashRectanglePoint = new int[] { x, y };
+            this.ShockwaveRectanglePoint = new int[] { x - 32, y };
+        }
+
         public void WriteAssets()
         {
             if (IsIcon)
@@ -123,38 +193,6 @@ namespace EliasLibrary
             }
         }
 
-        public void ParseAssetNames()
-        {
-            if (IsIcon)
-                return;
-
-            if (IsShadow)
-                return;
-
-            for (int i = 0; i < node.Attributes.Count; i++)
-            {
-                var attribute = node.Attributes.Item(i);
-
-                if (attribute == null)
-                {
-                    continue;
-                }
-
-                if (attribute.Name == "name")
-                {
-                    this.FlashAssetName = attribute.InnerText;
-                    this.ShockwaveAssetName = AssetUtil.ConvertFlashName(this.elias, attribute.InnerText, elias.X, elias.Y);
-                }
-
-                if (attribute.Name == "source")
-                {
-                    this.IsFlipped = true;
-                    this.FlashSourceAliasName = attribute.InnerText;
-                    this.ShockwaveSourceAliasName = AssetUtil.ConvertFlashName(this.elias, attribute.InnerText, elias.X, elias.Y);
-                }
-            }
-        }
-
         public void WriteImageNames()
         {
             if (IsIcon)
@@ -169,44 +207,6 @@ namespace EliasLibrary
             var sourceImage = ImageAssetUtil.SolveFile(elias.OUTPUT_PATH, FlashAssetName);
             
             File.Copy(sourceImage, Path.Combine(elias.IMAGE_PATH, this.ShockwaveAssetName + ".png"));
-        }
-
-        public void ParseRecPointNames()
-        {
-            if (IsIcon)
-                return;
-
-            if (IsShadow)
-                return;
-
-            int x = -1;
-            int y = -1;
-
-            for (int i = 0; i < node.Attributes.Count; i++)
-            {
-                var attribute = node.Attributes.Item(i);
-
-                if (attribute == null)
-                {
-                    continue;
-                }
-
-                if (attribute.Name == "x")
-                    x = int.Parse(attribute.InnerText);
-
-                if (attribute.Name == "y")
-                    y = int.Parse(attribute.InnerText);
-            }
-
-            if (x == -1 || y == -1)
-            {
-                this.FlashRectanglePoint = new int[] { 0, 0 };
-                this.ShockwaveRectanglePoint = new int[] { 0, 0 };
-                return;
-            }
-
-            this.FlashRectanglePoint = new int[] { x, y };
-            this.ShockwaveRectanglePoint = new int[] { x - 32, y };
         }
 
         public void WriteRegPointData()
