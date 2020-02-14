@@ -5,3 +5,4 @@
 *.lock
 *.ide-wal
 .vs/Elias/v16/.suo
+EliasApp/EliasApp.csproj.user

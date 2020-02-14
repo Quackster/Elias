@@ -11,13 +11,23 @@ namespace Elias.Utilities
 {
     class ImageAssetUtil
     {
-        public static string SolveFile(string outputDirectory, string fileNameContains)
+        public static string SolveFile(string outputDirectory, string fileNameContains, bool endsWith = true)
         {
             foreach (var file in Directory.GetFiles(Path.Combine(outputDirectory, "images"), "*"))
             {
-                if (Path.GetFileNameWithoutExtension(file).EndsWith(fileNameContains))
+                if (endsWith)
                 {
-                    return file;
+                    if (Path.GetFileNameWithoutExtension(file).EndsWith(fileNameContains))
+                    {
+                        return file;
+                    }
+                }
+                else
+                {
+                    if (Path.GetFileNameWithoutExtension(file).Contains(fileNameContains))
+                    {
+                        return file;
+                    }
                 }
             }
 

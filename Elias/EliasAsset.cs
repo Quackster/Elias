@@ -59,6 +59,27 @@ namespace EliasLibrary
 
             ParseAssetNames();
             ParseRecPointNames();
+            TryIcon();
+        }
+
+        private void TryIcon()
+        {
+            if (!this.IsIcon)
+                return;
+
+            var iconName = this.Elias.Sprite + "_small";
+            var icon = ImageAssetUtil.SolveFile(Elias.OUTPUT_PATH, "_icon_", false);
+
+            if (icon != null)
+            {
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.Write("Writing icon: ");
+                Console.ResetColor();
+                Console.WriteLine(iconName);
+
+                File.WriteAllText(Path.Combine(Elias.IMAGE_PATH, iconName + ".txt"), ShockwaveRectanglePoint[0] + "," + ShockwaveRectanglePoint[1]);
+                File.Copy(icon, Path.Combine(Elias.IMAGE_PATH,  iconName + ".png"));
+            }
         }
 
         public void ParseAssetNames()
