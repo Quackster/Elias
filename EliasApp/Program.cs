@@ -38,16 +38,46 @@ namespace EliasApp
                     WriteError("The input file is not a .swf file!");
 
 #if DEBUG
-            Console.Read();
+                    Console.Read();
 #endif
                     return;
                 }
 
-                var elias = new EliasLibrary.Elias(Path.GetFileNameWithoutExtension(fileName), 
-                    args[3] == "32", fullFileName, int.Parse(args[1]), int.Parse(args[2]), 
+                var outputDirectory = Path.Combine(Environment.CurrentDirectory, "output");
+
+                if (!Directory.Exists(outputDirectory))
+                {
+                    Directory.CreateDirectory(outputDirectory);
+                }
+
+                var smallElias = new EliasLibrary.Elias(Path.GetFileNameWithoutExtension(fileName),
+    true, fullFileName, int.Parse(args[1]), int.Parse(args[2]),
+    FFDEC_PATH, OUTPUT_PATH, DIRECTOR_PATH);
+
+                smallElias.Parse();
+
+                var castFile = string.Format("hh_furni_xx_s_{0}.cct", smallElias.Sprite);
+                var castFilePath = Path.Combine(Environment.CurrentDirectory, "output", castFile);
+
+                if (File.Exists(castFilePath))
+                    File.Delete(castFilePath);
+
+                File.Copy(Path.Combine(OUTPUT_PATH, "cast_data", castFile), castFilePath);
+
+                var elias = new EliasLibrary.Elias(Path.GetFileNameWithoutExtension(fileName),
+                    false, fullFileName, int.Parse(args[1]), int.Parse(args[2]),
                     FFDEC_PATH, OUTPUT_PATH, DIRECTOR_PATH);
 
                 elias.Parse();
+
+                castFile = string.Format("hh_furni_xx_{0}.cct", elias.Sprite);
+                castFilePath = Path.Combine(Environment.CurrentDirectory, "output", castFile);
+
+                if (File.Exists(castFilePath))
+                    File.Delete(castFilePath);
+
+                File.Copy(Path.Combine(OUTPUT_PATH, "cast_data", castFile), castFilePath);
+
             }
             catch (Exception ex)
             {
