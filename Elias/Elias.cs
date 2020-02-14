@@ -207,7 +207,7 @@ namespace EliasLibrary
             foreach (var eliasAlias in Assets)
             {
                 eliasAlias.WriteAssets();
-                //eliasAlias.WriteFlippedAssets();
+                eliasAlias.WriteFlippedAssets();
                 eliasAlias.WriteImageNames();
                 eliasAlias.WriteRegPointData();
             }
