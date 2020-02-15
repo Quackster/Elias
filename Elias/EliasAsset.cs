@@ -299,12 +299,6 @@ namespace EliasLibrary
 
         public void WriteRegPointData()
         {
-            if (ShockwaveAssetName.EndsWith("_0_0"))
-            {
-                var test = 1;
-
-            }
-
             if (IsIcon)
                 return;
 
