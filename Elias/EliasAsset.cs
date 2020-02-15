@@ -103,14 +103,14 @@ namespace EliasLibrary
                 if (attribute.Name == "name")
                 {
                     FlashAssetName = attribute.InnerText;
-                    ShockwaveAssetName = IsShadow ? AssetUtil.ConvertFlashShadow(Elias, attribute.InnerText) : AssetUtil.ConvertFlashName(Elias, attribute.InnerText, Elias.X, Elias.Y);
+                    ShockwaveAssetName = AssetUtil.ConvertName(Elias, attribute.InnerText, IsShadow);// IsShadow ? AssetUtil.ConvertFlashShadow(Elias, attribute.InnerText) : AssetUtil.ConvertFlashName(Elias, attribute.InnerText, Elias.X, Elias.Y);
                 }
 
                 if (attribute.Name == "source")
                 {
                     IsMemberAlias = true;
                     FlashSourceAliasName = attribute.InnerText;
-                    ShockwaveSourceAliasName = IsShadow ? AssetUtil.ConvertFlashShadow(Elias, attribute.InnerText) : AssetUtil.ConvertFlashName(Elias, attribute.InnerText, Elias.X, Elias.Y);
+                    ShockwaveSourceAliasName = AssetUtil.ConvertName(Elias, attribute.InnerText, IsShadow);// IsShadow ? AssetUtil.ConvertFlashShadow(Elias, attribute.InnerText) : AssetUtil.ConvertFlashName(Elias, attribute.InnerText, Elias.X, Elias.Y);
                 }
             }
         }
@@ -175,7 +175,7 @@ namespace EliasLibrary
                 if (attribute.Name == "name")
                 {
                     FlashAssetName = attribute.InnerText;
-                    ShockwaveAssetName = AssetUtil.ConvertFlashName(Elias, attribute.InnerText, Elias.X, Elias.Y);
+                    ShockwaveAssetName = AssetUtil.ConvertName(Elias, attribute.InnerText, IsShadow);
 
                     var flashFile = ImageAssetUtil.SolveFile(Elias.OUTPUT_PATH, FlashAssetName);
 
@@ -198,7 +198,7 @@ namespace EliasLibrary
 
                                 IsMemberAlias = true;
                                 FlashSourceAliasName = symbolFileName;
-                                ShockwaveSourceAliasName = AssetUtil.ConvertFlashName(Elias, FlashSourceAliasName, Elias.X, Elias.Y);
+                                ShockwaveSourceAliasName = AssetUtil.ConvertName(Elias, FlashSourceAliasName, IsShadow);
                             }
                             else
                             {
@@ -253,7 +253,7 @@ namespace EliasLibrary
 
                             IsMemberAlias = true;
                             FlashSourceAliasName = symbolFileName;
-                            ShockwaveSourceAliasName = AssetUtil.ConvertFlashName(Elias, FlashSourceAliasName, Elias.X, Elias.Y);
+                            ShockwaveSourceAliasName = AssetUtil.ConvertName(Elias, FlashSourceAliasName, IsShadow);
                         }
                         else
                         {

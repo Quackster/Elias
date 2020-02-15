@@ -18,6 +18,7 @@ namespace EliasLibrary
     {
         public string Sprite;
         public bool IsSmallFurni;
+        public bool IsWallItem;
         public int X;
         public int Y;
 
@@ -44,9 +45,10 @@ namespace EliasLibrary
         public Elias(string sprite, string fileName, int X, int Y, string FFDEC_PATH, string OUTPUT_PATH, string DIRECTOR_PATH)
         {
             this.Sprite = sprite;
+            this.IsWallItem = X == 0 && Y == 0;
             this.FullFileName = fileName;
-            this.X = X;
-            this.Y = Y;
+            this.X = X == 0 ? 1 : X;
+            this.Y = Y == 0 ? 1 : Y;
             this.FileDirectory = new FileInfo(this.FullFileName).DirectoryName;
             this.FFDEC_PATH = FFDEC_PATH;
             this.OUTPUT_PATH = OUTPUT_PATH;
@@ -605,10 +607,16 @@ namespace EliasLibrary
         private void GenerateAssetIndex()
         {
             // [#id: "s_tv_flat", #classes: ["Active Object Class",  "Active Object Extension Class"]]
-            File.WriteAllText(Path.Combine(CAST_PATH, "asset.index"), 
-                "[#id: \"" + ((this.IsSmallFurni ? "s_" : "") + this.Sprite) + "\", #classes: [\"Active Object Class\",  \"Active Object Extension Class\"]]");
+
+            if (IsWallItem)
+            {
+                // [#id: "window_diner", #classes: ["Item Object Class", "Item Object Extension Class", "Window Class"]]
+                File.WriteAllText(Path.Combine(CAST_PATH, "asset.index"), "[#id: \"" + ((this.IsSmallFurni ? "s_" : "") + this.Sprite) + "\", #classes: [\"Item Object Class\", \"Item Object Extension Class\", \"Window Class\"]]");
+            }
+            else
+            {
+                File.WriteAllText(Path.Combine(CAST_PATH, "asset.index"), "[#id: \"" + ((this.IsSmallFurni ? "s_" : "") + this.Sprite) + "\", #classes: [\"Active Object Class\",  \"Active Object Extension Class\"]]");
+            }
         }
-
-
     }
 }
