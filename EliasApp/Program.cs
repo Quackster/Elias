@@ -1,6 +1,7 @@
 ﻿using EliasApp.Utilities;
 using Newtonsoft.Json;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 
@@ -166,21 +167,7 @@ namespace EliasApp
                         Console.ResetColor();
                         Console.WriteLine(Path.GetFileNameWithoutExtension(file));
 
-                        var sprite = Path.GetFileNameWithoutExtension(file);
-
-                        int X = 1;
-                        int Y = 1;
-
-                        try
-                        {
-                            var elias = new EliasLibrary.Elias(sprite, file, X, Y, ffdecPath, outputPath, directorPath);
-                            SaveFiles(elias.Parse(), outputPath, cctPath);
-                        }
-                        catch (Exception ex)
-                        {
-                            WriteError(ex.ToString());
-                            ErrorLogging(ex, sprite);
-                        }
+                        ConvertFile(file, ffdecPath, outputPath, directorPath, cctPath);
                     }
                 }
                 else if (commandArguments.ContainsKey("-cct"))
@@ -193,64 +180,8 @@ namespace EliasApp
                     Console.ResetColor();
                     Console.WriteLine(file);
 
-                    int X = 1;
-                    int Y = 1;
-
-                    try
-                    {
-                        var elias = new EliasLibrary.Elias(sprite, file, X, Y, ffdecPath, outputPath, directorPath);
-                        SaveFiles(elias.Parse(), outputPath, cctPath);
-                    }
-                    catch (Exception ex)
-                    {
-                        WriteError(ex.ToString());
-                        ErrorLogging(ex, sprite);
-                    }
+                    ConvertFile(file, ffdecPath, outputPath, directorPath, cctPath);
                 }
-
-                /*string fullFileName = args[0];
-                string fileName = Path.GetFileName(fullFileName);
-
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.Write("Reading file: ");
-                Console.ResetColor();
-                Console.WriteLine(args[0]);
-
-                var fileExtension = Path.GetExtension(fileName);
-
-                if (fileExtension != ".swf")
-                {
-                    WriteError("The input file is not a .swf file!");
-
-#if DEBUG
-                    Console.Read();
-#endif
-                    return;
-                }
-
-                var outputDirectory = Path.Combine(Environment.CurrentDirectory, "output");
-
-                if (!Directory.Exists(CCT_PATH))
-                {
-                    Directory.CreateDirectory(CCT_PATH);
-                }
-
-
-                var elias = new EliasLibrary.Elias(Path.GetFileNameWithoutExtension(fileName), fullFileName, int.Parse(args[1]), int.Parse(args[2]),  FFDEC_PATH, OUTPUT_PATH, DIRECTOR_PATH);
-                var filesWritten = elias.Parse();
-
-                Console.WriteLine("Done!");
-
-                foreach (var castFile in filesWritten)
-                {
-                    var newFilePath = Path.Combine(OUTPUT_PATH, castFile);
-                    var castFilePath = Path.Combine(CCT_PATH, castFile);
-
-                    if (File.Exists(castFilePath))
-                        File.Delete(castFilePath);
-
-                    File.Copy(newFilePath, castFilePath);
-                }*/
 
                 Console.WriteLine("Done!");
             }
@@ -263,6 +194,51 @@ namespace EliasApp
 #if DEBUG
             Console.Read();
 #endif
+        }
+
+        private static void ConvertFile(string file, string ffdecPath, string outputPath, string directorPath, string cctPath)
+        {
+            var sprite = Path.GetFileNameWithoutExtension(file);
+            var furniItem = ItemList.FirstOrDefault(item => item.FileName == sprite);
+
+            int X = 1;
+            int Y = 1;
+
+            if (furniItem == null)
+            {
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.Write("No furnidata entry found for item: ");
+                Console.ResetColor();
+                Console.WriteLine(sprite);
+
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
+                Console.WriteLine("Assuming item is a 1x1 floor item.");
+                Console.ResetColor();
+            }
+            else
+            {
+                if (furniItem.Type.ToUpper() == "I")
+                {
+                    X = 0;
+                    Y = 0;
+                }
+                else
+                {
+                    X = furniItem.Length;
+                    Y = furniItem.Width;
+                }
+            }
+
+            try
+            {
+                var elias = new EliasLibrary.Elias(sprite, file, X, Y, ffdecPath, outputPath, directorPath);
+                SaveFiles(elias.Parse(), outputPath, cctPath);
+            }
+            catch (Exception ex)
+            {
+                WriteError(ex.ToString());
+                ErrorLogging(ex, sprite);
+            }
         }
 
         private static void SaveFiles(IEnumerable<string> outputFiles, string outputPath, string cctPath)
