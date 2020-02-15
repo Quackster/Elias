@@ -56,7 +56,7 @@ namespace EliasLibrary
                 }
             }
 
-            if (AssetUtil.ConvertName(elias, Node.Attributes.GetNamedItem("name").InnerText, IsShadow) == null)
+            if (!IsIcon && !IsShadow && AssetUtil.ConvertName(elias, Node.Attributes.GetNamedItem("name").InnerText, IsShadow) == null)
             {
                 this.ShockwaveAssetName = null;
                 this.IsShadow = false;
