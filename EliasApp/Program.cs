@@ -228,21 +228,13 @@ namespace EliasApp
             }
             else
             {
-                if (furniItem.Type.ToUpper() == "I")
-                {
-                    X = 0;
-                    Y = 0;
-                }
-                else
-                {
-                    X = furniItem.Length;
-                    Y = furniItem.Width;
-                }
+                X = furniItem.Length;
+                Y = furniItem.Width;
             }
 
             try
             {
-                var elias = new EliasLibrary.Elias(sprite, file, X, Y, ffdecPath, outputPath, directorPath);
+                var elias = new EliasLibrary.Elias(furniItem.Type.ToUpper() == "I", sprite, file, X, Y, ffdecPath, outputPath, directorPath);
                 SaveFiles(elias.Parse(), outputPath, cctPath);
             }
             catch (Exception ex)

@@ -42,13 +42,14 @@ namespace EliasLibrary
             get { return Path.Combine(CAST_PATH, "images"); }
         }
 
-        public Elias(string sprite, string fileName, int X, int Y, string FFDEC_PATH, string OUTPUT_PATH, string DIRECTOR_PATH)
+        public Elias(bool IsWallItem, string sprite, string fileName, int X, int Y, string FFDEC_PATH, string OUTPUT_PATH, string DIRECTOR_PATH)
         {
+            this.IsWallItem = IsWallItem;
             this.Sprite = sprite;
             this.IsWallItem = X == 0 && Y == 0;
             this.FullFileName = fileName;
-            this.X = X == 0 ? 1 : X;
-            this.Y = Y == 0 ? 1 : Y;
+            this.X = X;
+            this.Y = Y;
             this.FileDirectory = new FileInfo(this.FullFileName).DirectoryName;
             this.FFDEC_PATH = FFDEC_PATH;
             this.OUTPUT_PATH = OUTPUT_PATH;
@@ -79,10 +80,10 @@ namespace EliasLibrary
 
             filesWritten.Add("hh_furni_xx_" + Sprite + ".cct");
 
-            this.Assets.Clear();
+            /*this.Assets.Clear();
             this.Symbols.Clear();
 
-            this.IsSmallFurni = true;
+            this.IsSmallFurni = false;
 
             this.TryCleanup(true);
             this.ReadSymbolClass();
@@ -99,7 +100,7 @@ namespace EliasLibrary
             this.GenerateAnimations();
             this.RunEliasDirector();
 
-            filesWritten.Add("hh_furni_xx_s_" + Sprite + ".cct");
+            filesWritten.Add("hh_furni_xx_s_" + Sprite + ".cct");*/
             return filesWritten.ToArray();
         }
 
@@ -250,7 +251,7 @@ namespace EliasLibrary
                     continue;
 
                 eliasAlias.WriteAssets();
-                eliasAlias.WriteFlippedAssets();
+                //eliasAlias.WriteFlippedAssets();
                 eliasAlias.WriteImageNames();
                 eliasAlias.WriteRegPointData();
             }

@@ -144,7 +144,7 @@ namespace EliasLibrary
                     y = int.Parse(attribute.InnerText);
             }
 
-            if (x == -1 || y == -1)
+            if (Elias.IsWallItem)
             {
                 FlashRectanglePoint = new int[] { 0, 0 };
                 ShockwaveRectanglePoint = new int[] { 0, 0 };
@@ -299,6 +299,12 @@ namespace EliasLibrary
 
         public void WriteRegPointData()
         {
+            if (ShockwaveAssetName.EndsWith("_0_0"))
+            {
+                var test = 1;
+
+            }
+
             if (IsIcon)
                 return;
 
