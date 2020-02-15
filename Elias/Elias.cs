@@ -288,13 +288,13 @@ namespace EliasLibrary
                 if (eliasAsset.IsIcon)
                     continue;
 
-                if (eliasAsset.ShockwaveSourceAliasName != null && eliasAsset.IsFlipped)
+                if (eliasAsset.ShockwaveSourceAliasName != null && eliasAsset.IsInverted())
                 {
                     stringBuilder.Append(eliasAsset.ShockwaveAssetName);
                     stringBuilder.Append("=");
                     stringBuilder.Append(eliasAsset.ShockwaveSourceAliasName);
 
-                    if (eliasAsset.IsFlipped)
+                    if (eliasAsset.IsInverted())
                     {
                         stringBuilder.Append("*");
                     }
@@ -308,13 +308,13 @@ namespace EliasLibrary
                 if (eliasAsset.IsIcon)
                     continue;
 
-                if (eliasAsset.ShockwaveSourceAliasName != null && !eliasAsset.IsFlipped)
+                if (eliasAsset.ShockwaveSourceAliasName != null && !eliasAsset.IsInverted())
                 {
                     stringBuilder.Append(eliasAsset.ShockwaveAssetName);
                     stringBuilder.Append("=");
                     stringBuilder.Append(eliasAsset.ShockwaveSourceAliasName);
 
-                    if (eliasAsset.IsFlipped)
+                    if (eliasAsset.IsInverted())
                     {
                         stringBuilder.Append("*");
                     }

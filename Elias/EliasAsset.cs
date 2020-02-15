@@ -16,7 +16,6 @@ namespace EliasLibrary
 
         public bool IsIcon;
         public bool IsShadow;
-        public bool IsFlipped;
         public bool IsMemberAlias;
 
         public string FlashAssetName;
@@ -109,7 +108,6 @@ namespace EliasLibrary
 
                 if (attribute.Name == "source")
                 {
-                    IsFlipped = this.IsInverted();
                     IsMemberAlias = true;
                     FlashSourceAliasName = attribute.InnerText;
                     ShockwaveSourceAliasName = IsShadow ? AssetUtil.ConvertFlashShadow(Elias, attribute.InnerText) : AssetUtil.ConvertFlashName(Elias, attribute.InnerText, Elias.X, Elias.Y);
@@ -199,7 +197,6 @@ namespace EliasLibrary
                                 Console.WriteLine("Cloned: " + symbolFileName + " => " + FlashAssetName);
 
                                 IsMemberAlias = true;
-                                IsFlipped = false;
                                 FlashSourceAliasName = symbolFileName;
                                 ShockwaveSourceAliasName = AssetUtil.ConvertFlashName(Elias, FlashSourceAliasName, Elias.X, Elias.Y);
                             }
@@ -255,7 +252,6 @@ namespace EliasLibrary
                             Console.WriteLine("FP Cloned: " + symbolFileName + " => " + FlashSourceAliasName);
 
                             IsMemberAlias = true;
-                            IsFlipped = true;
                             FlashSourceAliasName = symbolFileName;
                             ShockwaveSourceAliasName = AssetUtil.ConvertFlashName(Elias, FlashSourceAliasName, Elias.X, Elias.Y);
                         }
@@ -327,7 +323,7 @@ namespace EliasLibrary
             }
         }
 
-        private bool IsInverted()
+        public bool IsInverted()
         {
             return Node.Attributes.GetNamedItem("flipH") != null && Node.Attributes.GetNamedItem("flipH").InnerText == "1";
         }
