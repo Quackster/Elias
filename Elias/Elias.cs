@@ -1,4 +1,5 @@
-﻿using Elias.Utilities;
+﻿using Elias;
+using Elias.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -328,16 +329,11 @@ namespace EliasLibrary
                 return;
             }
 
-            var visualisation = xmlData.SelectSingleNode("//visualizationData/graphics/visualization/layers");
+            var layers = xmlData.SelectNodes("//visualizationData/visualization[@size='" + (IsSmallFurni ? "32" : "64") + "']/layers/layer");
 
-            if (visualisation == null)
+            for (int i = 0; i < layers.Count; i++)
             {
-                visualisation = xmlData.SelectSingleNode("//visualizationData/visualization/layers");
-            }
-
-            for (int i = 0; i < visualisation.ChildNodes.Count; i++)
-            {
-                var node = visualisation.ChildNodes.Item(i);
+                var node = layers.Item(i);
 
                 if (node == null)
                 {
@@ -393,6 +389,53 @@ namespace EliasLibrary
                 }
 
                 sections.Add(string.Format(firstSection, secondSection));
+            }
+
+            var directions = new Dictionary<string, EliasDirection>();
+            var directionLayers = xmlData.SelectNodes("//visualizationData/visualization[@size='" + (IsSmallFurni ? "32" : "64") + "']/directions/direction/layer");
+
+            for (int i = 0; i < directionLayers.Count; i++)
+            {
+                var node = directionLayers.Item(i);
+
+                if (node == null)
+                {
+                    continue;
+                }
+
+                if (node.Name != "layer")
+                {
+                    continue;
+                }
+
+                var layerNode = node;
+                var directionNode = layerNode.ParentNode;
+
+                if (layerNode.Attributes.GetNamedItem("id") == null ||
+                    layerNode.Attributes.GetNamedItem("z") == null ||
+                    directionNode.Attributes.GetNamedItem("id") == null)
+                {
+                    continue;
+                }
+
+                string letter = Convert.ToString(alphabet[int.Parse(layerNode.Attributes.GetNamedItem("id").InnerText)]);
+                int z = int.Parse(layerNode.Attributes.GetNamedItem("z").InnerText);
+                int direction = int.Parse(directionNode.Attributes.GetNamedItem("id").InnerText);
+
+                if (!directions.ContainsKey(letter))
+                {
+                    directions.Add(letter, new EliasDirection());
+                }
+
+                directions[letter].Coords[direction] = z;
+                directions[letter].Coords[direction + 1] = z;
+            }
+
+            var j = 0;
+            foreach (var zData in directions)
+            {
+                sections.Add("\"" + zData.Key + "\": [#zshift: [" + zData.Value.Props + "]]" + ((j + 1 < directions.Count) ? ", " : ""));
+                j++;
             }
 
             File.WriteAllText(Path.Combine(CAST_PATH, ((this.IsSmallFurni ? "s_" : "") + this.Sprite) + ".props"), sections.Count > 0 ? "[" + string.Join(", ", sections) + "]" : "");

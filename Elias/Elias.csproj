@@ -50,6 +50,7 @@
     <Compile Include="Elias.cs" />
     <Compile Include="EliasAnimation.cs" />
     <Compile Include="EliasAsset.cs" />
+    <Compile Include="EliasDirection.cs" />
     <Compile Include="EliasFrame.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities\ImageAssetUtil.cs" />

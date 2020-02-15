@@ -77,7 +77,13 @@ namespace EliasLibrary
                 Console.WriteLine(iconName);
 
                 File.WriteAllText(Path.Combine(Elias.IMAGE_PATH, iconName + ".txt"), ShockwaveRectanglePoint[0] + "," + ShockwaveRectanglePoint[1]);
-                File.Copy(icon, Path.Combine(Elias.IMAGE_PATH,  iconName + ".png"));
+
+                var iconDestination = Path.Combine(Elias.IMAGE_PATH, iconName + ".png");
+
+                if (File.Exists(iconDestination))
+                    File.Delete(iconDestination);
+
+                File.Copy(icon, iconDestination);
             }
         }
 
