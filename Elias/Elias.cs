@@ -251,7 +251,7 @@ namespace EliasLibrary
                     continue;
 
                 eliasAlias.WriteAssets();
-                //eliasAlias.WriteFlippedAssets();
+                eliasAlias.WriteFlippedAssets();
                 eliasAlias.WriteImageNames();
                 eliasAlias.WriteRegPointData();
             }
