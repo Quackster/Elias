@@ -40,10 +40,9 @@ namespace EliasLibrary
             get { return Path.Combine(CAST_PATH, "images"); }
         }
 
-        public Elias(string sprite, bool IsSmallFurni, string fileName, int X, int Y, string FFDEC_PATH, string OUTPUT_PATH, string DIRECTOR_PATH)
+        public Elias(string sprite, string fileName, int X, int Y, string FFDEC_PATH, string OUTPUT_PATH, string DIRECTOR_PATH)
         {
             this.Sprite = sprite;
-            this.IsSmallFurni = IsSmallFurni;
             this.FullFileName = fileName;
             this.X = X;
             this.Y = Y;
@@ -55,37 +54,78 @@ namespace EliasLibrary
             this.Symbols = new Dictionary<int, List<string>>();
         }
 
-        public void Parse()
+        public string[] Parse()
         {
+            List<string> filesWritten = new List<string>();
+
+            this.IsSmallFurni = false;
+
             this.TryCleanup();
             this.ExtractAssets();
             this.RunSwfmill();
+
+            this.ReadSymbolClass();
             this.GenerateAliases();
+            this.TryWriteIcon();
             this.CreateMemberalias();
             this.GenerateProps();
             this.GenerateAssetIndex();
             this.GenerateAnimations();
             this.RunEliasDirector();
+
+            filesWritten.Add("hh_furni_xx_" + Sprite + ".cct");
+
+            this.Assets.Clear();
+            this.Symbols.Clear();
+
+            this.IsSmallFurni = true;
+
+            this.TryCleanup(true);
+            this.ReadSymbolClass();
+            this.GenerateAliases();
+
+            if (this.Assets.Count(asset => asset.FlashAssetName.Contains("_32_")) == 0)
+                return filesWritten.ToArray();
+
+            this.TryWriteIcon();
+            this.CreateMemberalias();
+            this.GenerateProps();
+            this.GenerateAssetIndex();
+            this.GenerateAnimations();
+            this.RunEliasDirector();
+
+            filesWritten.Add("hh_furni_xx_s_" + Sprite + ".cct");
+            return filesWritten.ToArray();
         }
 
-        private void TryCleanup()
+        private void TryCleanup(bool castPathOnly = false)
         {
             try
             {
-                if (Directory.Exists(this.OUTPUT_PATH))
-                    Directory.Delete(this.OUTPUT_PATH, true);
+                if (castPathOnly)
+                {
+                    if (Directory.Exists(this.CAST_PATH))
+                        Directory.Delete(this.CAST_PATH, true);
 
-                Directory.CreateDirectory(this.OUTPUT_PATH);
+                    Directory.CreateDirectory(this.CAST_PATH);
 
-                if (Directory.Exists(this.CAST_PATH))
-                    Directory.Delete(this.CAST_PATH, true);
+                    if (Directory.Exists(this.IMAGE_PATH))
+                        Directory.Delete(this.IMAGE_PATH, true);
 
-                Directory.CreateDirectory(this.CAST_PATH);
+                    Directory.CreateDirectory(this.IMAGE_PATH);
+                }
+                else
+                {
+                    if (Directory.Exists(this.OUTPUT_PATH))
+                        Directory.Delete(this.OUTPUT_PATH, true);
 
-                if (Directory.Exists(this.IMAGE_PATH))
-                    Directory.Delete(this.IMAGE_PATH, true);
+                    Directory.CreateDirectory(this.OUTPUT_PATH);
 
-                Directory.CreateDirectory(this.IMAGE_PATH);
+                    if (Directory.Exists(this.IMAGE_PATH))
+                        Directory.Delete(this.IMAGE_PATH, true);
+
+                    Directory.CreateDirectory(this.IMAGE_PATH);
+                }
             }
             catch
             {
@@ -115,8 +155,6 @@ namespace EliasLibrary
             p.StartInfo.Arguments = "swf2xml \"" + this.FullFileName + "\" \"" + Path.Combine(OUTPUT_PATH, Sprite + ".xml") + "\"";
             p.Start();
             p.WaitForExit();
-
-            ReadSymbolClass();
         }
 
         private void ReadSymbolClass()
@@ -210,6 +248,14 @@ namespace EliasLibrary
                 eliasAlias.WriteFlippedAssets();
                 eliasAlias.WriteImageNames();
                 eliasAlias.WriteRegPointData();
+            }
+        }
+
+        private void TryWriteIcon()
+        {
+            foreach (var asset in Assets)
+            {
+                asset.TryIcon();
             }
         }
 

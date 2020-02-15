@@ -59,10 +59,9 @@ namespace EliasLibrary
 
             ParseAssetNames();
             ParseRecPointNames();
-            TryIcon();
         }
 
-        private void TryIcon()
+        public void TryIcon()
         {
             if (!this.IsIcon)
                 return;
