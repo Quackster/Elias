@@ -8,6 +8,7 @@ namespace EliasApp
         private static string FFDEC_PATH = @"C:\Program Files (x86)\FFDec\ffdec.jar";
         private static string OUTPUT_PATH = @"C:\Users\Alex\Documents\GitHub\Elias\EliasDirector\temp";
         private static string DIRECTOR_PATH = @"C:\Users\Alex\Documents\GitHub\Elias\EliasDirector\elias_app.exe";
+        private static string CCT_PATH = @"C:\Users\Alex\Documents\GitHub\Elias\CCTs";
 
         static void Main(string[] args)
         {
@@ -45,9 +46,9 @@ namespace EliasApp
 
                 var outputDirectory = Path.Combine(Environment.CurrentDirectory, "output");
 
-                if (!Directory.Exists(outputDirectory))
+                if (!Directory.Exists(CCT_PATH))
                 {
-                    Directory.CreateDirectory(outputDirectory);
+                    Directory.CreateDirectory(CCT_PATH);
                 }
 
 
@@ -59,7 +60,7 @@ namespace EliasApp
                 foreach (var castFile in filesWritten)
                 {
                     var newFilePath = Path.Combine(OUTPUT_PATH, castFile);
-                    var castFilePath = Path.Combine(Environment.CurrentDirectory, "output", castFile);
+                    var castFilePath = Path.Combine(CCT_PATH, castFile);
 
                     if (File.Exists(castFilePath))
                         File.Delete(castFilePath);

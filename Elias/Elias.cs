@@ -285,9 +285,6 @@ namespace EliasLibrary
 
             foreach (var eliasAsset in Assets)
             {
-                if (eliasAsset.IsShadow)
-                    continue;
-
                 if (eliasAsset.IsIcon)
                     continue;
 
@@ -308,9 +305,6 @@ namespace EliasLibrary
 
             foreach (var eliasAsset in Assets)
             {
-                if (eliasAsset.IsShadow)
-                    continue;
-
                 if (eliasAsset.IsIcon)
                     continue;
 

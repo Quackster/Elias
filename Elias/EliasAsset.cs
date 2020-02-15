@@ -53,7 +53,6 @@ namespace EliasLibrary
                 if (attribute.InnerText.Contains("_sd_"))
                 {
                     IsShadow = true;
-                    FlashAssetName = attribute.InnerText;
                     break;
                 }
             }
@@ -93,9 +92,6 @@ namespace EliasLibrary
             if (IsIcon)
                 return;
 
-            if (IsShadow)
-                return;
-
             for (int i = 0; i < Node.Attributes.Count; i++)
             {
                 var attribute = Node.Attributes.Item(i);
@@ -108,15 +104,15 @@ namespace EliasLibrary
                 if (attribute.Name == "name")
                 {
                     FlashAssetName = attribute.InnerText;
-                    ShockwaveAssetName = AssetUtil.ConvertFlashName(Elias, attribute.InnerText, Elias.X, Elias.Y);
+                    ShockwaveAssetName = IsShadow ? AssetUtil.ConvertFlashShadow(Elias, attribute.InnerText) : AssetUtil.ConvertFlashName(Elias, attribute.InnerText, Elias.X, Elias.Y);
                 }
 
                 if (attribute.Name == "source")
                 {
-                    IsFlipped = true;
+                    IsFlipped = this.IsInverted();
                     IsMemberAlias = true;
                     FlashSourceAliasName = attribute.InnerText;
-                    ShockwaveSourceAliasName = AssetUtil.ConvertFlashName(Elias, attribute.InnerText, Elias.X, Elias.Y);
+                    ShockwaveSourceAliasName = IsShadow ? AssetUtil.ConvertFlashShadow(Elias, attribute.InnerText) : AssetUtil.ConvertFlashName(Elias, attribute.InnerText, Elias.X, Elias.Y);
                 }
             }
         }
@@ -329,6 +325,11 @@ namespace EliasLibrary
                 File.Copy(flashFile, Path.Combine(Elias.IMAGE_PATH, ShockwaveAssetName + ".png"));
                 File.WriteAllText(Path.Combine(Elias.IMAGE_PATH, ShockwaveAssetName + ".txt"), ShockwaveRectanglePoint[0] + "," + ShockwaveRectanglePoint[1]);
             }
+        }
+
+        private bool IsInverted()
+        {
+            return Node.Attributes.GetNamedItem("flipH") != null && Node.Attributes.GetNamedItem("flipH").InnerText == "1";
         }
     }
 }
