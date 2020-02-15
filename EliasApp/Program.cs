@@ -1,15 +1,12 @@
-﻿using System;
+﻿using EliasApp.Utilities;
+using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace EliasApp
 {
     class Program
     {
-        private static string FFDEC_PATH = @"C:\Program Files (x86)\FFDec\ffdec.jar";
-        private static string OUTPUT_PATH = @"C:\Users\Alex\Documents\GitHub\Elias\EliasDirector\temp";
-        private static string DIRECTOR_PATH = @"C:\Users\Alex\Documents\GitHub\Elias\EliasDirector\elias_app.exe";
-        private static string CCT_PATH = @"C:\Users\Alex\Documents\GitHub\Elias\CCTs";
-
         static void Main(string[] args)
         {
             if (args.Length == 0)
@@ -22,9 +19,76 @@ namespace EliasApp
                 return;
             }
 
+            Dictionary<string, string> commandArguments = new Dictionary<string, string>();
+
             try
             {
-                string fullFileName = args[0];
+                try
+                {
+                    for (int i = 0; i < args.Length; i++)
+                    {
+                        string key = args[i];
+                        string value = args[i + 1];
+
+                        commandArguments.Add(key, value);
+                        i++;
+                    }
+                }
+                catch
+                {
+                    Console.WriteLine("Invalid argument parameters!");
+
+#if DEBUG
+                    Console.Read();
+#endif
+                    return;
+                }
+
+                var ffdecPath = Config.Instance.GetString("ffdec.path");
+                var directorPath = Config.Instance.GetString("elias.cct.converter.app");
+                var outputPath = Path.Combine(Path.GetDirectoryName(directorPath), "temp");
+                var cctPath = Config.Instance.GetString("output.path");
+
+                if (commandArguments.ContainsKey("-directory"))
+                {
+                    var directory = commandArguments["-directory"];
+
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.Write("Reading directory: ");
+                    Console.ResetColor();
+                    Console.WriteLine(directory);
+
+                    foreach (var file in Directory.GetFiles(directory, "*.swf"))
+                    {
+                        Console.ForegroundColor = ConsoleColor.Blue;
+                        Console.Write("Creating CCT: ");
+                        Console.ResetColor();
+                        Console.WriteLine(Path.GetFileNameWithoutExtension(file));
+
+                        int X = 1;
+                        int Y = 1;
+
+                        var elias = new EliasLibrary.Elias(Path.GetFileNameWithoutExtension(file), file, X, Y, ffdecPath, outputPath, directorPath);
+                        SaveFiles(elias.Parse(), outputPath, cctPath);
+                    }
+                }
+                else if (commandArguments.ContainsKey("-cct"))
+                {
+                    var file = commandArguments["-cct"];
+
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.Write("Reading file: ");
+                    Console.ResetColor();
+                    Console.WriteLine(file);
+
+                    int X = 1;
+                    int Y = 1;
+
+                    var elias = new EliasLibrary.Elias(Path.GetFileNameWithoutExtension(file), file, X, Y, ffdecPath, outputPath, directorPath);
+                    SaveFiles(elias.Parse(), outputPath, cctPath);
+                }
+
+                /*string fullFileName = args[0];
                 string fileName = Path.GetFileName(fullFileName);
 
                 Console.ForegroundColor = ConsoleColor.Green;
@@ -66,7 +130,9 @@ namespace EliasApp
                         File.Delete(castFilePath);
 
                     File.Copy(newFilePath, castFilePath);
-                }
+                }*/
+
+                Console.WriteLine("Done!");
             }
             catch (Exception ex)
             {
@@ -76,6 +142,20 @@ namespace EliasApp
 #if DEBUG
             Console.Read();
 #endif
+        }
+
+        private static void SaveFiles(IEnumerable<string> outputFiles, string outputPath, string cctPath)
+        {
+            foreach (var castFile in outputFiles)
+            {
+                var newFilePath = Path.Combine(outputPath, castFile);
+                var castFilePath = Path.Combine(cctPath, castFile);
+
+                if (File.Exists(castFilePath))
+                    File.Delete(castFilePath);
+
+                File.Copy(newFilePath, castFilePath);
+            }
         }
 
         private static void WriteError(string errorMessage)
