@@ -149,7 +149,15 @@ namespace EliasLibrary
             }
 
             FlashRectanglePoint = new int[] { x, y };
-            ShockwaveRectanglePoint = new int[] { x - 32, y };
+
+            if (Elias.IsSmallFurni)
+            {
+                ShockwaveRectanglePoint = new int[] { x - 16, y };
+            }
+            else
+            {
+                ShockwaveRectanglePoint = new int[] { x - 32, y };
+            }
         }
 
         public void WriteAssets()
