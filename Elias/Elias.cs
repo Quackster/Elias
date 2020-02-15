@@ -80,10 +80,10 @@ namespace EliasLibrary
 
             filesWritten.Add("hh_furni_xx_" + Sprite + ".cct");
 
-            /*this.Assets.Clear();
+            this.Assets.Clear();
             this.Symbols.Clear();
 
-            this.IsSmallFurni = false;
+            this.IsSmallFurni = true;
 
             this.TryCleanup(true);
             this.ReadSymbolClass();
@@ -100,7 +100,7 @@ namespace EliasLibrary
             this.GenerateAnimations();
             this.RunEliasDirector();
 
-            filesWritten.Add("hh_furni_xx_s_" + Sprite + ".cct");*/
+            filesWritten.Add("hh_furni_xx_s_" + Sprite + ".cct");
             return filesWritten.ToArray();
         }
 
