@@ -50,15 +50,17 @@ namespace Elias.Utilities
 
             if (data[1] == "mask")
             {
-                newName = data[0] == "2" ? "leftwall" : "rightwall";
-                newName += " " + (elias.IsSmallFurni ? "s_" : "") + elias.Sprite;
+                newName += (elias.IsSmallFurni ? "s_" : "");
+                newName += data[0] == "2" ? "leftwall" : "rightwall";
+                newName += " " + elias.Sprite;
                 newName += "_";
                 newName += data[1];
                 return newName;
             }
 
-            newName = data[1] == "2" ? "leftwall" : "rightwall";
-            newName += " " + (elias.IsSmallFurni ? "s_" : "") + elias.Sprite;
+            newName += (elias.IsSmallFurni ? "s_" : "");
+            newName += data[1] == "2" ? "leftwall" : "rightwall";
+            newName += " " + elias.Sprite;
             newName += "_";
             newName += data[0];
             newName += "_";
