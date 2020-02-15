@@ -139,6 +139,17 @@ namespace EliasApp
                     return;
                 }
 
+                Console.WriteLine("Elias by Quackster");
+                Console.WriteLine("");
+                Console.WriteLine("Thanks to:");
+                Console.WriteLine("- Sefhriloff");
+                Console.WriteLine("");
+                Console.WriteLine("Written in Feburary 2020");
+
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine("Reading furnidata supplied...");
+                Console.ResetColor();
+
                 var officialFileContents = File.ReadAllText(furnidataPath);
                 officialFileContents = officialFileContents.Replace("]]\n[[", "],[");
                 var officialFurnidataList = JsonConvert.DeserializeObject<List<string[]>>(officialFileContents);
