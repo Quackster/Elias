@@ -84,7 +84,7 @@ namespace EliasLibrary
             this.ReadSymbolClass();
             this.GenerateAliases();
 
-            if (this.Assets.Count(asset => asset.FlashAssetName.Contains("_32_")) == 0)
+            if (this.Assets.Count(asset => asset.FlashAssetName != null && asset.FlashAssetName.Contains("_32_")) == 0)
                 return filesWritten.ToArray();
 
             this.TryWriteIcon();
@@ -234,7 +234,7 @@ namespace EliasLibrary
 
                 var eliasAlias = new EliasAsset(this, node);
 
-                if (eliasAlias.ShockwaveAssetName == null)
+                if (eliasAlias.ShockwaveAssetName == null && !eliasAlias.IsIcon)
                 {
                     continue;
                 }
@@ -244,6 +244,9 @@ namespace EliasLibrary
 
             foreach (var eliasAlias in Assets)
             {
+                if (eliasAlias.IsIcon)
+                    continue;
+
                 eliasAlias.WriteAssets();
                 eliasAlias.WriteFlippedAssets();
                 eliasAlias.WriteImageNames();
