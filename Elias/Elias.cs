@@ -145,10 +145,11 @@ namespace EliasLibrary
 
         private void ExtractAssets()
         {
-
             var p = new Process();
-            p.StartInfo.FileName = "java";
-            p.StartInfo.Arguments = string.Format("-jar \"" + FFDEC_PATH + "\" -export \"binaryData,image\" \"{0}\" \"{1}\"", OUTPUT_PATH, this.FullFileName);
+            p.StartInfo.FileName = FFDEC_PATH;
+            p.StartInfo.Arguments = string.Format("-export \"binaryData,image\" \"{0}\" \"{1}\"", OUTPUT_PATH, this.FullFileName);
+            p.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            p.StartInfo.CreateNoWindow = true;
             p.Start();
             p.WaitForExit();
         }

@@ -69,17 +69,24 @@ namespace Elias.Utilities
 
         public static string ConvertName(EliasLibrary.Elias elias, string name, bool isShadow)
         {
-            if (elias.IsWallItem)
+            try
             {
-                return ConvertFlashWallName(elias, name);
-            }
+                if (elias.IsWallItem)
+                {
+                    return ConvertFlashWallName(elias, name);
+                }
 
-            if (isShadow)
+                if (isShadow)
+                {
+                    return ConvertFlashShadow(elias, name);
+                }
+
+                return ConvertFlashName(elias, name);
+            }
+            catch
             {
-                return ConvertFlashShadow(elias, name);
+                return null;
             }
-
-            return ConvertFlashName(elias, name);
         }
     }
 }

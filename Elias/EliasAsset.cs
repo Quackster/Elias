@@ -56,6 +56,14 @@ namespace EliasLibrary
                 }
             }
 
+            if (AssetUtil.ConvertName(elias, Node.Attributes.GetNamedItem("name").InnerText, IsShadow) == null)
+            {
+                this.ShockwaveAssetName = null;
+                this.IsShadow = false;
+                this.IsIcon = false;
+                return;
+            }
+
             ParseAssetNames();
             ParseRecPointNames();
         }
