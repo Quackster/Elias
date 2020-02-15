@@ -271,6 +271,7 @@ namespace EliasLibrary
             char[] alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToLower().ToCharArray();
             var xmlData = BinaryDataUtil.SolveFile(this.OUTPUT_PATH, "visualization");
 
+            Dictionary<int, int> shiftValues = new Dictionary<int, int>();
             List<string> sections = new List<string>();
 
             if (xmlData == null)
@@ -304,14 +305,21 @@ namespace EliasLibrary
                     continue;
                 }
 
-                    char letter = alphabet[int.Parse(node.Attributes.GetNamedItem("id").InnerText)];
+                char letter = alphabet[int.Parse(node.Attributes.GetNamedItem("id").InnerText)];
 
                 string firstSection = "\"" + letter + "\": [{0}]";
                 string secondSection = "";
 
                 if (node.Attributes.GetNamedItem("z") != null)
                 {
-                    secondSection += "#zshift: [" + node.Attributes.GetNamedItem("z").InnerText + "], ";
+                    int z = int.Parse(node.Attributes.GetNamedItem("z").InnerText);
+
+                    if (!shiftValues.ContainsKey(z))
+                        shiftValues.Add(z, z);
+                    else
+                        shiftValues[z] = shiftValues[z] - 1;
+
+                    secondSection += "#zshift: [" + shiftValues[z] + "], ";
                 }
 
                 if (node.Attributes.GetNamedItem("alpha") != null && node.Attributes.GetNamedItem("ink") == null)//if (node.Attributes.GetNamedItem("alpha") != null)
