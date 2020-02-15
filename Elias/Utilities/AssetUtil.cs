@@ -43,8 +43,6 @@ namespace Elias.Utilities
             fileName = fileName.Replace("_32_", "_");
             fileName = fileName.Replace(elias.Sprite + "_", "");
 
-            Console.WriteLine(fileName);
-
             string[] data = fileName.Split('_');
             string newName = null;
 

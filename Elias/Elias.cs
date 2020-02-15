@@ -474,6 +474,13 @@ namespace EliasLibrary
                 var frame = frames.Item(i);
 
                 var animationLayer = frame.ParentNode.ParentNode;
+                int letterPosition = int.Parse(animationLayer.Attributes.GetNamedItem("id").InnerText);
+
+                if (letterPosition < 0 || letterPosition > alphabet.Length)
+                {
+                    continue;
+                }
+
                 var animationLetter = Convert.ToString(alphabet[int.Parse(animationLayer.Attributes.GetNamedItem("id").InnerText)]);
 
                 highestAnimationLayer = int.Parse(animationLayer.Attributes.GetNamedItem("id").InnerText) + 1;
@@ -548,8 +555,18 @@ namespace EliasLibrary
                 {
                     while (animation.Value.States.Count != animations)
                     {
-                        animation.Value.States.Add(0, new EliasFrame());
-                        animation.Value.States[0].Frames.Add("0");
+                        int nextKey = 0;
+
+                        if (animation.Value.States.ContainsKey(nextKey))
+                        {
+                            while (animation.Value.States.ContainsKey(nextKey))
+                            {
+                                nextKey++;
+                            }
+                        }
+
+                        animation.Value.States.Add(nextKey, new EliasFrame());
+                        animation.Value.States[nextKey].Frames.Add("0");
                     }
 
                     stringBuilder.Append(animation.Key + ": [ ");
