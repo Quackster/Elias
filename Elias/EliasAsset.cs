@@ -53,6 +53,7 @@ namespace EliasLibrary
                 if (attribute.InnerText.Contains("_sd_"))
                 {
                     IsShadow = true;
+                    FlashAssetName = attribute.InnerText;
                     break;
                 }
             }
@@ -122,12 +123,6 @@ namespace EliasLibrary
 
         public void ParseRecPointNames()
         {
-            if (IsIcon)
-                return;
-
-            if (IsShadow)
-                return;
-
             int x = -1;
             int y = -1;
 
@@ -289,7 +284,6 @@ namespace EliasLibrary
             }
         }
 
-
         public void WriteImageNames()
         {
             if (IsIcon)
@@ -319,6 +313,22 @@ namespace EliasLibrary
                 return;
 
             File.WriteAllText(Path.Combine(Elias.IMAGE_PATH, ShockwaveAssetName + ".txt"), ShockwaveRectanglePoint[0] + "," + ShockwaveRectanglePoint[1]);
+        }
+
+        public void TryShadow()
+        {
+            if (!IsShadow)
+                return;
+
+            var flashFile = ImageAssetUtil.SolveFile(Elias.OUTPUT_PATH, FlashAssetName);
+
+            if (flashFile != null)
+            {
+                this.ShockwaveAssetName = AssetUtil.ConvertFlashShadow(this.Elias, this.FlashAssetName);
+
+                File.Copy(flashFile, Path.Combine(Elias.IMAGE_PATH, ShockwaveAssetName + ".png"));
+                File.WriteAllText(Path.Combine(Elias.IMAGE_PATH, ShockwaveAssetName + ".txt"), ShockwaveRectanglePoint[0] + "," + ShockwaveRectanglePoint[1]);
+            }
         }
     }
 }

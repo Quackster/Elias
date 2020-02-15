@@ -68,6 +68,7 @@ namespace EliasLibrary
             this.ReadSymbolClass();
             this.GenerateAliases();
             this.TryWriteIcon();
+            this.GenerateShadows();
             this.CreateMemberalias();
             this.GenerateProps();
             this.GenerateAssetIndex();
@@ -89,6 +90,7 @@ namespace EliasLibrary
                 return filesWritten.ToArray();
 
             this.TryWriteIcon();
+            this.GenerateShadows();
             this.CreateMemberalias();
             this.GenerateProps();
             this.GenerateAssetIndex();
@@ -235,7 +237,7 @@ namespace EliasLibrary
 
                 var eliasAlias = new EliasAsset(this, node);
 
-                if (eliasAlias.ShockwaveAssetName == null && !eliasAlias.IsIcon)
+                if (eliasAlias.ShockwaveAssetName == null && !eliasAlias.IsIcon && !eliasAlias.IsShadow)
                 {
                     continue;
                 }
@@ -255,10 +257,24 @@ namespace EliasLibrary
             }
         }
 
+        private void GenerateShadows()
+        {
+            foreach (var asset in Assets)
+            {
+                if (!asset.IsShadow)
+                    continue;
+
+                asset.TryShadow();
+            }
+        }
+
         private void TryWriteIcon()
         {
             foreach (var asset in Assets)
             {
+                if (!asset.IsIcon)
+                    continue;
+
                 asset.TryIcon();
             }
         }
