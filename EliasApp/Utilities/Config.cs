@@ -8,7 +8,7 @@ namespace EliasApp.Utilities
 {
     class Config
     {
-        private static string FFDEC_PATH = @"C:\Program Files (x86)\FFDec\ffdec.jar";
+        private static string FFDEC_PATH = @"C:\Program Files (x86)\FFDec\ffdec.exe";
         private static string DIRECTOR_PATH = @"C:\Users\Alex\Documents\GitHub\Elias\EliasDirector\";
         private static string CCT_PATH = @"C:\Users\Alex\Documents\GitHub\Elias\CCTs";
 
@@ -38,6 +38,7 @@ namespace EliasApp.Utilities
             _configValues["ffdec.path"] = xmlDoc.SelectSingleNode("//configuration/ffdec").InnerText;
             _configValues["elias.cct.converter.app"] = xmlDoc.SelectSingleNode("//configuration/converter_app").InnerText;
             _configValues["output.path"] = xmlDoc.SelectSingleNode("//configuration/output_path").InnerText;
+            _configValues["furnidata.path"] = xmlDoc.SelectSingleNode("//configuration/furnidata_path").InnerText;
         }
 
         /// <summary>
@@ -65,6 +66,10 @@ namespace EliasApp.Utilities
 
             xmlWriter.WriteStartElement("output_path");
             xmlWriter.WriteString(CCT_PATH);
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteStartElement("furnidata_path");
+            xmlWriter.WriteString("furnidata.txt");
             xmlWriter.WriteEndElement();
 
             xmlWriter.WriteEndElement();

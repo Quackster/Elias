@@ -228,26 +228,18 @@ namespace EliasLibrary
                 var node = assets.ChildNodes.Item(i);
 
                 if (node == null)
-                {
                     continue;
-                }
 
                 if (IsSmallFurni && node.OuterXml.Contains("_64_"))
-                {
                     continue;
-                }
 
                 if (!IsSmallFurni && node.OuterXml.Contains("_32_"))
-                {
                     continue;
-                }
 
                 var eliasAlias = new EliasAsset(this, node);
 
                 if (eliasAlias.ShockwaveAssetName == null && !eliasAlias.IsIcon && !eliasAlias.IsShadow)
-                {
                     continue;
-                }
 
                 Assets.Add(eliasAlias);
             }

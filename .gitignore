@@ -8,3 +8,4 @@ EliasApp/EliasApp.csproj.user
 EliasApp/EliasApp.csproj.user
 *.user
 CCTs/
+packages/
