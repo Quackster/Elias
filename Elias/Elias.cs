@@ -320,9 +320,7 @@ namespace EliasLibrary
             char[] alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToLower().ToCharArray();
             var xmlData = BinaryDataUtil.SolveFile(this.OUTPUT_PATH, "visualization");
 
-            Dictionary<int, int> defaultShiftValues = new Dictionary<int, int>();
             Dictionary<int, int> shiftValues = new Dictionary<int, int>();
-
             List<string> sections = new List<string>();
 
             if (xmlData == null)
@@ -330,11 +328,16 @@ namespace EliasLibrary
                 return;
             }
 
-            var visualisation = xmlData.SelectNodes("//visualizationData/visualization[@size='" + (IsSmallFurni ? "32" : "64") + "']/layers/layer");
+            var visualisation = xmlData.SelectSingleNode("//visualizationData/graphics/visualization/layers");
 
-            for (int i = 0; i < visualisation.Count; i++)
+            if (visualisation == null)
             {
-                var node = visualisation.Item(i);
+                visualisation = xmlData.SelectSingleNode("//visualizationData/visualization/layers");
+            }
+
+            for (int i = 0; i < visualisation.ChildNodes.Count; i++)
+            {
+                var node = visualisation.ChildNodes.Item(i);
 
                 if (node == null)
                 {
@@ -346,23 +349,27 @@ namespace EliasLibrary
                     continue;
                 }
 
-                
+                if (node.Attributes.GetNamedItem("z") == null && node.Attributes.GetNamedItem("alpha") == null)
+                {
+                    continue;
+                }
+
                 char letter = alphabet[int.Parse(node.Attributes.GetNamedItem("id").InnerText)];
 
                 string firstSection = "\"" + letter + "\": [{0}]";
                 string secondSection = "";
 
-                int z = node.Attributes.GetNamedItem("z") == null ? 0 : int.Parse(node.Attributes.GetNamedItem("z").InnerText);
-                //z = z > 0 ? z + 1000 : 0;
+                if (node.Attributes.GetNamedItem("z") != null)
+                {
+                    int z = int.Parse(node.Attributes.GetNamedItem("z").InnerText);
 
-                defaultShiftValues.Add(i, z);
+                    if (!shiftValues.ContainsKey(z))
+                        shiftValues.Add(z, z);
+                    else
+                        shiftValues[z] = shiftValues[z] - 1;
 
-                if (!shiftValues.ContainsKey(z))
-                    shiftValues.Add(z, z);
-                else
-                    shiftValues[z] = shiftValues[z] - 1;
-
-                secondSection += "#zshift: [" + shiftValues[z] + "], ";
+                    secondSection += "#zshift: [" + shiftValues[z] + "], ";
+                }
 
                 if (node.Attributes.GetNamedItem("alpha") != null && node.Attributes.GetNamedItem("ink") == null)//if (node.Attributes.GetNamedItem("alpha") != null)
                 {
