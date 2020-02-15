@@ -110,24 +110,24 @@ namespace EliasLibrary
                 if (castPathOnly)
                 {
                     if (Directory.Exists(this.CAST_PATH))
-                        Directory.Delete(this.CAST_PATH, true);
+                        AssetUtil.DeleteDirectory(this.CAST_PATH);
 
                     Directory.CreateDirectory(this.CAST_PATH);
 
                     if (Directory.Exists(this.IMAGE_PATH))
-                        Directory.Delete(this.IMAGE_PATH, true);
+                        AssetUtil.DeleteDirectory(this.IMAGE_PATH);
 
                     Directory.CreateDirectory(this.IMAGE_PATH);
                 }
                 else
                 {
                     if (Directory.Exists(this.OUTPUT_PATH))
-                        Directory.Delete(this.OUTPUT_PATH, true);
+                        AssetUtil.DeleteDirectory(this.OUTPUT_PATH);
 
                     Directory.CreateDirectory(this.OUTPUT_PATH);
 
                     if (Directory.Exists(this.IMAGE_PATH))
-                        Directory.Delete(this.IMAGE_PATH, true);
+                        AssetUtil.DeleteDirectory(this.IMAGE_PATH);
 
                     Directory.CreateDirectory(this.IMAGE_PATH);
                 }
@@ -169,8 +169,8 @@ namespace EliasLibrary
         {
             try
             {
-                //Directory.Delete(Path.Combine(OUTPUT_PATH, "images"), true);
-                //Directory.Delete(Path.Combine(OUTPUT_PATH, "binaryData"), true);
+                //AssetUtil.DeleteDirectory(Path.Combine(OUTPUT_PATH, "images"), true);
+                //AssetUtil.DeleteDirectory(Path.Combine(OUTPUT_PATH, "binaryData"), true);
             }
             catch { }
 

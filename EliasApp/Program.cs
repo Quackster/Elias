@@ -65,16 +65,27 @@ namespace EliasApp
                         Console.ResetColor();
                         Console.WriteLine(Path.GetFileNameWithoutExtension(file));
 
+                        var sprite = Path.GetFileNameWithoutExtension(file);
+
                         int X = 1;
                         int Y = 1;
 
-                        var elias = new EliasLibrary.Elias(Path.GetFileNameWithoutExtension(file), file, X, Y, ffdecPath, outputPath, directorPath);
-                        SaveFiles(elias.Parse(), outputPath, cctPath);
+                        try
+                        {
+                            var elias = new EliasLibrary.Elias(sprite, file, X, Y, ffdecPath, outputPath, directorPath);
+                            SaveFiles(elias.Parse(), outputPath, cctPath);
+                        }
+                        catch (Exception ex)
+                        {
+                            WriteError(ex.ToString());
+                            ErrorLogging(ex, sprite);
+                        }
                     }
                 }
                 else if (commandArguments.ContainsKey("-cct"))
                 {
                     var file = commandArguments["-cct"];
+                    var sprite = Path.GetFileNameWithoutExtension(file);
 
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.Write("Reading file: ");
@@ -84,8 +95,16 @@ namespace EliasApp
                     int X = 1;
                     int Y = 1;
 
-                    var elias = new EliasLibrary.Elias(Path.GetFileNameWithoutExtension(file), file, X, Y, ffdecPath, outputPath, directorPath);
-                    SaveFiles(elias.Parse(), outputPath, cctPath);
+                    try
+                    {
+                        var elias = new EliasLibrary.Elias(sprite, file, X, Y, ffdecPath, outputPath, directorPath);
+                        SaveFiles(elias.Parse(), outputPath, cctPath);
+                    }
+                    catch (Exception ex)
+                    {
+                        WriteError(ex.ToString());
+                        ErrorLogging(ex, sprite);
+                    }
                 }
 
                 /*string fullFileName = args[0];
@@ -137,6 +156,7 @@ namespace EliasApp
             catch (Exception ex)
             {
                 WriteError(ex.ToString());
+                ErrorLogging(ex, "[no furni]");
             }
 
 #if DEBUG
@@ -160,6 +180,23 @@ namespace EliasApp
                     File.Delete(castFilePath);
 
                 File.Copy(newFilePath, castFilePath);
+            }
+        }
+
+        public static void ErrorLogging(Exception ex, string furniSprite)
+        {
+            string strPath = @"error.log";
+
+            if (!File.Exists(strPath))
+                File.Create(strPath).Dispose();
+
+            using (StreamWriter sw = File.AppendText(strPath))
+            {
+                sw.WriteLine("=============Error Logging ===========");
+                sw.WriteLine(ex.GetType().FullName + " occurred when processing furni: " + furniSprite);
+                sw.WriteLine("Date: " + DateTime.Now);
+                sw.WriteLine("Error Message: " + ex.Message);
+                sw.WriteLine("Stack Trace: " + ex.StackTrace);
             }
         }
 

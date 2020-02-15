@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using EliasLibrary;
 
 namespace Elias.Utilities
@@ -86,6 +87,27 @@ namespace Elias.Utilities
             catch
             {
                 return null;
+            }
+        }
+
+        public static void DeleteDirectory(string path)
+        {
+            foreach (string directory in Directory.GetDirectories(path))
+            {
+                DeleteDirectory(directory);
+            }
+
+            try
+            {
+                Directory.Delete(path, true);
+            }
+            catch (IOException)
+            {
+                Directory.Delete(path, true);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                Directory.Delete(path, true);
             }
         }
     }
