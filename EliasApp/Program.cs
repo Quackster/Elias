@@ -146,6 +146,11 @@ namespace EliasApp
 
         private static void SaveFiles(IEnumerable<string> outputFiles, string outputPath, string cctPath)
         {
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.Write("Saving files to disk: ");
+            Console.ResetColor();
+            Console.WriteLine(string.Join(", ", outputFiles));
+
             foreach (var castFile in outputFiles)
             {
                 var newFilePath = Path.Combine(outputPath, castFile);

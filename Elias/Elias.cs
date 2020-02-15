@@ -158,6 +158,26 @@ namespace EliasLibrary
             var p = new Process();
             p.StartInfo.FileName = Path.Combine(Environment.CurrentDirectory, "swfmill\\swfmill.exe");
             p.StartInfo.Arguments = "swf2xml \"" + this.FullFileName + "\" \"" + Path.Combine(OUTPUT_PATH, Sprite + ".xml") + "\"";
+            p.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            p.StartInfo.CreateNoWindow = true;
+            p.Start();
+            p.WaitForExit();
+        }
+
+        private void RunEliasDirector()
+        {
+            try
+            {
+                //Directory.Delete(Path.Combine(OUTPUT_PATH, "images"), true);
+                //Directory.Delete(Path.Combine(OUTPUT_PATH, "binaryData"), true);
+            }
+            catch { }
+
+            var p = new Process();
+            p.StartInfo.WorkingDirectory = new FileInfo(DIRECTOR_PATH).DirectoryName;
+            p.StartInfo.FileName = DIRECTOR_PATH;
+            p.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            p.StartInfo.CreateNoWindow = true;
             p.Start();
             p.WaitForExit();
         }
@@ -189,22 +209,6 @@ namespace EliasLibrary
                 Symbols[objectID].Add(name);
             }
 
-        }
-
-        private void RunEliasDirector()
-        {
-            try
-            {
-                //Directory.Delete(Path.Combine(OUTPUT_PATH, "images"), true);
-                //Directory.Delete(Path.Combine(OUTPUT_PATH, "binaryData"), true);
-            }
-            catch { }
-
-            var p = new Process();
-            p.StartInfo.WorkingDirectory = new FileInfo(DIRECTOR_PATH).DirectoryName;
-            p.StartInfo.FileName = DIRECTOR_PATH;
-            p.Start();
-            p.WaitForExit();
         }
 
         private void GenerateAliases()

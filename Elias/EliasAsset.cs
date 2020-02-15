@@ -70,11 +70,11 @@ namespace EliasLibrary
 
             if (icon != null)
             {
-                Console.ForegroundColor = ConsoleColor.Yellow;
+               /* Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.Write("Writing icon: ");
                 Console.ResetColor();
                 Console.WriteLine(iconName);
-
+                */
                 File.WriteAllText(Path.Combine(Elias.IMAGE_PATH, iconName + ".txt"), ShockwaveRectanglePoint[0] + "," + ShockwaveRectanglePoint[1]);
 
                 var iconDestination = Path.Combine(Elias.IMAGE_PATH, iconName + ".png");
@@ -201,8 +201,6 @@ namespace EliasLibrary
 
                            if (symbolAsset != null)
                             {
-                                Console.WriteLine("Cloned: " + symbolFileName + " => " + FlashAssetName);
-
                                 IsMemberAlias = true;
                                 FlashSourceAliasName = symbolFileName;
                                 ShockwaveSourceAliasName = AssetUtil.ConvertName(Elias, FlashSourceAliasName, IsShadow);
@@ -210,7 +208,6 @@ namespace EliasLibrary
                             else
                             {
                                 // Copy it over because different regpoints
-                                Console.WriteLine("Copied: " + symbolFileName + " => " + FlashAssetName);
                                 File.Copy(symbolReference, Path.Combine(Elias.OUTPUT_PATH, "images", FlashAssetName + ".png"));
                             }
                         }
@@ -218,8 +215,6 @@ namespace EliasLibrary
                         {
                             if (!IsMemberAlias)
                             {
-                                Console.WriteLine("Create blank sprite for: " + FlashAssetName);
-
                                 Bitmap bmp = new Bitmap(1, 1);
                                 bmp.Save(Path.Combine(Elias.OUTPUT_PATH, "images", FlashAssetName + ".png"), ImageFormat.Png);
                             }
@@ -256,8 +251,6 @@ namespace EliasLibrary
 
                         if (symbolAsset != null)
                         {
-                            Console.WriteLine("FP Cloned: " + symbolFileName + " => " + FlashSourceAliasName);
-
                             IsMemberAlias = true;
                             FlashSourceAliasName = symbolFileName;
                             ShockwaveSourceAliasName = AssetUtil.ConvertName(Elias, FlashSourceAliasName, IsShadow);
@@ -265,7 +258,6 @@ namespace EliasLibrary
                         else
                         {
                             // Copy it over because different regpoints
-                            Console.WriteLine("FP Copied: " + symbolFileName + " => " + FlashSourceAliasName);
                             File.Copy(symbolReference, Path.Combine(Elias.OUTPUT_PATH, "images", FlashSourceAliasName + ".png"));
                         }
                     }
@@ -273,8 +265,6 @@ namespace EliasLibrary
                     {
                         if (!IsMemberAlias)
                         {
-                            Console.WriteLine("Create blank sprite for: " + FlashSourceAliasName);
-
                             Bitmap bmp = new Bitmap(1, 1);
                             bmp.Save(Path.Combine(Elias.OUTPUT_PATH, "images", FlashSourceAliasName + ".png"), ImageFormat.Png);
                         }
