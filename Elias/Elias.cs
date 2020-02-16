@@ -29,6 +29,9 @@ namespace EliasLibrary
         public string OUTPUT_PATH;
         public string DIRECTOR_PATH;
 
+        public bool GenerateSmallModernFurni;
+        public bool GenerateSmallFurni;
+
         public Dictionary<int, List<string>> Symbols;
         public List<EliasAsset> Assets;
 
@@ -42,7 +45,7 @@ namespace EliasLibrary
             get { return Path.Combine(CAST_PATH, "images"); }
         }
 
-        public Elias(bool IsWallItem, string sprite, string fileName, int X, int Y, string FFDEC_PATH, string OUTPUT_PATH, string DIRECTOR_PATH)
+        public Elias(bool IsWallItem, string sprite, string fileName, int X, int Y, string FFDEC_PATH, string OUTPUT_PATH, string DIRECTOR_PATH, bool generateSmallModernFurni, bool generateSmallFurni)
         {
             this.IsWallItem = IsWallItem;
             this.Sprite = sprite;
@@ -55,6 +58,9 @@ namespace EliasLibrary
             this.DIRECTOR_PATH = DIRECTOR_PATH;
             this.Assets = new List<EliasAsset>();
             this.Symbols = new Dictionary<int, List<string>>();
+
+            this.GenerateSmallModernFurni = generateSmallModernFurni;
+            this.GenerateSmallFurni = generateSmallFurni;
         }
 
         public string[] Parse()
@@ -79,6 +85,9 @@ namespace EliasLibrary
 
             filesWritten.Add("hh_furni_xx_" + Sprite + ".cct");
 
+            if (!GenerateSmallFurni)
+                return filesWritten.ToArray();
+
             this.Assets.Clear();
             this.Symbols.Clear();
 
@@ -89,7 +98,10 @@ namespace EliasLibrary
             this.GenerateAliases();
 
             if (this.Assets.Count(asset => asset.FlashAssetName != null && asset.FlashAssetName.Contains("_32_")) == 0)
-                return filesWritten.ToArray();
+            {
+                if (!GenerateSmallModernFurni)
+                    return filesWritten.ToArray();
+            }
 
             this.TryWriteIcon();
             this.GenerateShadows();

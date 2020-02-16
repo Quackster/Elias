@@ -236,7 +236,10 @@ namespace EliasApp
 
             try
             {
-                var elias = new EliasLibrary.Elias(isWallItem, sprite, file, X, Y, ffdecPath, outputPath, directorPath);
+                var elias = new EliasLibrary.Elias(isWallItem, sprite, file, X, Y, ffdecPath, outputPath, directorPath,
+                    Config.Instance.GetString("generate.small.modern.furni").ToLower() == "true", 
+                    Config.Instance.GetString("generate.small.furni") == "true");
+
                 SaveFiles(elias.Parse(), outputPath, cctPath);
             }
             catch (Exception ex)
@@ -257,6 +260,12 @@ namespace EliasApp
             {
                 var newFilePath = Path.Combine(outputPath, castFile);
                 var castFilePath = Path.Combine(cctPath, castFile);
+
+                if (Config.Instance.GetString("save.as.cst").ToLower() == "true")
+                {
+                    castFilePath = castFilePath.TrimEnd(".cct".ToCharArray());
+                    castFilePath = castFilePath + ".cst";
+                }
 
                 if (File.Exists(castFilePath))
                     File.Delete(castFilePath);

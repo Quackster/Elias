@@ -39,6 +39,9 @@ namespace EliasApp.Utilities
             _configValues["elias.cct.converter.app"] = xmlDoc.SelectSingleNode("//configuration/converter_app").InnerText;
             _configValues["output.path"] = xmlDoc.SelectSingleNode("//configuration/output_path").InnerText;
             _configValues["furnidata.path"] = xmlDoc.SelectSingleNode("//configuration/furnidata_path").InnerText;
+            _configValues["generate.small.modern.furni"] = xmlDoc.SelectSingleNode("//configuration/small_furni/generate_modern").InnerText;
+            _configValues["generate.small.furni"] = xmlDoc.SelectSingleNode("//configuration/small_furni/generate").InnerText;
+            _configValues["save.as.cst"] = xmlDoc.SelectSingleNode("//configuration/save_as_cst").InnerText;
         }
 
         /// <summary>
@@ -70,6 +73,22 @@ namespace EliasApp.Utilities
 
             xmlWriter.WriteStartElement("furnidata_path");
             xmlWriter.WriteString("furnidata.txt");
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteStartElement("small_furni");
+
+            xmlWriter.WriteStartElement("generate");
+            xmlWriter.WriteString("true");
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteStartElement("generate_modern");
+            xmlWriter.WriteString("false");
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteEndElement();
+
+            xmlWriter.WriteStartElement("save_as_cst");
+            xmlWriter.WriteString("true");
             xmlWriter.WriteEndElement();
 
             xmlWriter.WriteEndElement();
