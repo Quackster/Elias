@@ -73,6 +73,9 @@ namespace Elias.Utilities
 
         private static void DownscaleImage(string path)
         {
+            if (path.Contains("_icon_"))
+                return;
+
             string tempPath = Path.GetFileName(path);
 
             using (Bitmap image = new Bitmap(path))
