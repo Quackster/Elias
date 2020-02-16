@@ -214,6 +214,7 @@ namespace EliasApp
 
             int X = 1;
             int Y = 1;
+            bool isWallItem = false;
 
             if (furniItem == null)
             {
@@ -230,11 +231,12 @@ namespace EliasApp
             {
                 X = furniItem.Length;
                 Y = furniItem.Width;
+                isWallItem = furniItem.Type.ToUpper() == "I";
             }
 
             try
             {
-                var elias = new EliasLibrary.Elias(furniItem.Type.ToUpper() == "I", sprite, file, X, Y, ffdecPath, outputPath, directorPath);
+                var elias = new EliasLibrary.Elias(isWallItem, sprite, file, X, Y, ffdecPath, outputPath, directorPath);
                 SaveFiles(elias.Parse(), outputPath, cctPath);
             }
             catch (Exception ex)

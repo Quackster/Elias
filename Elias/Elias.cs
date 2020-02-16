@@ -308,7 +308,7 @@ namespace EliasLibrary
                         newAsset.ShockwaveSourceAliasName = (sourceMember + "_0");
                         Assets.Add(newAsset);
 
-                        //Console.WriteLine("Added to memberalias: (" + newAsset.ShockwaveAssetName + " => " + newAsset.ShockwaveSourceAliasName + ")");
+                        //Console.WriteLine("Added to memberalias: " + newAsset.ShockwaveAssetName + " => " + newAsset.ShockwaveSourceAliasName);
                     }
                     else
                     {
