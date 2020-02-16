@@ -276,8 +276,6 @@ namespace EliasLibrary
                 if (asset.IsShadow)
                     continue;
 
-
-
                 string[] data = asset.ShockwaveAssetName.Replace((this.IsSmallFurni ? "s_" : "") + Sprite + "_", "").Split('_');
                 string member = (this.IsSmallFurni ? "s_" : "") + Sprite + "_" + data[0] + "_" + data[1] + "_" + data[2] + "_" + data[3] + "_" + data[4];
 
