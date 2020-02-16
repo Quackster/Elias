@@ -94,13 +94,21 @@ namespace EliasLibrary
             this.IsSmallFurni = true;
 
             this.TryCleanup(true);
-            this.ReadSymbolClass();
             this.GenerateAliases();
+            this.ReadSymbolClass();
 
             if (this.Assets.Count(asset => asset.FlashAssetName != null && asset.FlashAssetName.Contains("_32_")) == 0)
             {
                 if (!GenerateSmallModernFurni)
                     return filesWritten.ToArray();
+
+                this.Assets.Clear();
+                this.Symbols.Clear();
+
+                BinaryDataUtil.ReplaceFiles(this.OUTPUT_PATH, "_64_", "_32_");
+
+                ReadSymbolClass();
+                GenerateAliases();
             }
 
             this.TryWriteIcon();
@@ -113,6 +121,53 @@ namespace EliasLibrary
 
             filesWritten.Add("hh_furni_xx_s_" + Sprite + ".cct");
             return filesWritten.ToArray();
+        }
+
+        private void GenerateAliases()
+        {
+            var xmlData = BinaryDataUtil.SolveFile(this.OUTPUT_PATH, "assets");
+
+            if (xmlData == null)
+            {
+                return;
+            }
+
+            var assets = xmlData.SelectSingleNode("//assets");
+
+            for (int i = 0; i < assets.ChildNodes.Count; i++)
+            {
+                var node = assets.ChildNodes.Item(i);
+
+                if (node == null)
+                    continue;
+
+                if (IsSmallFurni && node.OuterXml.Contains("_64_"))
+                    continue;
+
+                if (!IsSmallFurni && node.OuterXml.Contains("_32_"))
+                    continue;
+
+                var eliasAlias = new EliasAsset(this, node);
+                eliasAlias.Parse();
+
+                if (eliasAlias.ShockwaveAssetName == null && !eliasAlias.IsIcon && !eliasAlias.IsShadow)
+                    continue;
+
+                Assets.Add(eliasAlias);
+            }
+
+            foreach (var eliasAlias in Assets)
+            {
+                if (eliasAlias.IsIcon)
+                    continue;
+
+                eliasAlias.WriteAssets();
+                eliasAlias.WriteFlippedAssets();
+                eliasAlias.WriteImageNames();
+                eliasAlias.WriteRegPointData();
+            }
+
+            this.SantiyCheckFrames();
         }
 
         private void TryCleanup(bool castPathOnly = false)
@@ -222,53 +277,6 @@ namespace EliasLibrary
                 Symbols[objectID].Add(name);
             }
 
-        }
-
-        private void GenerateAliases()
-        {
-            var xmlData = BinaryDataUtil.SolveFile(this.OUTPUT_PATH, "assets");
-
-            if (xmlData == null)
-            {
-                return;
-            }
-
-            var assets = xmlData.SelectSingleNode("//assets");
-
-            for (int i = 0; i < assets.ChildNodes.Count; i++)
-            {
-                var node = assets.ChildNodes.Item(i);
-
-                if (node == null)
-                    continue;
-
-                if (IsSmallFurni && node.OuterXml.Contains("_64_"))
-                    continue;
-
-                if (!IsSmallFurni && node.OuterXml.Contains("_32_"))
-                    continue;
-
-                var eliasAlias = new EliasAsset(this, node);
-                eliasAlias.Parse();
-
-                if (eliasAlias.ShockwaveAssetName == null && !eliasAlias.IsIcon && !eliasAlias.IsShadow)
-                    continue;
-
-                Assets.Add(eliasAlias);
-            }
-
-            foreach (var eliasAlias in Assets)
-            {
-                if (eliasAlias.IsIcon)
-                    continue;
-
-                eliasAlias.WriteAssets();
-                eliasAlias.WriteFlippedAssets();
-                eliasAlias.WriteImageNames();
-                eliasAlias.WriteRegPointData();
-            }
-
-            this.SantiyCheckFrames();
         }
 
         private void SantiyCheckFrames()

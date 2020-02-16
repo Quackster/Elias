@@ -40,5 +40,27 @@ namespace Elias.Utilities
 
             return null;
         }
+
+        public static void ReplaceFiles(string directory, string search, string newWord)
+        {
+            foreach (string file in Directory.GetFiles(directory, "*", SearchOption.AllDirectories))
+                ReplaceWord(file, search, newWord);
+        }
+
+        public static void ReplaceWord(string file, string find, string replaceWith)
+        {
+            string fileName = Path.GetFileName(file);
+            string newFileName = fileName.Replace(find, replaceWith);
+            string newFilePath = file.Replace(fileName, newFileName);
+
+            File.Move(file, newFilePath);
+
+            if (Path.GetExtension(file) == ".bin" || Path.GetExtension(file) == ".xml")
+            {
+                string content = File.ReadAllText(newFilePath);
+                content = content.Replace(find, replaceWith);
+                File.WriteAllText(newFilePath, content);
+            }
+        }
     }
 }
