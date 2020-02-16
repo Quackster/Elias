@@ -355,7 +355,7 @@ namespace EliasLibrary
                     continue;
                 }
 
-                if (node.Attributes.GetNamedItem("z") == null && node.Attributes.GetNamedItem("alpha") == null)
+                if (node.Attributes.GetNamedItem("z") == null && node.Attributes.GetNamedItem("alpha") == null && node.Attributes.GetNamedItem("ink") == null)
                 {
                     continue;
                 }
