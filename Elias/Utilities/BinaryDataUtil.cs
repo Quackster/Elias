@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -61,6 +63,40 @@ namespace Elias.Utilities
                 content = content.Replace(find, replaceWith);
                 File.WriteAllText(newFilePath, content);
             }
+        }
+
+        internal static void DownscaleImages(string directory)
+        {
+            foreach (string file in Directory.GetFiles(directory, "*.png", SearchOption.AllDirectories))
+                DownscaleImage(file);
+        }
+
+        private static void DownscaleImage(string path)
+        {
+            string tempPath = Path.GetFileName(path);
+
+            using (Bitmap image = new Bitmap(path))
+            {
+                int newWidth = image.Width > 1 ? image.Width / 2 : 1;
+                int newHeight = image.Height > 1 ? image.Height / 2 : 1;
+
+                Bitmap newImage = new Bitmap(newWidth, newHeight);
+                using (Graphics gr = Graphics.FromImage(newImage))
+                {
+                    gr.SmoothingMode = SmoothingMode.HighQuality;
+                    gr.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                    gr.PixelOffsetMode = PixelOffsetMode.HighQuality;
+                    gr.DrawImage(image, new Rectangle(0, 0, newWidth, newHeight));
+                }
+
+
+                newImage.Save(tempPath, System.Drawing.Imaging.ImageFormat.Png);
+            }
+
+            if (File.Exists(path))
+                File.Delete(path);
+
+            File.Move(tempPath, path);
         }
     }
 }

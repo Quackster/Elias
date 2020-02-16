@@ -19,6 +19,7 @@ namespace EliasLibrary
         public string Sprite;
         public bool IsSmallFurni;
         public bool IsWallItem;
+        public bool IsDownscaled;
         public int X;
         public int Y;
 
@@ -106,9 +107,10 @@ namespace EliasLibrary
                 this.Symbols.Clear();
 
                 BinaryDataUtil.ReplaceFiles(this.OUTPUT_PATH, "_64_", "_32_");
+                BinaryDataUtil.DownscaleImages(this.OUTPUT_PATH);
 
                 ReadSymbolClass();
-                GenerateAliases();
+                GenerateAliases(true);
             }
 
             this.TryWriteIcon();
@@ -123,8 +125,9 @@ namespace EliasLibrary
             return filesWritten.ToArray();
         }
 
-        private void GenerateAliases()
+        private void GenerateAliases(bool isDownscaled = false)
         {
+            this.IsDownscaled = isDownscaled;
             var xmlData = BinaryDataUtil.SolveFile(this.OUTPUT_PATH, "assets");
 
             if (xmlData == null)

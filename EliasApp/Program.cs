@@ -263,8 +263,8 @@ namespace EliasApp
 
                 if (Config.Instance.GetString("save.as.cst").ToLower() == "true")
                 {
-                    castFilePath = castFilePath.TrimEnd(".cct".ToCharArray());
-                    castFilePath = castFilePath + ".cst";
+                    castFilePath = castFilePath.Replace(".cct", ".cst");/*.ToCharArray());
+                    castFilePath = castFilePath + ".cst";*/
                 }
 
                 if (File.Exists(castFilePath))

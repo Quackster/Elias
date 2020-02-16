@@ -164,7 +164,14 @@ namespace EliasLibrary
             {
                 if (Elias.IsSmallFurni)
                 {
-                    ShockwaveRectanglePoint = new int[] { x - 16, y };
+                    if (Elias.IsDownscaled)
+                    {
+                        ShockwaveRectanglePoint = new int[] { x / 2, y / 2 };
+                    }
+                    else
+                    {
+                        ShockwaveRectanglePoint = new int[] { x - 16, y };
+                    }
                 }
                 else
                 {
