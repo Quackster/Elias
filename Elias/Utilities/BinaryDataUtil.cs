@@ -86,8 +86,11 @@ namespace Elias.Utilities
                 Bitmap newImage = new Bitmap(newWidth, newHeight);
                 using (Graphics gr = Graphics.FromImage(newImage))
                 {
+                    //gr.SmoothingMode = SmoothingMode.HighQuality;
+                    //gr.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                    //gr.PixelOffsetMode = PixelOffsetMode.HighQuality;
                     gr.SmoothingMode = SmoothingMode.HighQuality;
-                    gr.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                    gr.InterpolationMode = InterpolationMode.Default;
                     gr.PixelOffsetMode = PixelOffsetMode.HighQuality;
                     gr.DrawImage(image, new Rectangle(0, 0, newWidth, newHeight));
                 }
