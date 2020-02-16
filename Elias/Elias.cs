@@ -427,7 +427,16 @@ namespace EliasLibrary
                 return;
             }
 
-            var layers = xmlData.SelectNodes("//visualizationData/visualization[@size='" + (IsSmallFurni ? "32" : "64") + "']/layers/layer");
+            XmlNodeList layers = null;
+
+            if (!IsDownscaled)
+            {
+                layers = xmlData.SelectNodes("//visualizationData/visualization[@size='" + (IsSmallFurni ? "32" : "64") + "']/layers/layer");
+            }
+            else
+            {
+                layers = xmlData.SelectNodes("//visualizationData/visualization[@size='64']/layers/layer");
+            }
 
             for (int i = 0; i < layers.Count; i++)
             {

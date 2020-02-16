@@ -167,7 +167,8 @@ namespace EliasLibrary
                     if (Elias.IsDownscaled)
                     {
                         x = x - 32;
-                        ShockwaveRectanglePoint = new int[] { (int)Math.Round((double)x / 2), (int)Math.Round((double)y / 2) };
+                        ShockwaveRectanglePoint = new int[] { x / 2, y / 2 };
+                        //ShockwaveRectanglePoint = new int[] { (int)Math.Round((double)x / 2), (int)Math.Round((double)y / 2) };
                         return;
                     }
 
