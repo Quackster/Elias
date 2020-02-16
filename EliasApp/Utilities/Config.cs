@@ -41,7 +41,7 @@ namespace EliasApp.Utilities
             _configValues["furnidata.path"] = xmlDoc.SelectSingleNode("//configuration/furnidata_path").InnerText;
             _configValues["generate.small.modern.furni"] = xmlDoc.SelectSingleNode("//configuration/small_furni/generate_modern").InnerText;
             _configValues["generate.small.furni"] = xmlDoc.SelectSingleNode("//configuration/small_furni/generate").InnerText;
-            _configValues["save.as.cst"] = xmlDoc.SelectSingleNode("//configuration/save_as_cst").InnerText;
+            _configValues["save.as.cst"] = xmlDoc.SelectSingleNode("//configuration/options/save_as_cst").InnerText;
         }
 
         /// <summary>
@@ -87,8 +87,12 @@ namespace EliasApp.Utilities
 
             xmlWriter.WriteEndElement();
 
+            xmlWriter.WriteStartElement("options");
+
             xmlWriter.WriteStartElement("save_as_cst");
             xmlWriter.WriteString("true");
+            xmlWriter.WriteEndElement();
+
             xmlWriter.WriteEndElement();
 
             xmlWriter.WriteEndElement();
