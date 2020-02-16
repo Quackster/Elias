@@ -11,8 +11,8 @@ namespace EliasLibrary
 {
     public class EliasAsset
     {
-        private Elias Elias;
-        private XmlNode Node;
+        public Elias Elias;
+        public XmlNode Node;
 
         public bool IsIcon;
         public bool IsShadow;
@@ -63,7 +63,10 @@ namespace EliasLibrary
                 this.IsIcon = false;
                 return;
             }
+        }
 
+        public void Parse()
+        {
             ParseAssetNames();
             ParseRecPointNames();
         }

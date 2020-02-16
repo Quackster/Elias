@@ -46,7 +46,6 @@ namespace EliasLibrary
         {
             this.IsWallItem = IsWallItem;
             this.Sprite = sprite;
-            this.IsWallItem = X == 0 && Y == 0;
             this.FullFileName = fileName;
             this.X = X;
             this.Y = Y;
@@ -238,6 +237,7 @@ namespace EliasLibrary
                     continue;
 
                 var eliasAlias = new EliasAsset(this, node);
+                eliasAlias.Parse();
 
                 if (eliasAlias.ShockwaveAssetName == null && !eliasAlias.IsIcon && !eliasAlias.IsShadow)
                     continue;
@@ -254,6 +254,73 @@ namespace EliasLibrary
                 eliasAlias.WriteFlippedAssets();
                 eliasAlias.WriteImageNames();
                 eliasAlias.WriteRegPointData();
+            }
+
+            this.SantiyCheckFrames();
+        }
+
+        private void SantiyCheckFrames()
+        {               
+            if (IsWallItem)
+                    return;
+
+            List<string> assetTypes = new List<string>();
+
+            for (int i = 0; i < Assets.Count; i++)
+            {
+                var asset = Assets[i];
+
+                if (asset.IsIcon)
+                    continue;
+
+                if (asset.IsShadow)
+                    continue;
+
+
+
+                string[] data = asset.ShockwaveAssetName.Replace((this.IsSmallFurni ? "s_" : "") + Sprite + "_", "").Split('_');
+                string member = (this.IsSmallFurni ? "s_" : "") + Sprite + "_" + data[0] + "_" + data[1] + "_" + data[2] + "_" + data[3] + "_" + data[4];
+
+                if (!assetTypes.Contains(member))
+                    assetTypes.Add(member);
+                else
+                    continue;
+
+                /*Console.WriteLine("-----------");
+                Console.WriteLine("Finding: " + member + "_0");
+
+                foreach (var a in Assets)
+                {
+                    Console.WriteLine(a.ShockwaveAssetName);
+                }
+
+                Console.WriteLine("-----------");*/
+
+                if (Assets.Count(f => f.ShockwaveAssetName == (member + "_0")) == 0)
+                {
+                    if (asset.IsMemberAlias)
+                    {
+                        string[] sourceData = asset.ShockwaveSourceAliasName.Replace(Sprite + "_", "").Split('_');
+                        string sourceMember = Sprite + "_" + sourceData[0] + "_" + sourceData[1] + "_" + sourceData[2] + "_" + sourceData[3] + "_" + sourceData[4];
+
+                        var newAsset = new EliasAsset(this, asset.Node);
+                        newAsset.Parse();
+                        newAsset.IsMemberAlias = true;
+                        newAsset.ShockwaveAssetName = (member + "_0");
+                        newAsset.ShockwaveSourceAliasName = (sourceMember + "_0");
+                        Assets.Add(newAsset);
+
+                        //Console.WriteLine("Added to memberalias: (" + newAsset.ShockwaveAssetName + " => " + newAsset.ShockwaveSourceAliasName + ")");
+                    }
+                    else
+                    {
+                        //Console.WriteLine("Added source: " + (member + "_0"));
+      
+                        Bitmap bmp = new Bitmap(1, 1);
+                        bmp.Save(Path.Combine(IMAGE_PATH, (member + "_0") + ".png"), ImageFormat.Png);
+                        File.WriteAllText(Path.Combine(IMAGE_PATH, (member + "_0") + ".txt"), "0,0");
+                    }
+                }
             }
         }
 
