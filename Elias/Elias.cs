@@ -551,8 +551,18 @@ namespace EliasLibrary
             {
                 return;
             }
-      
-            var frames = xmlData.SelectNodes("//visualizationData/visualization[@size='" + (IsSmallFurni ? "32" : "64") + "']/animations/animation/animationLayer/frameSequence/frame");
+
+            XmlNodeList frames = null;
+
+            if (!IsDownscaled)
+            {
+                frames = xmlData.SelectNodes("//visualizationData/visualization[@size='" + (IsSmallFurni ? "32" : "64") + "']/animations/animation/animationLayer/frameSequence/frame");
+            }
+            else
+            {
+                frames = xmlData.SelectNodes("//visualizationData/visualization[@size='64']/animations/animation/animationLayer/frameSequence/frame");
+            }
+
             int highestAnimationLayer = 0;
 
             for (int i = 0; i < frames.Count; i++)
