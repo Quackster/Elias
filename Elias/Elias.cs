@@ -113,6 +113,13 @@ namespace EliasLibrary
                 GenerateAliases(true);
             }
 
+            if (IsDownscaled)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("WARNING: Downscaling small version for: " + Sprite);
+                Console.ResetColor();
+            }
+
             this.TryWriteIcon();
             this.GenerateShadows();
             this.CreateMemberalias();
