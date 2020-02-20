@@ -781,7 +781,7 @@ namespace EliasLibrary
             if (IsWallItem)
             {
                 // [#id: "window_diner", #classes: ["Item Object Class", "Item Object Extension Class", "Window Class"]]
-                File.WriteAllText(Path.Combine(CAST_PATH, "asset.index"), "[#id: \"" + ((this.IsSmallFurni ? "s_" : "") + this.Sprite) + "\", #classes: [\"Item Object Class\", \"Item Object Extension Class\", \"Window Class\"]]");
+                File.WriteAllText(Path.Combine(CAST_PATH, "asset.index"), "[#id: \"" + ((this.IsSmallFurni ? "s_" : "") + this.Sprite) + "\", #classes: [\"Item Object Class\", \"Item Object Extension Class\"]]");
             }
             else
             {

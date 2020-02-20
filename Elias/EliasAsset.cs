@@ -158,13 +158,6 @@ namespace EliasLibrary
                     y = int.Parse(attribute.InnerText);
             }
 
-            if (Elias.IsWallItem)
-            {
-                FlashRectanglePoint = new int[] { 0, 0 };
-                ShockwaveRectanglePoint = new int[] { 0, 0 };
-                return;
-            }
-
             FlashRectanglePoint = new int[] { x, y };
 
             if (Elias.IsWallItem)
