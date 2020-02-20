@@ -383,6 +383,9 @@ namespace EliasLibrary
                 if (eliasAsset.IsIcon)
                     continue;
 
+                if (eliasAsset.IsShadow)
+                    continue;
+
                 if (eliasAsset.ShockwaveSourceAliasName != null && eliasAsset.IsInverted())
                 {
                     stringBuilder.Append(eliasAsset.ShockwaveAssetName);
@@ -403,18 +406,55 @@ namespace EliasLibrary
                 if (eliasAsset.IsIcon)
                     continue;
 
+                if (eliasAsset.IsShadow)
+                    continue;
+
                 if (eliasAsset.ShockwaveSourceAliasName != null && !eliasAsset.IsInverted())
                 {
                     stringBuilder.Append(eliasAsset.ShockwaveAssetName);
                     stringBuilder.Append("=");
                     stringBuilder.Append(eliasAsset.ShockwaveSourceAliasName);
-
-                    if (eliasAsset.IsInverted())
-                    {
-                        stringBuilder.Append("*");
-                    }
-
                     stringBuilder.Append("\r");
+                }
+            }
+
+            foreach (var eliasAsset in Assets)
+            {
+                if (eliasAsset.IsShadow)
+                {
+                    if (eliasAsset.ShockwaveSourceAliasName != null && eliasAsset.IsInverted())
+                    {
+                        stringBuilder.Append(eliasAsset.ShockwaveAssetName);
+                        stringBuilder.Append("=");
+                        stringBuilder.Append(eliasAsset.ShockwaveSourceAliasName);
+
+                        if (eliasAsset.IsInverted())
+                        {
+                            stringBuilder.Append("*");
+                        }
+
+                        stringBuilder.Append("\r");
+                    }
+                }
+            }
+
+            foreach (var eliasAsset in Assets)
+            {
+                if (eliasAsset.IsShadow)
+                {
+                    if (eliasAsset.ShockwaveSourceAliasName != null && !eliasAsset.IsInverted())
+                    {
+                        stringBuilder.Append(eliasAsset.ShockwaveAssetName);
+                        stringBuilder.Append("=");
+                        stringBuilder.Append(eliasAsset.ShockwaveSourceAliasName);
+
+                        if (eliasAsset.IsInverted())
+                        {
+                            stringBuilder.Append("*");
+                        }
+
+                        stringBuilder.Append("\r");
+                    }
                 }
             }
 
@@ -491,6 +531,7 @@ namespace EliasLibrary
                 if (node.Attributes.GetNamedItem("ink") != null)//if (node.Attributes.GetNamedItem("alpha") != null)
                 {
                     secondSection += "#ink: 33, ";
+                    secondSection += "#transparent: 1, "; // Don't allow click
                 }
 
                 if (secondSection.Length > 0)
