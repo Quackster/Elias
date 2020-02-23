@@ -188,7 +188,6 @@ namespace EliasApp
                     }
                 }
 
-                var outputPath = Path.Combine(Path.GetDirectoryName(directorPath), "temp");
                 var cctPath = instance.GetString("output.path");
 
                 if (commandArguments.ContainsKey("-directory"))
@@ -228,7 +227,7 @@ namespace EliasApp
                     var sprite = Path.GetFileNameWithoutExtension(file);
                     var furniItem = ItemList.FirstOrDefault(item => item.FileName == sprite);
 
-                    ConvertFile(file, ffdecPath, outputPath, directorPath, cctPath);
+                    ConvertFile(file, ffdecPath, directorPath, cctPath);
                     UpdateTile();
                 }
 
@@ -296,7 +295,7 @@ namespace EliasApp
             }
         }
 
-        private static void ConvertFile(string file, string ffdecPath, string outputPath, string directorPath, string cctPath)
+        private static void ConvertFile(string file, string ffdecPath, string directorPath, string cctPath)
         {
             var sprite = Path.GetFileNameWithoutExtension(file);
             var furniItem = ItemList.FirstOrDefault(item => item.FileName == sprite);
@@ -325,11 +324,11 @@ namespace EliasApp
             {
                 Logging.Log(ConsoleColor.Blue, "Creating CCT: " + Path.GetFileNameWithoutExtension(file));
 
-                var elias = new EliasLibrary.Elias(isWallItem, sprite, file, X, Y, ffdecPath, outputPath, directorPath,
+                var elias = new EliasLibrary.Elias(isWallItem, sprite, file, X, Y, ffdecPath, directorPath,
                     Config.Instance.GetBoolean("generate.small.modern.furni"), 
                     Config.Instance.GetBoolean("generate.small.furni"));
 
-                SaveFiles(elias.Parse(), outputPath, cctPath);
+                SaveFiles(elias.Parse(), elias.OUTPUT_PATH, cctPath);
                 ConvertedFurniture.Add(file);
             }
             catch (Exception ex)

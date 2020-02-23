@@ -29,7 +29,7 @@ namespace EliasLibrary
         public string FFDEC_PATH;
         public string OUTPUT_PATH;
         public string DIRECTOR_PATH;
-
+        public string DIRECTOR_PROGRAM;
         public bool GenerateSmallModernFurni;
         public bool GenerateSmallFurni;
 
@@ -48,7 +48,7 @@ namespace EliasLibrary
             get { return Path.Combine(CAST_PATH, "images"); }
         }
 
-        public Elias(bool IsWallItem, string sprite, string fileName, int X, int Y, string FFDEC_PATH, string OUTPUT_PATH, string DIRECTOR_PATH, bool generateSmallModernFurni, bool generateSmallFurni)
+        public Elias(bool IsWallItem, string sprite, string fileName, int X, int Y, string FFDEC_PATH, string DIRECTOR_PATH, bool generateSmallModernFurni, bool generateSmallFurni)
         {
             this.IsWallItem = IsWallItem;
             this.Sprite = sprite;
@@ -57,8 +57,9 @@ namespace EliasLibrary
             this.Y = Y;
             this.FileDirectory = new FileInfo(this.FullFileName).DirectoryName;
             this.FFDEC_PATH = FFDEC_PATH;
-            this.OUTPUT_PATH = OUTPUT_PATH;
-            this.DIRECTOR_PATH = DIRECTOR_PATH;
+            this.DIRECTOR_PATH = new FileInfo(DIRECTOR_PATH).DirectoryName;
+            this.DIRECTOR_PROGRAM = new FileInfo(DIRECTOR_PATH).FullName;
+            this.OUTPUT_PATH = Path.Combine(this.DIRECTOR_PATH, "temp");
             this.Assets = new List<EliasAsset>();
             this.Symbols = new Dictionary<int, List<string>>();
 
@@ -262,8 +263,8 @@ namespace EliasLibrary
             catch { }
 
             var p = new Process();
-            p.StartInfo.WorkingDirectory = new FileInfo(DIRECTOR_PATH).DirectoryName;
-            p.StartInfo.FileName = DIRECTOR_PATH;
+            p.StartInfo.WorkingDirectory = DIRECTOR_PATH;
+            p.StartInfo.FileName = DIRECTOR_PROGRAM;
             p.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
             p.StartInfo.CreateNoWindow = true;
             p.Start();
