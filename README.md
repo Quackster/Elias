@@ -1,4 +1,4 @@
-**Elias**
+***Elias***
 
 I started this project about two weeks ago to convert early Flash furniture (2010-2012, for example) to cast files that work on the Shockwave client. It took me five entire days to write this and perfect it, including all animations, shadows, icons to convert perfectly to a .cct file. The whole point of this is to do fully automated furniture conversion without needing to touch a single thing.
 
@@ -39,11 +39,11 @@ Here's an example with doing the entire furniture of Celestial, with small gener
 
 **Command Arguments**
 
--directory "<folder path>"
+-directory "\<folder path>"
 
 The directory to parse every possible .swf inside.
 
--cct "<file path>"
+-cct "\<file path>"
 
 The file path to a single file to parse.
 
