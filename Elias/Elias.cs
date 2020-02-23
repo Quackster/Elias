@@ -553,6 +553,9 @@ namespace EliasLibrary
                     }
                 }
 
+                if (layerData.ContainsKey(Convert.ToString(letter)))
+                    layerData.Remove(Convert.ToString(letter));
+
                 layerData.Add(Convert.ToString(letter), secondSection);
                 //sections.Add(string.Format(firstSection, secondSection));
             }
