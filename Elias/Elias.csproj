@@ -53,6 +53,7 @@
     <Compile Include="EliasDirection.cs" />
     <Compile Include="EliasFrame.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utilities\ILogging.cs" />
     <Compile Include="Utilities\ImageAssetUtil.cs" />
     <Compile Include="Utilities\AssetUtil.cs" />
     <Compile Include="Utilities\BinaryDataUtil.cs" />

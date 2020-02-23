@@ -36,6 +36,8 @@ namespace EliasLibrary
         public Dictionary<int, List<string>> Symbols;
         public List<EliasAsset> Assets;
 
+        public ILogging Logging;
+
         public string CAST_PATH
         {
             get { return Path.Combine(OUTPUT_PATH, "cast_data"); }
@@ -115,9 +117,7 @@ namespace EliasLibrary
 
             if (IsDownscaled)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("WARNING: Downscaling small version for: " + Sprite);
-                Console.ResetColor();
+                Logging.Log(ConsoleColor.Red, "WARNING: Downscaling small version for: " + Sprite);
             }
 
             this.TryWriteIcon();

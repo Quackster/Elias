@@ -76,10 +76,17 @@ namespace EliasApp
 
     class Program
     {
+        private static EliasLogging Logging;
         private static List<FurniItem> ItemList = new List<FurniItem>();
+
+        private static List<string> QueuedFurniture = new List<string>();
+        private static List<string> ConvertedFurniture = new List<string>();
 
         static void Main(string[] args)
         {
+            UpdateTile();
+            Logging = new EliasLogging();
+
             var instance = Config.Instance;
 
             if (args.Length == 0)
@@ -123,9 +130,7 @@ namespace EliasApp
 
                 if (!File.Exists(furnidataPath))
                 {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Furnidata doesn't exist, check your paths!");
-                    Console.ResetColor();
+                    Logging.Log(ConsoleColor.Red, "Furnidata doesn't exist, check your paths!");
 
                     if (!instance.GetBoolean("close.when.finished"))
                         Console.Read();
@@ -135,9 +140,7 @@ namespace EliasApp
 
                 if (!File.Exists(ffdecPath))
                 {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("FFDEC doesn't exist, check your paths!");
-                    Console.ResetColor();
+                    Logging.Log(ConsoleColor.Red, "FFDEC doesn't exist, check your paths!");
 
                     if (!instance.GetBoolean("close.when.finished"))
                         Console.Read();
@@ -147,9 +150,7 @@ namespace EliasApp
 
                 if (!File.Exists(directorPath))
                 {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Director doesn't exist, check your paths!");
-                    Console.ResetColor();
+                    Logging.Log(ConsoleColor.Red, "Director doesn't exist, check your paths!");
 
                     if (!instance.GetBoolean("close.when.finished"))
                         Console.Read();
@@ -157,16 +158,17 @@ namespace EliasApp
                     return;
                 }
 
-                Console.WriteLine("Elias by Quackster");
-                Console.WriteLine("");
-                Console.WriteLine("Thanks to:");
-                Console.WriteLine("- Sefhriloff");
-                Console.WriteLine("");
-                Console.WriteLine("Written in Feburary 2020");
+                Logging.Log(ConsoleColor.Gray, "prjElias");
+                Logging.Log(ConsoleColor.Gray, "");
+                Logging.Log(ConsoleColor.Gray, "THE FREE AND OPEN SOURCE .SWF TO .CCT CONVERTER");
+                Logging.Log(ConsoleColor.Gray, "COPYRIGHT (C) 2020 - QUACKSTER");
+                Logging.Log(ConsoleColor.Gray, "");
+                Logging.Log(ConsoleColor.Gray, "Shoutout to:");
+                Logging.Log(ConsoleColor.Gray, "- Sefhriloff");
+                Logging.Log(ConsoleColor.Gray, "");
+                Logging.Log(ConsoleColor.Gray, "Written in Feburary 2020");
 
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine("Reading furnidata supplied...");
-                Console.ResetColor();
+                Logging.Log(ConsoleColor.Yellow, "Reading furnidata supplied...");
 
                 var furnidataExtension = Path.GetExtension(furnidataPath);
 
@@ -192,36 +194,45 @@ namespace EliasApp
                 if (commandArguments.ContainsKey("-directory"))
                 {
                     var directory = commandArguments["-directory"];
-
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.Write("Reading directory: ");
-                    Console.ResetColor();
-                    Console.WriteLine(directory);
+                    Logging.Log(ConsoleColor.Green, "Reading directory: " + directory);
 
                     foreach (var file in Directory.GetFiles(directory, "*.swf"))
                     {
-                        Console.ForegroundColor = ConsoleColor.Blue;
-                        Console.Write("Creating CCT: ");
-                        Console.ResetColor();
-                        Console.WriteLine(Path.GetFileNameWithoutExtension(file));
-
-                        ConvertFile(file, ffdecPath, outputPath, directorPath, cctPath);
+                        QueuedFurniture.Add(file);
+                        //ConvertFile(file, ffdecPath, outputPath, directorPath, cctPath);
                     }
                 }
                 else if (commandArguments.ContainsKey("-cct"))
                 {
                     var file = commandArguments["-cct"];
-                    var sprite = Path.GetFileNameWithoutExtension(file);
-
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.Write("Reading file: ");
-                    Console.ResetColor();
-                    Console.WriteLine(file);
-
-                    ConvertFile(file, ffdecPath, outputPath, directorPath, cctPath);
+                    QueuedFurniture.Add(file);
+                    //ConvertFile(file, ffdecPath, outputPath, directorPath, cctPath);
                 }
 
-                Console.WriteLine("Done!");
+                foreach (var file in QueuedFurniture.ToArray())
+                {
+                    var sprite = Path.GetFileNameWithoutExtension(file);
+                    var furniItem = ItemList.FirstOrDefault(item => item.FileName == sprite);
+
+                    if (furniItem == null)
+                    {
+                        Logging.Log(ConsoleColor.Red, "No furnidata entry found for item: " + sprite);
+                        QueuedFurniture.Remove(file);
+                    }
+                }
+
+                UpdateTile();
+
+                foreach (var file in QueuedFurniture)
+                {
+                    var sprite = Path.GetFileNameWithoutExtension(file);
+                    var furniItem = ItemList.FirstOrDefault(item => item.FileName == sprite);
+
+                    ConvertFile(file, ffdecPath, outputPath, directorPath, cctPath);
+                    UpdateTile();
+                }
+
+                Logging.Log(ConsoleColor.DarkGreen, "Done!");
             }
             catch (Exception ex)
             {
@@ -231,6 +242,11 @@ namespace EliasApp
 
             if (!Config.Instance.GetBoolean("close.when.finished"))
                 Console.Read();
+        }
+
+        private static void UpdateTile()
+        {
+            Console.Title = string.Format("prjElias - Converted {0} out of {1} furniture", ConvertedFurniture.Count, QueuedFurniture.Count);
         }
 
         private static void ParseFurnidataXML(string furnidataPath)
@@ -291,14 +307,12 @@ namespace EliasApp
 
             if (furniItem == null)
             {
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.Write("No furnidata entry found for item: ");
-                Console.ResetColor();
-                Console.WriteLine(sprite);
-
-                Console.ForegroundColor = ConsoleColor.DarkYellow;
-                Console.WriteLine("Assuming item is a 1x1 floor item.");
-                Console.ResetColor();
+                /*
+                Logging.Log(ConsoleColor.Yellow, "No furnidata entry found for item: " + sprite);
+                Logging.Log(ConsoleColor.DarkYellow, "Assuming item is a 1x1 floor item.");
+                */
+                //Logging.Log(ConsoleColor.Red, "No furnidata entry found for item: " + sprite);
+                return;
             }
             else
             {
@@ -309,11 +323,14 @@ namespace EliasApp
 
             try
             {
+                Logging.Log(ConsoleColor.Blue, "Creating CCT: " + Path.GetFileNameWithoutExtension(file));
+
                 var elias = new EliasLibrary.Elias(isWallItem, sprite, file, X, Y, ffdecPath, outputPath, directorPath,
                     Config.Instance.GetBoolean("generate.small.modern.furni"), 
                     Config.Instance.GetBoolean("generate.small.furni"));
 
                 SaveFiles(elias.Parse(), outputPath, cctPath);
+                ConvertedFurniture.Add(file);
             }
             catch (Exception ex)
             {
@@ -324,10 +341,7 @@ namespace EliasApp
 
         private static void SaveFiles(IEnumerable<string> outputFiles, string outputPath, string cctPath)
         {
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.Write("Saving files to disk: ");
-            Console.ResetColor();
-            Console.WriteLine(string.Join(", ", outputFiles));
+            Logging.Log(ConsoleColor.Cyan, "Saving files to disk: " + string.Join(", ", outputFiles));
 
             foreach (var castFile in outputFiles)
             {
