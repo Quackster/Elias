@@ -95,8 +95,8 @@ namespace EliasLibrary
             this.IsSmallFurni = true;
 
             this.TryCleanup(true);
-            this.GenerateAliases();
             this.ReadSymbolClass();
+            this.GenerateAliases();
 
             if (this.Assets.Count(asset => asset.FlashAssetName != null && asset.FlashAssetName.Contains("_32_")) == 0)
             {
