@@ -92,13 +92,13 @@ namespace EliasLibrary
             if (!GenerateSmallFurni)
                 return filesWritten.ToArray();
 
-            this.Assets.Clear();
-            this.Symbols.Clear();
-
             this.IsSmallFurni = true;
 
-            if (this.Assets.Count(asset => asset.FlashAssetName != null && asset.FlashAssetName.Contains("_32_")) == 0)
+            if (!this.ContainsSmallFurni())
             {
+                this.Assets.Clear();
+                this.Symbols.Clear();
+
                 if (!GenerateSmallModernFurni)
                     return filesWritten.ToArray();
 
@@ -127,6 +127,9 @@ namespace EliasLibrary
             }
             else
             {
+                this.Assets.Clear();
+                this.Symbols.Clear();
+
                 TryCleanup(true);
                 ReadSymbolClass();
                 GenerateAliases();
@@ -141,6 +144,31 @@ namespace EliasLibrary
                 filesWritten.Add("hh_furni_xx_s_" + Sprite + ".cct");
             }
             return filesWritten.ToArray();
+        }
+
+        private bool ContainsSmallFurni()
+        {
+            var xmlData = BinaryDataUtil.SolveFile(this.OUTPUT_PATH, "assets");
+
+            if (xmlData == null)
+            {
+                return false;
+            }
+
+            var assets = xmlData.SelectSingleNode("//assets");
+
+            for (int i = 0; i < assets.ChildNodes.Count; i++)
+            {
+                var node = assets.ChildNodes.Item(i);
+
+                if (node == null)
+                    continue;
+
+                if (node.OuterXml.Contains("_32_"))
+                    return true;
+            }
+
+            return false;
         }
 
         private void GenerateAliases(bool isDownscaled = false)
