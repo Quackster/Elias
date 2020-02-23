@@ -42,6 +42,7 @@ namespace EliasApp.Utilities
             _configValues["generate.small.modern.furni"] = xmlDoc.SelectSingleNode("//configuration/small_furni/generate_modern").InnerText;
             _configValues["generate.small.furni"] = xmlDoc.SelectSingleNode("//configuration/small_furni/generate").InnerText;
             _configValues["save.as.cst"] = xmlDoc.SelectSingleNode("//configuration/options/save_as_cst").InnerText;
+            _configValues["close.when.finished"] = xmlDoc.SelectSingleNode("//configuration/options/close_when_finished").InnerText;
         }
 
         /// <summary>
@@ -93,6 +94,10 @@ namespace EliasApp.Utilities
             xmlWriter.WriteString("true");
             xmlWriter.WriteEndElement();
 
+            xmlWriter.WriteStartElement("close_when_finished");
+            xmlWriter.WriteString("false");
+            xmlWriter.WriteEndElement();
+
             xmlWriter.WriteEndElement();
 
             xmlWriter.WriteEndElement();
@@ -122,6 +127,16 @@ namespace EliasApp.Utilities
             int number = 0;
             int.TryParse(GetString(key), out number);
             return number;
+        }
+
+        /// <summary>
+        /// Get boolean by key
+        /// </summary>
+        /// <param name="key">the key</param>
+        /// <returns>the boolean</returns>
+        internal bool GetBoolean(string key)
+        {
+            return GetString(key).ToLower() == "true";
         }
     }
 }

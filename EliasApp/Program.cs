@@ -4,6 +4,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.IO;
+using System.Xml;
 
 namespace EliasApp
 {
@@ -28,6 +29,20 @@ namespace EliasApp
         }
 
         public bool Ignore;
+
+        public FurniItem()
+        {
+            this.Type = "";
+            this.SpriteId = 0;
+            this.FileName = "";
+            this.Revision = "";
+            this.Unknown = "";
+            this.Length = 0;
+            this.Width = 0;
+            this.Colour = "";
+            this.Name = "";
+            this.Description = "";
+        }
 
         public FurniItem(string[] data)
         {
@@ -65,13 +80,15 @@ namespace EliasApp
 
         static void Main(string[] args)
         {
+            var instance = Config.Instance;
+
             if (args.Length == 0)
             {
                 Console.WriteLine("No arguments supplied");
 
-#if DEBUG
-            Console.Read();
-#endif
+                if (!Config.Instance.GetBoolean("close.when.finished"))
+                    Console.Read();
+
                 return;
             }
 
@@ -93,15 +110,16 @@ namespace EliasApp
                 catch
                 {
                     Console.WriteLine("Invalid argument parameters!");
-#if DEBUG
-                    Console.Read();
-#endif
+
+                    if (!instance.GetBoolean("close.when.finished"))
+                        Console.Read();
+
                     return;
                 }
 
-                var furnidataPath = Config.Instance.GetString("furnidata.path");
-                var ffdecPath = Config.Instance.GetString("ffdec.path");
-                var directorPath = Config.Instance.GetString("elias.cct.converter.app");
+                var furnidataPath = instance.GetString("furnidata.path");
+                var ffdecPath = instance.GetString("ffdec.path");
+                var directorPath = instance.GetString("elias.cct.converter.app");
 
                 if (!File.Exists(furnidataPath))
                 {
@@ -109,9 +127,9 @@ namespace EliasApp
                     Console.WriteLine("Furnidata doesn't exist, check your paths!");
                     Console.ResetColor();
 
-#if DEBUG
-                    Console.Read();
-#endif
+                    if (!instance.GetBoolean("close.when.finished"))
+                        Console.Read();
+
                     return;
                 }
 
@@ -121,9 +139,9 @@ namespace EliasApp
                     Console.WriteLine("FFDEC doesn't exist, check your paths!");
                     Console.ResetColor();
 
-#if DEBUG
-                    Console.Read();
-#endif
+                    if (!instance.GetBoolean("close.when.finished"))
+                        Console.Read();
+
                     return;
                 }
 
@@ -133,9 +151,9 @@ namespace EliasApp
                     Console.WriteLine("Director doesn't exist, check your paths!");
                     Console.ResetColor();
 
-#if DEBUG
-                    Console.Read();
-#endif
+                    if (!instance.GetBoolean("close.when.finished"))
+                        Console.Read();
+
                     return;
                 }
 
@@ -150,17 +168,26 @@ namespace EliasApp
                 Console.WriteLine("Reading furnidata supplied...");
                 Console.ResetColor();
 
-                var officialFileContents = File.ReadAllText(furnidataPath);
-                officialFileContents = officialFileContents.Replace("]]\n[[", "],[");
-                var officialFurnidataList = JsonConvert.DeserializeObject<List<string[]>>(officialFileContents);
+                var furnidataExtension = Path.GetExtension(furnidataPath);
 
-                foreach (var stringArray in officialFurnidataList)
+                if (furnidataExtension == ".xml")
                 {
-                    ItemList.Add(new FurniItem(stringArray));
+                    ParseFurnidataXML(furnidataPath);
+                }
+                else
+                {
+                    var officialFileContents = File.ReadAllText(furnidataPath);
+                    officialFileContents = officialFileContents.Replace("]]\n[[", "],[");
+                    var officialFurnidataList = JsonConvert.DeserializeObject<List<string[]>>(officialFileContents);
+
+                    foreach (var stringArray in officialFurnidataList)
+                    {
+                        ItemList.Add(new FurniItem(stringArray));
+                    }
                 }
 
                 var outputPath = Path.Combine(Path.GetDirectoryName(directorPath), "temp");
-                var cctPath = Config.Instance.GetString("output.path");
+                var cctPath = instance.GetString("output.path");
 
                 if (commandArguments.ContainsKey("-directory"))
                 {
@@ -202,9 +229,55 @@ namespace EliasApp
                 ErrorLogging(ex, "[no furni]");
             }
 
-#if DEBUG
-            Console.Read();
-#endif
+            if (!Config.Instance.GetBoolean("close.when.finished"))
+                Console.Read();
+        }
+
+        private static void ParseFurnidataXML(string furnidataPath)
+        {
+            XmlDocument xmlDoc = new XmlDocument();
+            xmlDoc.Load(furnidataPath);
+
+            var floorTypes = xmlDoc.SelectNodes("//furnidata/roomitemtypes/furnitype");
+            var floorItems = floorTypes.Count;
+
+            for (int i = 0; i < floorItems; i++)
+            {
+                var itemNode = floorTypes.Item(i);
+
+                if (itemNode.Attributes.GetNamedItem("classname") == null)
+                    continue;
+
+                var className = itemNode.Attributes.GetNamedItem("classname").InnerText;
+
+                var length = itemNode.ChildNodes.Item(2).InnerText;
+                var width = itemNode.ChildNodes.Item(3).InnerText;
+
+                FurniItem furniItem = new FurniItem();
+                furniItem.Length = int.Parse(length);
+                furniItem.Width = int.Parse(width);
+                furniItem.Type = "S";
+                furniItem.FileName = className;
+                ItemList.Add(furniItem);
+            }
+
+            var wallTypes = xmlDoc.SelectNodes("//furnidata/wallitemtypes/furnitype");
+            var wallItems = wallTypes.Count;
+
+            for (int i = 0; i < wallItems; i++)
+            {
+                var itemNode = wallTypes.Item(i);
+
+                if (itemNode.Attributes.GetNamedItem("classname") == null)
+                    continue;
+
+                var className = itemNode.Attributes.GetNamedItem("classname").InnerText;
+
+                FurniItem furniItem = new FurniItem();
+                furniItem.Type = "I";
+                furniItem.FileName = className;
+                ItemList.Add(furniItem);
+            }
         }
 
         private static void ConvertFile(string file, string ffdecPath, string outputPath, string directorPath, string cctPath)
@@ -237,8 +310,8 @@ namespace EliasApp
             try
             {
                 var elias = new EliasLibrary.Elias(isWallItem, sprite, file, X, Y, ffdecPath, outputPath, directorPath,
-                    Config.Instance.GetString("generate.small.modern.furni").ToLower() == "true", 
-                    Config.Instance.GetString("generate.small.furni") == "true");
+                    Config.Instance.GetBoolean("generate.small.modern.furni"), 
+                    Config.Instance.GetBoolean("generate.small.furni"));
 
                 SaveFiles(elias.Parse(), outputPath, cctPath);
             }
@@ -261,7 +334,7 @@ namespace EliasApp
                 var newFilePath = Path.Combine(outputPath, castFile);
                 var castFilePath = Path.Combine(cctPath, castFile);
 
-                if (Config.Instance.GetString("save.as.cst").ToLower() == "true")
+                if (Config.Instance.GetBoolean("save.as.cst"))
                 {
                     castFilePath = castFilePath.Replace(".cct", ".cst");/*.ToCharArray());
                     castFilePath = castFilePath + ".cst";*/
