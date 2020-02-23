@@ -73,3 +73,8 @@ If 'save_as_cst' is set to true, it will save as .cst instead of .cct.
 </configuration>
 ```
 
+##
+
+See also:
+
+Director MX 2004 to open .cst files: https://archive.org/details/director_mx_2004
