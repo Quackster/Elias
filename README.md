@@ -31,7 +31,7 @@ Here's an example with doing the entire furniture of Celestial, with small gener
 
 ![](https://i.imgur.com/VRjDUPd.png)
 
-![](https://i.imgur.com/6ujTmdM.gif)
+![](https://i.imgur.com/HYMScyu.gif)
 
 ## Command Arguments
 
