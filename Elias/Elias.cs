@@ -96,10 +96,6 @@ namespace EliasLibrary
 
             this.IsSmallFurni = true;
 
-            this.TryCleanup(true);
-            this.ReadSymbolClass();
-            this.GenerateAliases();
-
             if (this.Assets.Count(asset => asset.FlashAssetName != null && asset.FlashAssetName.Contains("_32_")) == 0)
             {
                 if (!GenerateSmallModernFurni)
@@ -111,24 +107,38 @@ namespace EliasLibrary
                 BinaryDataUtil.ReplaceFiles(this.OUTPUT_PATH, "_64_", "_32_");
                 BinaryDataUtil.DownscaleImages(this.OUTPUT_PATH);
 
+                TryCleanup(true);
                 ReadSymbolClass();
                 GenerateAliases(true);
-            }
 
-            if (IsDownscaled)
+                if (IsDownscaled)
+                {
+                    Logging.Log(ConsoleColor.Red, "WARNING: Downscaling small version for: " + Sprite);
+                }
+
+                TryWriteIcon();
+                GenerateShadows();
+                CreateMemberalias();
+                GenerateProps();
+                GenerateAssetIndex();
+                GenerateAnimations();
+                RunEliasDirector();
+            }
+            else
             {
-                Logging.Log(ConsoleColor.Red, "WARNING: Downscaling small version for: " + Sprite);
+                TryCleanup(true);
+                ReadSymbolClass();
+                GenerateAliases();
+                TryWriteIcon();
+                GenerateShadows();
+                CreateMemberalias();
+                GenerateProps();
+                GenerateAssetIndex();
+                GenerateAnimations();
+                RunEliasDirector();
+
+                filesWritten.Add("hh_furni_xx_s_" + Sprite + ".cct");
             }
-
-            this.TryWriteIcon();
-            this.GenerateShadows();
-            this.CreateMemberalias();
-            this.GenerateProps();
-            this.GenerateAssetIndex();
-            this.GenerateAnimations();
-            this.RunEliasDirector();
-
-            filesWritten.Add("hh_furni_xx_s_" + Sprite + ".cct");
             return filesWritten.ToArray();
         }
 
@@ -467,7 +477,6 @@ namespace EliasLibrary
             var xmlData = BinaryDataUtil.SolveFile(this.OUTPUT_PATH, "visualization");
 
             Dictionary<int, int> shiftValues = new Dictionary<int, int>();
-            List<string> sections = new List<string>();
 
             if (xmlData == null)
             {
@@ -475,15 +484,20 @@ namespace EliasLibrary
             }
 
             XmlNodeList layers = null;
+            string prefix = "";
 
             if (!IsDownscaled)
             {
-                layers = xmlData.SelectNodes("//visualizationData/visualization[@size='" + (IsSmallFurni ? "32" : "64") + "']/layers/layer");
+                prefix = "//visualizationData/visualization[@size='" + (IsSmallFurni ? "32" : "64") + "']";
+                layers = xmlData.SelectNodes(prefix + "/layers/layer");
             }
             else
             {
-                layers = xmlData.SelectNodes("//visualizationData/visualization[@size='64']/layers/layer");
+                prefix = "//visualizationData/visualization[@size='64']";
+                layers = xmlData.SelectNodes(prefix + "/layers/layer");
             }
+
+            Dictionary<string, string> layerData = new Dictionary<string, string>();
 
             for (int i = 0; i < layers.Count; i++)
             {
@@ -505,8 +519,7 @@ namespace EliasLibrary
                 }
 
                 char letter = alphabet[int.Parse(node.Attributes.GetNamedItem("id").InnerText)];
-
-                string firstSection = "\"" + letter + "\": [{0}]";
+                //string firstSection = "\"" + letter + "\": [{0}]";
                 string secondSection = "";
 
                 if (node.Attributes.GetNamedItem("z") != null)
@@ -518,7 +531,10 @@ namespace EliasLibrary
                     else
                         shiftValues[z] = shiftValues[z] - 1;
 
-                    secondSection += "#zshift: [" + shiftValues[z] + "], ";
+                    if (xmlData.SelectNodes(prefix + "/directions/direction/layer[@id='" + node.Attributes.GetNamedItem("id").InnerText + "']").Count == 0)
+                    {
+                        secondSection += "#zshift: [" + shiftValues[z] + "], ";
+                    }
                 }
 
                 if (node.Attributes.GetNamedItem("alpha") != null && node.Attributes.GetNamedItem("ink") == null)//if (node.Attributes.GetNamedItem("alpha") != null)
@@ -530,20 +546,15 @@ namespace EliasLibrary
 
                 if (node.Attributes.GetNamedItem("ink") != null)//if (node.Attributes.GetNamedItem("alpha") != null)
                 {
-                    secondSection += "#ink: 33, ";
-                    secondSection += "#transparent: 1, "; // Don't allow click
+                    if (node.Attributes.GetNamedItem("ink").InnerText != "COPY")
+                    {
+                        secondSection += "#ink: 33, ";
+                        secondSection += "#transparent: 1, "; // Don't allow click
+                    }
                 }
 
-                if (secondSection.Length > 0)
-                {
-                    secondSection = secondSection.TrimEnd(", ".ToCharArray());
-                }
-                else
-                {
-                    secondSection = ":";
-                }
-
-                sections.Add(string.Format(firstSection, secondSection));
+                layerData.Add(Convert.ToString(letter), secondSection);
+                //sections.Add(string.Format(firstSection, secondSection));
             }
 
             var directions = new Dictionary<string, EliasDirection>();
@@ -589,11 +600,43 @@ namespace EliasLibrary
             var j = 0;
             foreach (var zData in directions)
             {
-                sections.Add("\"" + zData.Key + "\": [#zshift: [" + zData.Value.Props + "]]" + ((j + 1 < directions.Count) ? ", " : ""));
+                string letter = zData.Key;
+
+                if (!layerData.ContainsKey(letter))
+                {
+                    layerData.Add(letter, "");
+                }
+
+                layerData[letter] += "#zshift: [" + zData.Value.Props + "], ";
+                //sections.Add("\"" + zData.Key + "\": [#zshift: [" + zData.Value.Props + "]]" + ((j + 1 < directions.Count) ? ", " : ""));
                 j++;
             }
 
-            File.WriteAllText(Path.Combine(CAST_PATH, ((this.IsSmallFurni ? "s_" : "") + this.Sprite) + ".props"), sections.Count > 0 ? "[" + string.Join(", ", sections) + "]" : "");
+            StringBuilder output = new StringBuilder();
+
+            if (layerData.Count > 0)
+            {
+                output.Append("[");
+
+                int k = 0;
+                foreach (var layer in layerData)
+                {
+                    output.Append("\"" + layer.Key + "\": ");
+                    output.Append("[" + (layer.Value.Length >= 2 ? layer.Value.Substring(0, layer.Value.Length - 2) : ":") + "]");
+
+                    if (layerData.Count - 1 > k)
+                    {
+                        output.Append(", ");
+                    }
+
+                    k++;
+                }
+
+                output.Append("]");
+            }
+
+            File.WriteAllText(Path.Combine(CAST_PATH, ((this.IsSmallFurni ? "s_" : "") + this.Sprite) + ".props"), output.ToString());
+            //File.WriteAllText(Path.Combine(CAST_PATH, ((this.IsSmallFurni ? "s_" : "") + this.Sprite) + ".props"), sections.Count > 0 ? "[" + string.Join(", ", sections) + "]" : "");
         }
 
         private void GenerateAnimations()
