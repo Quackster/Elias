@@ -6,7 +6,7 @@ It's called Elias because it's from the word 'alias' and the file memberalias.in
 
 This project consists of three other executables to complete the conversion process. The first is JPEXS to export all assets, the second is swfmill to export the SymbolClass (so we know which images are duplicates) and the last is a project file I've written entirely in Lingo and is a Macromedia projector (don't panic it's just just a simple .exe) which reads all images in a directory and spits out a .cct file since there's no third party library to create .cct files.
 
-## Features**
+## Features
 =======
 
 - Converts furniture icon.
@@ -44,7 +44,7 @@ The directory to parse every possible .swf inside.
 
 The file path to a single file to parse.
 
-## Configuration**
+## Configuration
 
 Here's an example configuration. JPEXS (listed as FFDec) is required. The converter path is a link to the Elias projector file written in Adobe Shockwave Lingo language. The furnidata can either be furnidata.xml or traditional furnidata.txt, it will detect either by the file extension.
 
