@@ -211,7 +211,7 @@ namespace EliasApp
                 foreach (var file in QueuedFurniture.ToArray())
                 {
                     var sprite = Path.GetFileNameWithoutExtension(file);
-                    var furniItem = ItemList.FirstOrDefault(item => item.FileName == sprite);
+                    var furniItem = ResolveFurni(sprite);
 
                     if (furniItem == null)
                     {
@@ -225,7 +225,6 @@ namespace EliasApp
                 foreach (var file in QueuedFurniture)
                 {
                     var sprite = Path.GetFileNameWithoutExtension(file);
-                    var furniItem = ItemList.FirstOrDefault(item => item.FileName == sprite);
 
                     ConvertFile(file, ffdecPath, directorPath, cctPath);
                     UpdateTile();
@@ -298,7 +297,7 @@ namespace EliasApp
         private static void ConvertFile(string file, string ffdecPath, string directorPath, string cctPath)
         {
             var sprite = Path.GetFileNameWithoutExtension(file);
-            var furniItem = ItemList.FirstOrDefault(item => item.FileName == sprite);
+            var furniItem = ResolveFurni(sprite);
 
             int X = 1;
             int Y = 1;
@@ -325,7 +324,7 @@ namespace EliasApp
                 Logging.Log(ConsoleColor.Blue, "Creating CCT: " + Path.GetFileNameWithoutExtension(file));
 
                 var elias = new EliasLibrary.Elias(isWallItem, sprite, file, X, Y, ffdecPath, directorPath,
-                    Config.Instance.GetBoolean("generate.small.modern.furni"), 
+                    Config.Instance.GetBoolean("generate.small.modern.furni"),
                     Config.Instance.GetBoolean("generate.small.furni"));
 
                 SaveFiles(elias.Parse(), elias.OUTPUT_PATH, cctPath);
@@ -336,6 +335,37 @@ namespace EliasApp
                 WriteError(ex.ToString());
                 ErrorLogging(ex, sprite);
             }
+        }
+
+        private static FurniItem ResolveFurni(string sprite)
+        {
+            FurniItem furniItem = ItemList.FirstOrDefault(item => item.FileName == sprite);
+
+            if (furniItem == null && sprite.EndsWith("_cmp"))
+                furniItem = ItemList.FirstOrDefault(item => item.FileName == sprite.Remove(sprite.Length - "_cmp".Length));
+
+            if (furniItem == null && sprite.EndsWith("cmp"))
+                furniItem = ItemList.FirstOrDefault(item => item.FileName == sprite.Remove(sprite.Length - "cmp".Length));
+
+            if (furniItem == null && sprite.EndsWith("camp"))
+                furniItem = ItemList.FirstOrDefault(item => item.FileName == sprite.Remove(sprite.Length - "camp".Length));
+
+            if (furniItem == null && sprite.EndsWith("_camp"))
+                furniItem = ItemList.FirstOrDefault(item => item.FileName == sprite.Remove(sprite.Length - "_camp".Length));
+
+            if (furniItem == null && sprite.EndsWith("c"))
+                furniItem = ItemList.FirstOrDefault(item => item.FileName == sprite.Remove(sprite.Length - "c".Length));
+
+            if (furniItem == null && sprite.EndsWith("_c"))
+                furniItem = ItemList.FirstOrDefault(item => item.FileName == sprite.Remove(sprite.Length - "_c".Length));
+
+            if (furniItem == null && sprite.EndsWith("campaign"))
+                furniItem = ItemList.FirstOrDefault(item => item.FileName == sprite.Remove(sprite.Length - "campaign".Length));
+
+            if (furniItem == null && sprite.EndsWith("_campaign"))
+                furniItem = ItemList.FirstOrDefault(item => item.FileName == sprite.Remove(sprite.Length - "_campaign".Length));
+
+            return furniItem;
         }
 
         private static void SaveFiles(IEnumerable<string> outputFiles, string outputPath, string cctPath)
