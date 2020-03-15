@@ -358,9 +358,9 @@ namespace EliasLibrary
                     Directory.CreateDirectory(this.IMAGE_PATH);
                 }
             }
-            catch
+            catch (Exception ex)
             {
-
+                //Console.WriteLine(ex);
             }
             finally
             {

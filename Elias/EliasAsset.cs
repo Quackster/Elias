@@ -167,6 +167,7 @@ namespace EliasLibrary
                 {
                     var bitmap = Bitmap.FromFile(flashFile);
                     x = bitmap.Width - x;
+                    bitmap.Dispose();
                 }
             }
 
@@ -302,6 +303,7 @@ namespace EliasLibrary
                         {
                             Bitmap bmp = new Bitmap(1, 1);
                             bmp.Save(Path.Combine(Elias.OUTPUT_PATH, "images", FlashSourceAliasName + ".png"), ImageFormat.Png);
+                            bmp.Dispose();
                         }
                     }
                 }
@@ -324,6 +326,7 @@ namespace EliasLibrary
                         var bitmap1 = (Bitmap)Bitmap.FromFile(newPath);
                         bitmap1.RotateFlip(RotateFlipType.Rotate180FlipY);
                         bitmap1.Save(newPath);
+                        bitmap1.Dispose();
                     }
                 }
             }
