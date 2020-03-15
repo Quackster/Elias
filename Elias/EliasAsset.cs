@@ -17,6 +17,7 @@ namespace EliasLibrary
         public bool IsIcon;
         public bool IsShadow;
         public bool IsMemberAlias;
+        public bool FlipX;
 
         public string FlashAssetName;
         public string ShockwaveAssetName;
@@ -92,11 +93,11 @@ namespace EliasLibrary
 
             if (icon != null)
             {
-               /* Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.Write("Writing icon: ");
-                Console.ResetColor();
-                Console.WriteLine(iconName);
-                */
+                /* Console.ForegroundColor = ConsoleColor.Yellow;
+                 Console.Write("Writing icon: ");
+                 Console.ResetColor();
+                 Console.WriteLine(iconName);
+                 */
                 File.WriteAllText(Path.Combine(Elias.IMAGE_PATH, iconName + ".txt"), ShockwaveRectanglePoint[0] + "," + ShockwaveRectanglePoint[1]);
 
                 var iconDestination = Path.Combine(Elias.IMAGE_PATH, iconName + ".png");
@@ -156,6 +157,17 @@ namespace EliasLibrary
 
                 if (attribute.Name == "y")
                     y = int.Parse(attribute.InnerText);
+            }
+
+            if (FlipX)
+            {
+                var flashFile = ImageAssetUtil.SolveFile(Elias.OUTPUT_PATH, FlashAssetName);
+
+                if (flashFile != null)
+                {
+                    var bitmap = Bitmap.FromFile(flashFile);
+                    x = bitmap.Width - x;
+                }
             }
 
             FlashRectanglePoint = new int[] { x, y };
@@ -222,7 +234,7 @@ namespace EliasLibrary
                             var symbolAsset = Elias.Assets.FirstOrDefault(asset => asset.FlashAssetName == symbolFileName && FlashRectanglePoint[0] == asset.FlashRectanglePoint[0]
                                 && FlashRectanglePoint[1] == asset.FlashRectanglePoint[1]);
 
-                           if (symbolAsset != null)
+                            if (symbolAsset != null)
                             {
                                 IsMemberAlias = true;
                                 FlashSourceAliasName = symbolFileName;
@@ -293,6 +305,27 @@ namespace EliasLibrary
                         }
                     }
                 }
+                else
+                {
+                    //if (!this.IsInverted())
+                    {
+                        FlashSourceAliasName = null;
+                        ShockwaveSourceAliasName = null;
+                        IsMemberAlias = false;
+                    }
+
+                    var newPath = Path.Combine(Elias.OUTPUT_PATH, "images", FlashAssetName + ".png");
+                    File.Copy(flashFile, newPath);
+
+                    if (this.IsInverted())
+                    {
+                        this.FlipX = true;
+
+                        var bitmap1 = (Bitmap)Bitmap.FromFile(newPath);
+                        bitmap1.RotateFlip(RotateFlipType.Rotate180FlipY);
+                        bitmap1.Save(newPath);
+                    }
+                }
             }
         }
 
@@ -308,7 +341,7 @@ namespace EliasLibrary
                 return;
 
             var sourceImage = ImageAssetUtil.SolveFile(Elias.OUTPUT_PATH, FlashAssetName);
-            
+
             File.Copy(sourceImage, Path.Combine(Elias.IMAGE_PATH, ShockwaveAssetName + ".png"));
         }
 
@@ -323,6 +356,11 @@ namespace EliasLibrary
 
             if (!string.IsNullOrEmpty(FlashSourceAliasName))
                 return;
+
+            if (this.FlipX)
+            {
+                ParseRecPointNames();
+            }
 
             File.WriteAllText(Path.Combine(Elias.IMAGE_PATH, ShockwaveAssetName + ".txt"), ShockwaveRectanglePoint[0] + "," + ShockwaveRectanglePoint[1]);
         }
