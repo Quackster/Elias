@@ -57,7 +57,7 @@ namespace Elias.Utilities
 
             File.Move(file, newFilePath);
 
-            if (Path.GetExtension(file) == ".bin" || Path.GetExtension(file) == ".xml")
+            if (Path.GetExtension(file) == ".bin" || Path.GetExtension(file) == ".xml" || Path.GetExtension(file) == ".props" || Path.GetExtension(file) == ".data" || Path.GetExtension(file) == ".index")
             {
                 string content = File.ReadAllText(newFilePath);
                 content = content.Replace(find, replaceWith);

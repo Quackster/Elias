@@ -85,6 +85,7 @@ namespace EliasLibrary
             this.GenerateProps();
             this.GenerateAssetIndex();
             this.GenerateAnimations();
+            GenerateMissingImages();
             this.RunEliasDirector();
 
             filesWritten.Add("hh_furni_xx_" + Sprite + ".cct");
@@ -123,6 +124,7 @@ namespace EliasLibrary
                 GenerateProps();
                 GenerateAssetIndex();
                 GenerateAnimations();
+                GenerateMissingImages();
                 RunEliasDirector();
             }
             else
@@ -139,11 +141,178 @@ namespace EliasLibrary
                 GenerateProps();
                 GenerateAssetIndex();
                 GenerateAnimations();
+                GenerateMissingImages();
                 RunEliasDirector();
 
                 filesWritten.Add("hh_furni_xx_s_" + Sprite + ".cct");
             }
             return filesWritten.ToArray();
+        }
+
+        private void GenerateMissingImages()
+        {
+            if (this.IsWallItem)
+            {
+                if (this.Assets.Count(asset => asset.FlashAssetName != null && asset.FlashAssetName.Contains("_a_")) > 0 && this.Assets.Count(asset => asset.FlashAssetName != null && asset.FlashAssetName.Contains("_b_")) == 0)
+                {
+                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "_a_", "_b_");
+                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "\"a\":", "\"b\":");
+
+                    foreach (var file in Directory.GetFiles(this.IMAGE_PATH))
+                    {
+                        if (Path.GetExtension(file) != ".png" || Path.GetFileNameWithoutExtension(file).EndsWith("_small"))
+                        {
+                            continue;
+                        }
+
+                        string newFile = Path.Combine(this.IMAGE_PATH, Path.GetFileNameWithoutExtension(file).Replace("_b_", "_a_") + ".png");
+                        string regPointFile = Path.Combine(this.IMAGE_PATH, Path.GetFileNameWithoutExtension(file).Replace("_b_", "_a_") + ".txt");
+
+                        File.WriteAllText(regPointFile, "0,0");
+
+                        Console.WriteLine("Generating: " + newFile);
+
+                        Bitmap bmp = new Bitmap(1, 1);
+                        bmp.Save(newFile, ImageFormat.Png);
+                    }
+                }
+                else
+                {
+                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "_a_", "_bb_");
+                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "_b_", "_cc_");
+                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "_c_", "_dd_");
+                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "_d_", "_ee_");
+                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "_e_", "_ff_");
+                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "_f_", "_gg_");
+                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "_g_", "_hh_");
+                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "_h_", "_ii_");
+                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "_i_", "_jj_");
+                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "_j_", "_kk_");
+                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "_k_", "_ll_");
+                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "_l_", "_mm_");
+                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "_m_", "_nn_");
+
+                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "_bb_", "_b_");
+                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "_cc_", "_c_");
+                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "_dd_", "_d_");
+                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "_ee_", "_e_");
+                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "_ff_", "_f_");
+                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "_gg_", "_g_");
+                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "_hh_", "_h_");
+                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "_ii_", "_i_");
+                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "_jj_", "_j_");
+                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "_kk_", "_k_");
+                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "_ll_", "_l_");
+                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "_mm_", "_m_");
+                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "_nn_", "_n_");
+
+                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "\"a\":", "\"bb\":");
+                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "\"b\":", "\"cc\":");
+                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "\"c\":", "\"dd\":");
+                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "\"d\":", "\"ee\":");
+                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "\"e\":", "\"ff\":");
+                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "\"f\":", "\"gg\":");
+                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "\"g\":", "\"hh\":");
+                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "\"h\":", "\"ii\":");
+                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "\"i\":", "\"jj\":");
+                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "\"j\":", "\"kk\":");
+                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "\"k\":", "\"ll\":");
+                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "\"l\":", "\"mm\":");
+                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "\"m\":", "\"nn\":");
+
+                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "\"bb\":", "\"b\":");
+                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "\"cc\":", "\"c\":");
+                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "\"dd\":", "\"d\":");
+                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "\"ee\":", "\"e\":");
+                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "\"ff\":", "\"f\":");
+                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "\"gg\":", "\"g\":");
+                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "\"hh\":", "\"h\":");
+                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "\"ii\":", "\"i\":");
+                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "\"jj\":", "\"j\":");
+                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "\"kk\":", "\"k\":");
+                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "\"ll\":", "\"l\":");
+                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "\"mm\":", "\"m\":");
+                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "\"nn\":", "\"n\":");
+
+
+                    foreach (var file in Directory.GetFiles(this.IMAGE_PATH))
+                    {
+                        if (Path.GetExtension(file) != ".png" || Path.GetFileNameWithoutExtension(file).EndsWith("_small"))
+                        {
+                            continue;
+                        }
+
+                        string newFile = Path.Combine(this.IMAGE_PATH, Path.GetFileNameWithoutExtension(file).Replace("_b_", "_a_") + ".png");
+                        string regPointFile = Path.Combine(this.IMAGE_PATH, Path.GetFileNameWithoutExtension(file).Replace("_b_", "_a_") + ".txt");
+
+                        File.WriteAllText(regPointFile, "0,0");
+
+                        Console.WriteLine("Generating: " + newFile);
+
+                        Bitmap bmp = new Bitmap(1, 1);
+                        bmp.Save(newFile, ImageFormat.Png);
+                    }
+                }
+
+                var dataPath = Path.Combine(this.CAST_PATH, this.Sprite + ".data");
+                var data = File.Exists(dataPath) ? File.ReadAllText(dataPath) : "";
+
+                if (data.Length == 0)
+                {
+                    List<string> layers = new List<string>();
+
+                    /*
+                   [
+states:[1], 
+layers:[ 
+a:[ [ frames:[ 0 ] ] ],
+b:[ [ frames:[ 0 ] ] ]
+]
+]
+
+                    */
+
+                    foreach (var file in Directory.GetFiles(this.IMAGE_PATH))
+                    {
+                        if (Path.GetExtension(file) != ".png" || Path.GetFileNameWithoutExtension(file).EndsWith("_small"))
+                        {
+                            continue;
+                        }
+
+                        string layer = Path.GetFileNameWithoutExtension(file).Split('_')[Path.GetFileNameWithoutExtension(file).Split('_').Length - 2];
+                        
+                        if (!layers.Contains(layer))
+                        {
+                            layers.Add(layer);
+                        }
+                    }
+
+                    StringBuilder output = new StringBuilder();
+                    output.Append("[\r" +
+                                    "states:[1],\r" +
+                                    "layers:[ \r");
+
+                    int k = 0;
+                    foreach (string layer in layers)
+                    {
+                        output.Append(layer + ":[ [ frames:[ 0 ] ] ]");
+
+                        if (layers.Count - 1 > k)
+                        {
+                            output.Append(", ");
+                        }
+
+                        k++;
+
+                        output.Append("\r");
+                    }
+
+                    output.Append("]\r");
+                    output.Append("]\r");
+
+                    File.WriteAllText(dataPath, output.ToString());
+                }
+            }
         }
 
         private bool ContainsSmallFurni()
@@ -363,7 +532,7 @@ namespace EliasLibrary
 
                 Console.WriteLine("-----------");*/
 
-                if (Assets.Count(f => f.ShockwaveAssetName == (member + "_0")) == 0)
+                    if (Assets.Count(f => f.ShockwaveAssetName == (member + "_0")) == 0)
                 {
                     if (asset.IsMemberAlias)
                     {
