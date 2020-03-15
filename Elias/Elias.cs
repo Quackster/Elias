@@ -155,8 +155,8 @@ namespace EliasLibrary
             {
                 if (this.Assets.Count(asset => asset.FlashAssetName != null && asset.FlashAssetName.Contains("_a_")) > 0 && this.Assets.Count(asset => asset.FlashAssetName != null && asset.FlashAssetName.Contains("_b_")) == 0)
                 {
-                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "_a_", "_b_");
-                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "\"a\":", "\"b\":");
+                    // Shift a->b and so forth
+                    AssetUtil.CrudeReplace(this.CAST_PATH);
 
                     foreach (var file in Directory.GetFiles(this.IMAGE_PATH))
                     {
@@ -178,62 +178,8 @@ namespace EliasLibrary
                 }
                 else
                 {
-                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "_a_", "_bb_");
-                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "_b_", "_cc_");
-                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "_c_", "_dd_");
-                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "_d_", "_ee_");
-                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "_e_", "_ff_");
-                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "_f_", "_gg_");
-                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "_g_", "_hh_");
-                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "_h_", "_ii_");
-                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "_i_", "_jj_");
-                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "_j_", "_kk_");
-                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "_k_", "_ll_");
-                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "_l_", "_mm_");
-                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "_m_", "_nn_");
-
-                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "_bb_", "_b_");
-                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "_cc_", "_c_");
-                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "_dd_", "_d_");
-                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "_ee_", "_e_");
-                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "_ff_", "_f_");
-                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "_gg_", "_g_");
-                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "_hh_", "_h_");
-                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "_ii_", "_i_");
-                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "_jj_", "_j_");
-                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "_kk_", "_k_");
-                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "_ll_", "_l_");
-                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "_mm_", "_m_");
-                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "_nn_", "_n_");
-
-                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "\"a\":", "\"bb\":");
-                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "\"b\":", "\"cc\":");
-                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "\"c\":", "\"dd\":");
-                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "\"d\":", "\"ee\":");
-                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "\"e\":", "\"ff\":");
-                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "\"f\":", "\"gg\":");
-                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "\"g\":", "\"hh\":");
-                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "\"h\":", "\"ii\":");
-                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "\"i\":", "\"jj\":");
-                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "\"j\":", "\"kk\":");
-                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "\"k\":", "\"ll\":");
-                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "\"l\":", "\"mm\":");
-                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "\"m\":", "\"nn\":");
-
-                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "\"bb\":", "\"b\":");
-                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "\"cc\":", "\"c\":");
-                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "\"dd\":", "\"d\":");
-                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "\"ee\":", "\"e\":");
-                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "\"ff\":", "\"f\":");
-                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "\"gg\":", "\"g\":");
-                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "\"hh\":", "\"h\":");
-                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "\"ii\":", "\"i\":");
-                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "\"jj\":", "\"j\":");
-                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "\"kk\":", "\"k\":");
-                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "\"ll\":", "\"l\":");
-                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "\"mm\":", "\"m\":");
-                    BinaryDataUtil.ReplaceFiles(this.CAST_PATH, "\"nn\":", "\"n\":");
-
+                    // Shift a->b and so forth
+                    AssetUtil.CrudeReplace(this.CAST_PATH);
 
                     foreach (var file in Directory.GetFiles(this.IMAGE_PATH))
                     {
@@ -243,14 +189,18 @@ namespace EliasLibrary
                         }
 
                         string newFile = Path.Combine(this.IMAGE_PATH, Path.GetFileNameWithoutExtension(file).Replace("_b_", "_a_") + ".png");
-                        string regPointFile = Path.Combine(this.IMAGE_PATH, Path.GetFileNameWithoutExtension(file).Replace("_b_", "_a_") + ".txt");
 
-                        File.WriteAllText(regPointFile, "0,0");
+                        if (!File.Exists(newFile))
+                        {
+                            string regPointFile = Path.Combine(this.IMAGE_PATH, Path.GetFileNameWithoutExtension(file).Replace("_b_", "_a_") + ".txt");
 
-                        Console.WriteLine("Generating: " + newFile);
+                            File.WriteAllText(regPointFile, "0,0");
 
-                        Bitmap bmp = new Bitmap(1, 1);
-                        bmp.Save(newFile, ImageFormat.Png);
+                            Console.WriteLine("Generating: " + newFile);
+
+                            Bitmap bmp = new Bitmap(1, 1);
+                            bmp.Save(newFile, ImageFormat.Png);
+                        }
                     }
                 }
 
@@ -261,16 +211,7 @@ namespace EliasLibrary
                 {
                     List<string> layers = new List<string>();
 
-                    /*
-                   [
-states:[1], 
-layers:[ 
-a:[ [ frames:[ 0 ] ] ],
-b:[ [ frames:[ 0 ] ] ]
-]
-]
-
-                    */
+                  
 
                     foreach (var file in Directory.GetFiles(this.IMAGE_PATH))
                     {

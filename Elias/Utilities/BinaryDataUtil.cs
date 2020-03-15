@@ -46,7 +46,34 @@ namespace Elias.Utilities
         public static void ReplaceFiles(string directory, string search, string newWord)
         {
             foreach (string file in Directory.GetFiles(directory, "*", SearchOption.AllDirectories))
-                ReplaceWord(file, search, newWord);
+            {
+                if (Path.GetExtension(file) != ".data" && Path.GetExtension(file) != ".props")
+                {
+                    ReplaceWord(file, search, newWord);
+                }
+            }
+        }
+
+        public static void ReplaceData(string directory, string search, string newWord)
+        {
+            foreach (string file in Directory.GetFiles(directory, "*", SearchOption.AllDirectories))
+            {
+                if (Path.GetExtension(file) == ".data")
+                {
+                    ReplaceWord(file, search, newWord);
+                }
+            }
+        }
+
+        public static void ReplaceProps(string directory, string search, string newWord)
+        {
+            foreach (string file in Directory.GetFiles(directory, "*", SearchOption.AllDirectories))
+            {
+                if (Path.GetExtension(file) == ".props")
+                {
+                    ReplaceWord(file, search, newWord);
+                }
+            }
         }
 
         public static void ReplaceWord(string file, string find, string replaceWith)
@@ -57,7 +84,7 @@ namespace Elias.Utilities
 
             File.Move(file, newFilePath);
 
-            if (Path.GetExtension(file) == ".bin" || Path.GetExtension(file) == ".xml" || Path.GetExtension(file) == ".props" || Path.GetExtension(file) == ".data" || Path.GetExtension(file) == ".index")
+            if (Path.GetExtension(file) == ".bin" || Path.GetExtension(file) == ".txt" || Path.GetExtension(file) == ".xml" || Path.GetExtension(file) == ".props" || Path.GetExtension(file) == ".data" || Path.GetExtension(file) == ".index")
             {
                 string content = File.ReadAllText(newFilePath);
                 content = content.Replace(find, replaceWith);
