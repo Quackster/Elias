@@ -12,7 +12,7 @@ namespace Elias.Utilities
 {
     public class BinaryDataUtil
     {
-        public static XmlDocument SolveFile(string outputDirectory, string fileNameContains)
+        public static XmlDocument SolveFile(EliasLibrary.Elias elias, string outputDirectory, string fileNameContains)
         {
             foreach (var file in Directory.GetFiles(Path.Combine(outputDirectory, "binaryData"), "*"))
             {
@@ -29,14 +29,33 @@ namespace Elias.Utilities
                     if (text.Contains("<graphics>"))
                     {
                         text = text.Replace("<graphics>", "");
-                        text = text.Replace("</graphics>", "");
+                        text = text.Replace("</graphics>", "            ");
                         File.WriteAllText(file, text);
+                        elias.HasGraphicsTag = true;
                     }
 
                     XmlDocument xmlDoc = new XmlDocument();
                     xmlDoc.Load(file);
 
+                    if (elias.HasGraphicsTag)
+                    {
+                        xmlDoc.Save(file);
+                    }
+
                     return xmlDoc;
+                }
+            }
+
+            return null;
+        }
+
+        public static string SolveFilePath(EliasLibrary.Elias elias, string outputDirectory, string fileNameContains)
+        {
+            foreach (var file in Directory.GetFiles(Path.Combine(outputDirectory, "binaryData"), "*"))
+            {
+                if (Path.GetFileNameWithoutExtension(file).Contains(fileNameContains))
+                {
+                    return file;
                 }
             }
 

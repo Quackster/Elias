@@ -33,6 +33,8 @@ namespace EliasLibrary
         public bool GenerateSmallModernFurni;
         public bool GenerateSmallFurni;
 
+        public bool HasGraphicsTag;
+
         public Dictionary<int, List<string>> Symbols;
         public List<EliasAsset> Assets;
 
@@ -86,6 +88,7 @@ namespace EliasLibrary
             this.GenerateAssetIndex();
             this.GenerateAnimations();
             GenerateMissingImages();
+            TryRemoveGraphicsTag();
             this.RunEliasDirector();
 
             filesWritten.Add("hh_furni_xx_" + Sprite + ".cct");
@@ -125,6 +128,7 @@ namespace EliasLibrary
                 GenerateAssetIndex();
                 GenerateAnimations();
                 GenerateMissingImages();
+                //TryRemoveGraphicsTag();
                 RunEliasDirector();
             }
             else
@@ -142,11 +146,43 @@ namespace EliasLibrary
                 GenerateAssetIndex();
                 GenerateAnimations();
                 GenerateMissingImages();
+                //TryRemoveGraphicsTag();
                 RunEliasDirector();
 
                 filesWritten.Add("hh_furni_xx_s_" + Sprite + ".cct");
             }
             return filesWritten.ToArray();
+        }
+
+        private void TryRemoveGraphicsTag()
+        {
+            if (!this.HasGraphicsTag)
+                return;
+
+            string convertedDirectory = Path.Combine(this.FileDirectory, "converted");
+
+            if (!Directory.Exists(convertedDirectory))
+                Directory.CreateDirectory(convertedDirectory);
+
+            string copiedSwfPath = Path.Combine(convertedDirectory, this.Sprite + ".swf");
+
+            if (File.Exists(copiedSwfPath))
+                File.Delete(copiedSwfPath);
+
+            File.Copy(FullFileName, copiedSwfPath);
+            var xmlData = BinaryDataUtil.SolveFilePath(this, this.OUTPUT_PATH, "visualization");
+
+            var p = new Process();
+            p.StartInfo.FileName = FFDEC_PATH;
+            p.StartInfo.Arguments = string.Format("-replace \"{0}\" \"{1}\" \"{2}\" \"{3}\"", copiedSwfPath, copiedSwfPath, Path.GetFileName(xmlData).Split('_')[0], xmlData);
+            p.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            p.StartInfo.CreateNoWindow = true;
+            p.Start();
+            p.WaitForExit();
+
+
+            //xmlData.SelectSingleNode
+            //document.Load(@"C:\Path\To\xmldoc.xml");
         }
 
         private void GenerateMissingImages()
@@ -211,8 +247,6 @@ namespace EliasLibrary
                 {
                     List<string> layers = new List<string>();
 
-                  
-
                     foreach (var file in Directory.GetFiles(this.IMAGE_PATH))
                     {
                         if (Path.GetExtension(file) != ".png" || Path.GetFileNameWithoutExtension(file).EndsWith("_small"))
@@ -258,7 +292,7 @@ namespace EliasLibrary
 
         private bool ContainsSmallFurni()
         {
-            var xmlData = BinaryDataUtil.SolveFile(this.OUTPUT_PATH, "assets");
+            var xmlData = BinaryDataUtil.SolveFile(this, this.OUTPUT_PATH, "assets");
 
             if (xmlData == null)
             {
@@ -284,7 +318,7 @@ namespace EliasLibrary
         private void GenerateAliases(bool isDownscaled = false)
         {
             this.IsDownscaled = isDownscaled;
-            var xmlData = BinaryDataUtil.SolveFile(this.OUTPUT_PATH, "assets");
+            var xmlData = BinaryDataUtil.SolveFile(this, this.OUTPUT_PATH, "assets");
 
             if (xmlData == null)
             {
@@ -613,7 +647,7 @@ namespace EliasLibrary
         private void GenerateProps()
         {
             char[] alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToLower().ToCharArray();
-            var xmlData = BinaryDataUtil.SolveFile(this.OUTPUT_PATH, "visualization");
+            var xmlData = BinaryDataUtil.SolveFile(this, this.OUTPUT_PATH, "visualization");
 
             Dictionary<int, int> shiftValues = new Dictionary<int, int>();
 
@@ -784,7 +818,7 @@ namespace EliasLibrary
         private void GenerateAnimations()
         {
             char[] alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToLower().ToCharArray();
-            var xmlData = BinaryDataUtil.SolveFile(this.OUTPUT_PATH, "visualization");
+            var xmlData = BinaryDataUtil.SolveFile(this, this.OUTPUT_PATH, "visualization");
 
             var animations = 0;
             var sections = new SortedDictionary<string, EliasAnimation>();
