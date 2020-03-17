@@ -222,7 +222,7 @@ namespace EliasLibrary
 
                         string layer = Path.GetFileNameWithoutExtension(file).Split('_')[Path.GetFileNameWithoutExtension(file).Split('_').Length - 2];
                         
-                        if (!layers.Contains(layer))
+                        if (!layers.Contains(layer) && layer != "sd")
                         {
                             layers.Add(layer);
                         }

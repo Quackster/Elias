@@ -317,6 +317,10 @@ namespace EliasLibrary
                     }
 
                     var newPath = Path.Combine(Elias.OUTPUT_PATH, "images", FlashAssetName + ".png");
+
+                    if (File.Exists(newPath))
+                        File.Delete(newPath);
+
                     File.Copy(flashFile, newPath);
 
                     if (this.IsInverted())
@@ -344,8 +348,12 @@ namespace EliasLibrary
                 return;
 
             var sourceImage = ImageAssetUtil.SolveFile(Elias.OUTPUT_PATH, FlashAssetName);
+            var newPath = Path.Combine(Elias.IMAGE_PATH, ShockwaveAssetName + ".png");
 
-            File.Copy(sourceImage, Path.Combine(Elias.IMAGE_PATH, ShockwaveAssetName + ".png"));
+            if (File.Exists(newPath))
+                File.Delete(newPath);
+
+            File.Copy(sourceImage, newPath);
         }
 
         public void WriteRegPointData()
