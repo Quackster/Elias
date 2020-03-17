@@ -19,6 +19,7 @@ namespace EliasApp
             Console.Write("] ");
             Console.ForegroundColor = consoleColor;
             Console.WriteLine(input);
+            Console.ResetColor();
         }
     }
 }
