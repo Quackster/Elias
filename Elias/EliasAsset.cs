@@ -309,23 +309,22 @@ namespace EliasLibrary
                 }
                 else
                 {
-                    if (!this.IsInverted())
+                    //if (!this.IsInverted())
                     {
-                        //{
                         FlashSourceAliasName = null;
                         ShockwaveSourceAliasName = null;
                         IsMemberAlias = false;
-                        //}
+                    }
 
-                        var newPath = Path.Combine(Elias.OUTPUT_PATH, "images", FlashAssetName + ".png");
+                    var newPath = Path.Combine(Elias.OUTPUT_PATH, "images", FlashAssetName + ".png");
 
-                        if (File.Exists(newPath))
-                            File.Delete(newPath);
+                    if (File.Exists(newPath))
+                        File.Delete(newPath);
 
-                        File.Copy(flashFile, newPath);
+                    File.Copy(flashFile, newPath);
 
-                        //if (this.IsInverted())
-                        // {
+                    if (this.IsInverted())
+                    {
                         this.FlipX = true;
 
                         var bitmap1 = (Bitmap)Bitmap.FromFile(newPath);
