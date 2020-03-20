@@ -309,28 +309,31 @@ namespace EliasLibrary
                 }
                 else
                 {
-                    //if (!this.IsInverted())
+                    var integrity = Elias.Assets.FirstOrDefault(asset => asset.FlashAssetName == FlashSourceAliasName && asset.FlashSourceAliasName == null);
+
+                    if (integrity != null && /*((integrity.IsInverted() != this.IsInverted()) &&*/ ((integrity.FlashRectanglePoint[0] != this.FlashRectanglePoint[0]) || (integrity.FlashRectanglePoint[1] != this.FlashRectanglePoint[1])))
                     {
+
                         FlashSourceAliasName = null;
                         ShockwaveSourceAliasName = null;
                         IsMemberAlias = false;
-                    }
 
-                    var newPath = Path.Combine(Elias.OUTPUT_PATH, "images", FlashAssetName + ".png");
+                        var newPath = Path.Combine(Elias.OUTPUT_PATH, "images", FlashAssetName + ".png");
 
-                    if (File.Exists(newPath))
-                        File.Delete(newPath);
+                        if (File.Exists(newPath))
+                            File.Delete(newPath);
 
-                    File.Copy(flashFile, newPath);
+                        File.Copy(flashFile, newPath);
 
-                    if (this.IsInverted())
-                    {
-                        this.FlipX = true;
+                        if (this.IsInverted())
+                        {
+                            this.FlipX = true;
 
-                        var bitmap1 = (Bitmap)Bitmap.FromFile(newPath);
-                        bitmap1.RotateFlip(RotateFlipType.Rotate180FlipY);
-                        bitmap1.Save(newPath);
-                        bitmap1.Dispose();
+                            var bitmap1 = (Bitmap)Bitmap.FromFile(newPath);
+                            bitmap1.RotateFlip(RotateFlipType.Rotate180FlipY);
+                            bitmap1.Save(newPath);
+                            bitmap1.Dispose();
+                        }
                     }
                 }
             }
