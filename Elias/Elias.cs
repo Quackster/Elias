@@ -206,7 +206,7 @@ namespace EliasLibrary
 
                         File.WriteAllText(regPointFile, "0,0");
 
-                        Console.WriteLine("Generating: " + newFile);
+                        //Console.WriteLine("Generating: " + newFile);
 
                         Bitmap bmp = new Bitmap(1, 1);
                         bmp.Save(newFile, ImageFormat.Png);
@@ -231,8 +231,7 @@ namespace EliasLibrary
                             string regPointFile = Path.Combine(this.IMAGE_PATH, Path.GetFileNameWithoutExtension(file).Replace("_b_", "_a_") + ".txt");
 
                             File.WriteAllText(regPointFile, "0,0");
-
-                            Console.WriteLine("Generating: " + newFile);
+                            //Console.WriteLine("Generating: " + newFile);
 
                             Bitmap bmp = new Bitmap(1, 1);
                             bmp.Save(newFile, ImageFormat.Png);
