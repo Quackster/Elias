@@ -241,6 +241,8 @@ namespace EliasLibrary
                     }
                 }
 
+                //AssetUtil.FlipAllMembers(this);
+
                 var dataPath = Path.Combine(this.CAST_PATH, this.Sprite + ".data");
                 var data = File.Exists(dataPath) ? File.ReadAllText(dataPath) : "";
 
@@ -287,6 +289,94 @@ namespace EliasLibrary
                     output.Append("]\r");
 
                     File.WriteAllText(dataPath, output.ToString());
+                }
+                else
+                {
+                    List<string> missingLayers = new List<string>();
+                    StringBuilder output = new StringBuilder();
+
+                    foreach (var file in Directory.GetFiles(this.IMAGE_PATH))
+                    {
+                        if (Path.GetExtension(file) != ".png" || Path.GetFileNameWithoutExtension(file).EndsWith("_small"))
+                        {
+                            continue;
+                        }
+
+                        string layer = Path.GetFileNameWithoutExtension(file).Split('_')[Path.GetFileNameWithoutExtension(file).Split('_').Length - 2];
+
+                        if (!missingLayers.Contains(layer) && layer != "sd")
+                        {
+                            if (data.Contains(layer + ":"))
+                                continue;
+
+                            missingLayers.Add(layer);
+                        }
+                    }
+
+                    if (missingLayers.Count > 0)
+                    {
+                        int animations = this.CountStates();
+                        string states = "";
+
+                        for (int i = 0; i < animations; i++)
+                        {
+                            states += "[ frames:[ 0 ] ], ";
+                        }
+
+                        if (states.Length > 0)
+                        {
+                            states = states.Substring(0, states.Length - 2);
+                        }
+
+                        int k = 0;
+                        foreach (string layer in missingLayers)
+                        {
+                            output.Append(layer + ":[ [ " + states + " ]");
+
+                            if (data.Contains("frames"))
+                            {
+                                output.Append(",");
+                            }
+
+                            output.Append("\r");
+                        }
+
+                        data = data.Replace("layers:[\r", "layers:[\r" + output.ToString());
+                        File.WriteAllText(dataPath, data);
+                    }
+
+                    /*
+                    Dictionary<string, EliasAnimation> missingLayers = new Dictionary<string, EliasAnimation>();
+
+                    foreach (var file in Directory.GetFiles(this.IMAGE_PATH))
+                    {
+                        if (Path.GetExtension(file) != ".png" || Path.GetFileNameWithoutExtension(file).EndsWith("_small"))
+                        {
+                            continue;
+                        }
+
+                        string layer = Path.GetFileNameWithoutExtension(file).Split('_')[Path.GetFileNameWithoutExtension(file).Split('_').Length - 2];
+
+                        if (!missingLayers.ContainsKey(layer) && layer != "sd")
+                        {
+                            if (data.Contains(layer + ":"))
+                                continue;
+
+                            var eliasFrame = new EliasFrame();
+                            var eliasAnimation = new EliasAnimation();
+
+                            eliasFrame.Frames.Add("0");
+                            eliasAnimation.States.Add(0, eliasFrame);
+
+                            missingLayers.Add(layer, eliasAnimation);
+                        }
+                    }
+
+                    if (missingLayers.Count > 0)
+                    {
+                        GenerateAnimations(missingLayers);
+                    }
+                    */
                 }
             }
         }
@@ -816,7 +906,7 @@ namespace EliasLibrary
             //File.WriteAllText(Path.Combine(CAST_PATH, ((this.IsSmallFurni ? "s_" : "") + this.Sprite) + ".props"), sections.Count > 0 ? "[" + string.Join(", ", sections) + "]" : "");
         }
 
-        private void GenerateAnimations()
+        private void GenerateAnimations(Dictionary<string, EliasAnimation> addIfNotExists = null)
         {
             char[] alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToLower().ToCharArray();
             var xmlData = BinaryDataUtil.SolveFile(this, this.OUTPUT_PATH, "visualization");
@@ -907,6 +997,17 @@ namespace EliasLibrary
                             animation.States.Add(j, frame);
                         }
                     }
+                }
+            }
+
+            if (addIfNotExists != null)
+            {
+                foreach (var kvp in addIfNotExists)
+                {
+                    if (sections.ContainsKey(kvp.Key))
+                        continue;
+
+                    sections.Add(kvp.Key, kvp.Value);
                 }
             }
 
@@ -1015,6 +1116,62 @@ namespace EliasLibrary
             {
                 File.WriteAllText(Path.Combine(CAST_PATH, "asset.index"), "[#id: \"" + ((this.IsSmallFurni ? "s_" : "") + this.Sprite) + "\", #classes: [\"Active Object Class\",  \"Active Object Extension Class\"]]");
             }
+        }
+
+        public int CountStates()
+        {
+            char[] alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToLower().ToCharArray();
+            var xmlData = BinaryDataUtil.SolveFile(this, this.OUTPUT_PATH, "visualization");
+
+            var animations = 0;
+            var sections = new SortedDictionary<string, EliasAnimation>();
+
+            if (xmlData == null)
+            {
+                return animations;
+            }
+
+            XmlNodeList frames = null;
+
+            if (!IsDownscaled)
+            {
+                frames = xmlData.SelectNodes("//visualizationData/visualization[@size='" + (IsSmallFurni ? "32" : "64") + "']/animations/animation/animationLayer/frameSequence/frame");
+            }
+            else
+            {
+                frames = xmlData.SelectNodes("//visualizationData/visualization[@size='64']/animations/animation/animationLayer/frameSequence/frame");
+            }
+
+            int highestAnimationLayer = 0;
+
+            for (int i = 0; i < frames.Count; i++)
+            {
+                var frame = frames.Item(i);
+
+                var animationLayer = frame.ParentNode.ParentNode;
+                int letterPosition = int.Parse(animationLayer.Attributes.GetNamedItem("id").InnerText);
+
+                if (letterPosition < 0 || letterPosition > alphabet.Length)
+                {
+                    continue;
+                }
+
+                var animationLetter = Convert.ToString(alphabet[int.Parse(animationLayer.Attributes.GetNamedItem("id").InnerText)]);
+
+                highestAnimationLayer = int.Parse(animationLayer.Attributes.GetNamedItem("id").InnerText) + 1;
+
+                var animation = frame.ParentNode.ParentNode.ParentNode;
+                var animationId = int.Parse(animation.Attributes.GetNamedItem("id").InnerText);
+
+                var castAnimationId = animationId + 1;
+
+                if (castAnimationId > animations)
+                {
+                    animations = castAnimationId;
+                }
+            }
+
+            return animations;
         }
     }
 }
