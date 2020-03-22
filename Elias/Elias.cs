@@ -258,7 +258,7 @@ namespace EliasLibrary
                         }
 
                         string layer = Path.GetFileNameWithoutExtension(file).Split('_')[Path.GetFileNameWithoutExtension(file).Split('_').Length - 2];
-                        
+
                         if (!layers.Contains(layer) && layer != "sd")
                         {
                             layers.Add(layer);
@@ -313,7 +313,7 @@ namespace EliasLibrary
                         }
                     }
 
-                    if (missingLayers.Count == 1 && missingLayers.Contains("a"))
+                    /*if (missingLayers.Count == 1 && missingLayers.Contains("a"))
                     {
                         foreach (string line in data.Split('\r'))
                         {
@@ -323,68 +323,73 @@ namespace EliasLibrary
                                 break;
                             }
                         }
-                    }
-                        /*int animations = this.CountStates();
-                        string states = "";
+                    }*/
 
-                        for (int i = 0; i < animations; i++)
-                        {
-                            states += "[ frames:[ 0 ] ], ";
-                        }
+                    int animations = this.CountStates();
+                    string states = "";
 
-                        if (states.Length > 0)
-                        {
-                            states = states.Substring(0, states.Length - 2);
-                        }
-
-                        int k = 0;
-                        foreach (string layer in missingLayers)
-                        {
-                            output.Append(layer + ":[ [ " + states + " ]");
-
-                            if (data.Contains("frames"))
-                            {
-                                output.Append(",");
-                            }
-
-                            output.Append("\r");
-                        }*/
-
-                        File.WriteAllText(dataPath, data);
-                //    }
-
-                    /*
-                    Dictionary<string, EliasAnimation> missingLayers = new Dictionary<string, EliasAnimation>();
-
-                    foreach (var file in Directory.GetFiles(this.IMAGE_PATH))
+                    for (int i = 0; i < animations; i++)
                     {
-                        if (Path.GetExtension(file) != ".png" || Path.GetFileNameWithoutExtension(file).EndsWith("_small"))
-                        {
-                            continue;
-                        }
-
-                        string layer = Path.GetFileNameWithoutExtension(file).Split('_')[Path.GetFileNameWithoutExtension(file).Split('_').Length - 2];
-
-                        if (!missingLayers.ContainsKey(layer) && layer != "sd")
-                        {
-                            if (data.Contains(layer + ":"))
-                                continue;
-
-                            var eliasFrame = new EliasFrame();
-                            var eliasAnimation = new EliasAnimation();
-
-                            eliasFrame.Frames.Add("0");
-                            eliasAnimation.States.Add(0, eliasFrame);
-
-                            missingLayers.Add(layer, eliasAnimation);
-                        }
+                        states += "[ frames:[ 0 ] ], ";
                     }
 
-                    if (missingLayers.Count > 0)
+                    if (states.Length > 0)
                     {
-                        GenerateAnimations(missingLayers);
+                        states = states.Substring(0, states.Length - 2);
                     }
-                    */
+
+                    int k = 0;
+                    foreach (string layer in missingLayers)
+                    {
+                        output.Append(layer + ": [ " + states + " ]");
+
+                        if (data.Contains("frames"))
+                        {
+                            output.Append(",");
+                        }
+
+                        output.Append("\r");
+                    }
+
+                    data = data.Replace("layers:[\r", "layers:[\r" + output.ToString());
+                    File.WriteAllText(dataPath, data);
+                }
+
+                // cull the herd! aka remove spare "a" frames
+                foreach (var file in Directory.GetFiles(this.IMAGE_PATH))
+                {
+                    if (Path.GetExtension(file) != ".png" || Path.GetFileNameWithoutExtension(file).EndsWith("_small"))
+                    {
+                        continue;
+                    }
+
+                    string layer = Path.GetFileNameWithoutExtension(file).Split('_')[Path.GetFileNameWithoutExtension(file).Split('_').Length - 2];
+
+                    if (layer == "sd")
+                    {
+                        continue;
+                    }
+
+                    if (layer != "a")
+                    {
+                        continue;
+                    }
+
+                    if (Path.GetFileNameWithoutExtension(file).EndsWith("a_0"))
+                    {
+                        continue;
+                    }
+
+                    var directory = new FileInfo(file).DirectoryName;
+
+                    var picture = Path.Combine(directory, Path.GetFileNameWithoutExtension(file) + ".png");
+                    var points = Path.Combine(directory, Path.GetFileNameWithoutExtension(file) + ".txt");
+
+                    if (File.Exists(picture))
+                        File.Delete(picture);
+
+                    if (File.Exists(points))
+                        File.Delete(points);
                 }
             }
         }
