@@ -923,6 +923,14 @@ namespace EliasLibrary
                 stringBuilder.Append("states:[" + states.TrimEnd(",".ToCharArray()) + "],\r");
                 stringBuilder.Append("layers:[\r");
 
+                foreach (char letter in alphabet)
+                {
+                    if (Assets.Count(asset => !asset.IsIcon && !asset.IsShadow && asset.FlashAssetName.Contains("_" + Convert.ToString(letter) + "_")) == 0)
+                    {
+                        sections.Remove(Convert.ToString(letter));
+                    }
+                }
+
                 int e = 0;
                 foreach (var animation in sections)
                 {
