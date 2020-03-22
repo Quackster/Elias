@@ -30,9 +30,10 @@ namespace EliasLibrary
         public string OUTPUT_PATH;
         public string DIRECTOR_PATH;
         public string DIRECTOR_PROGRAM;
+
         public bool GenerateSmallModernFurni;
         public bool GenerateSmallFurni;
-
+        public bool EmergencyFix;
         public bool HasGraphicsTag;
 
         public Dictionary<int, List<string>> Symbols;
@@ -50,7 +51,7 @@ namespace EliasLibrary
             get { return Path.Combine(CAST_PATH, "images"); }
         }
 
-        public Elias(bool IsWallItem, string sprite, string fileName, int X, int Y, string FFDEC_PATH, string DIRECTOR_PATH, bool generateSmallModernFurni, bool generateSmallFurni)
+        public Elias(bool IsWallItem, string sprite, string fileName, int X, int Y, string FFDEC_PATH, string DIRECTOR_PATH, bool generateSmallModernFurni, bool generateSmallFurni, bool EmergencyFix)
         {
             this.IsWallItem = IsWallItem;
             this.Sprite = sprite;
@@ -64,6 +65,7 @@ namespace EliasLibrary
             this.OUTPUT_PATH = Path.Combine(this.DIRECTOR_PATH, "temp");
             this.Assets = new List<EliasAsset>();
             this.Symbols = new Dictionary<int, List<string>>();
+            this.EmergencyFix = EmergencyFix;
 
             this.GenerateSmallModernFurni = generateSmallModernFurni;
             this.GenerateSmallFurni = generateSmallFurni;
@@ -339,7 +341,7 @@ namespace EliasLibrary
                 if (!IsSmallFurni && node.OuterXml.Contains("_32_"))
                     continue;
 
-                var eliasAlias = new EliasAsset(this, node);
+                var eliasAlias = new EliasAsset(this, node, EmergencyFix);
                 eliasAlias.Parse();
 
                 if (eliasAlias.ShockwaveAssetName == null && !eliasAlias.IsIcon && !eliasAlias.IsShadow)
@@ -513,7 +515,7 @@ namespace EliasLibrary
                         string[] sourceData = asset.ShockwaveSourceAliasName.Replace(Sprite + "_", "").Split('_');
                         string sourceMember = Sprite + "_" + sourceData[0] + "_" + sourceData[1] + "_" + sourceData[2] + "_" + sourceData[3] + "_" + sourceData[4];
 
-                        var newAsset = new EliasAsset(this, asset.Node);
+                        var newAsset = new EliasAsset(this, asset.Node, EmergencyFix);
                         newAsset.Parse();
                         newAsset.IsMemberAlias = true;
                         newAsset.ShockwaveAssetName = (member + "_0");

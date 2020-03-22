@@ -325,7 +325,8 @@ namespace EliasApp
 
                 var elias = new EliasLibrary.Elias(isWallItem, sprite, file, X, Y, ffdecPath, directorPath,
                     Config.Instance.GetBoolean("generate.small.modern.furni"),
-                    Config.Instance.GetBoolean("generate.small.furni"));
+                    Config.Instance.GetBoolean("generate.small.furni"),
+                    Config.Instance.GetBoolean("emergency.fix"));
 
                 SaveFiles(elias.Parse(), elias.OUTPUT_PATH, cctPath);
                 ConvertedFurniture.Add(file);

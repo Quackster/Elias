@@ -18,6 +18,7 @@ namespace EliasLibrary
         public bool IsShadow;
         public bool IsMemberAlias;
         public bool FlipX;
+        public bool EmergencyFix;
 
         public string FlashAssetName;
         public string ShockwaveAssetName;
@@ -28,10 +29,11 @@ namespace EliasLibrary
         public int[] FlashRectanglePoint;
         public int[] ShockwaveRectanglePoint;
 
-        public EliasAsset(Elias elias, XmlNode node)
+        public EliasAsset(Elias elias, XmlNode node, bool EmergencyFix)
         {
             this.Elias = elias;
             this.Node = node;
+            this.EmergencyFix = EmergencyFix;
             this.FlashRectanglePoint = new int[2];
             this.ShockwaveRectanglePoint = new int[2];
 
@@ -311,7 +313,7 @@ namespace EliasLibrary
                 {
                     var integrity = Elias.Assets.FirstOrDefault(asset => asset.FlashAssetName == FlashSourceAliasName && asset.FlashSourceAliasName == null);
 
-                    if (integrity != null && /*((integrity.IsInverted() != this.IsInverted()) &&*/ ((integrity.FlashRectanglePoint[0] != this.FlashRectanglePoint[0]) || (integrity.FlashRectanglePoint[1] != this.FlashRectanglePoint[1])))
+                    if (integrity != null && (EmergencyFix || ((integrity.FlashRectanglePoint[0] != this.FlashRectanglePoint[0]) || (integrity.FlashRectanglePoint[1] != this.FlashRectanglePoint[1]))))
                     {
 
                         FlashSourceAliasName = null;
