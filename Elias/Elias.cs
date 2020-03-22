@@ -210,8 +210,12 @@ namespace EliasLibrary
 
                         //Console.WriteLine("Generating: " + newFile);
 
+                        if (File.Exists(newFile))
+                            File.Delete(newFile);
+
                         Bitmap bmp = new Bitmap(1, 1);
                         bmp.Save(newFile, ImageFormat.Png);
+                        bmp.Dispose();
                     }
                 }
                 else
@@ -230,6 +234,8 @@ namespace EliasLibrary
 
                         if (!File.Exists(newFile))
                         {
+
+                            //if (!File.Exists(newFile))
                             string regPointFile = Path.Combine(this.IMAGE_PATH, Path.GetFileNameWithoutExtension(file).Replace("_b_", "_a_") + ".txt");
 
                             File.WriteAllText(regPointFile, "0,0");
@@ -237,6 +243,7 @@ namespace EliasLibrary
 
                             Bitmap bmp = new Bitmap(1, 1);
                             bmp.Save(newFile, ImageFormat.Png);
+                            bmp.Dispose();
                         }
                     }
                 }
