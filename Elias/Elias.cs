@@ -250,7 +250,7 @@ namespace EliasLibrary
 
                 //AssetUtil.FlipAllMembers(this);
 
-                var dataPath = Path.Combine(this.CAST_PATH, this.Sprite + ".data");
+                var dataPath = Path.Combine(this.CAST_PATH, ((this.IsSmallFurni ? "s_" : "") + this.Sprite) + ".data");
                 var data = File.Exists(dataPath) ? File.ReadAllText(dataPath) : "";
 
                 if (data.Length == 0)
