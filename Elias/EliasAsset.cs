@@ -313,7 +313,7 @@ namespace EliasLibrary
                 {
                     var integrity = Elias.Assets.FirstOrDefault(asset => asset.FlashAssetName == FlashSourceAliasName && asset.FlashSourceAliasName == null);
 
-                    if (integrity != null && (EmergencyFix || ((integrity.FlashRectanglePoint[0] != this.FlashRectanglePoint[0]) || (integrity.FlashRectanglePoint[1] != this.FlashRectanglePoint[1]))))
+                    if (integrity != null && (EmergencyFix || Elias.IsWallItem || ((integrity.FlashRectanglePoint[0] != this.FlashRectanglePoint[0]) || (integrity.FlashRectanglePoint[1] != this.FlashRectanglePoint[1]))))
                     {
 
                         FlashSourceAliasName = null;

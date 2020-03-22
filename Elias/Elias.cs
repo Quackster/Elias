@@ -313,9 +313,18 @@ namespace EliasLibrary
                         }
                     }
 
-                    if (missingLayers.Count > 0)
+                    if (missingLayers.Count == 1 && missingLayers.Contains("a"))
                     {
-                        int animations = this.CountStates();
+                        foreach (string line in data.Split('\r'))
+                        {
+                            if (line.StartsWith("b:"))
+                            {
+                                data = data.Replace("layers:[\r", "layers:[\r" + line.Replace("b:", "a:") + "\r");
+                                break;
+                            }
+                        }
+                    }
+                        /*int animations = this.CountStates();
                         string states = "";
 
                         for (int i = 0; i < animations; i++)
@@ -339,11 +348,10 @@ namespace EliasLibrary
                             }
 
                             output.Append("\r");
-                        }
+                        }*/
 
-                        data = data.Replace("layers:[\r", "layers:[\r" + output.ToString());
                         File.WriteAllText(dataPath, data);
-                    }
+                //    }
 
                     /*
                     Dictionary<string, EliasAnimation> missingLayers = new Dictionary<string, EliasAnimation>();
