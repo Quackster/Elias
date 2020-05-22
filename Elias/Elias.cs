@@ -66,6 +66,7 @@ namespace EliasLibrary
             this.Assets = new List<EliasAsset>();
             this.Symbols = new Dictionary<int, List<string>>();
             this.EmergencyFix = EmergencyFix;
+            this.Logging = new EliasLogging();
 
             this.GenerateSmallModernFurni = generateSmallModernFurni;
             this.GenerateSmallFurni = generateSmallFurni;
@@ -132,6 +133,8 @@ namespace EliasLibrary
                 GenerateMissingImages();
                 //TryRemoveGraphicsTag();
                 RunEliasDirector();
+
+                filesWritten.Add("hh_furni_xx_s_" + Sprite + ".cct");
             }
             else
             {
