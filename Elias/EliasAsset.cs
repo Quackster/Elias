@@ -387,8 +387,11 @@ namespace EliasLibrary
             {
                 this.ShockwaveAssetName = AssetUtil.ConvertFlashShadow(this.Elias, this.FlashAssetName);
 
-                File.Copy(flashFile, Path.Combine(Elias.IMAGE_PATH, ShockwaveAssetName + ".png"));
-                File.WriteAllText(Path.Combine(Elias.IMAGE_PATH, ShockwaveAssetName + ".txt"), ShockwaveRectanglePoint[0] + "," + ShockwaveRectanglePoint[1]);
+                if (!File.Exists(Path.Combine(Elias.IMAGE_PATH, ShockwaveAssetName + ".png")))
+                    File.Copy(flashFile, Path.Combine(Elias.IMAGE_PATH, ShockwaveAssetName + ".png"));
+
+                if (!File.Exists(Path.Combine(Elias.IMAGE_PATH, ShockwaveAssetName + ".txt")))
+                    File.WriteAllText(Path.Combine(Elias.IMAGE_PATH, ShockwaveAssetName + ".txt"), ShockwaveRectanglePoint[0] + "," + ShockwaveRectanglePoint[1]);
             }
         }
 
