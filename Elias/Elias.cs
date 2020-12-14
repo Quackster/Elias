@@ -719,11 +719,16 @@ namespace EliasLibrary
 
                 if (node.Attributes.GetNamedItem("ink") != null)//if (node.Attributes.GetNamedItem("alpha") != null)
                 {
-                    if (node.Attributes.GetNamedItem("ink").InnerText != "COPY")
+                    if (node.Attributes.GetNamedItem("ink").InnerText == "ADD" || node.Attributes.GetNamedItem("ink").InnerText == "33")
                     {
                         secondSection += "#ink: 33, ";
-                        secondSection += "#transparent: 1, "; // Don't allow click
                     }
+                }
+
+                if ((node.Attributes.GetNamedItem("ignoreMouse") != null && node.Attributes.GetNamedItem("ignoreMouse").InnerText == "1") || 
+                    (node.Attributes.GetNamedItem("ink") != null && node.Attributes.GetNamedItem("ink").InnerText == "COPY"))//if (node.Attributes.GetNamedItem("alpha") != null)
+                {
+                    secondSection += "#transparent: 1, "; // Don't allow click
                 }
 
                 if (layerData.ContainsKey(Convert.ToString(letter)))

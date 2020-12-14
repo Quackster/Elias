@@ -365,6 +365,9 @@ namespace EliasApp
             if (furniItem == null && sprite.EndsWith("_campaign"))
                 furniItem = ItemList.FirstOrDefault(item => item.FileName == sprite.Remove(sprite.Length - "_campaign".Length));
 
+            if (furniItem == null)
+                furniItem = ItemList.FirstOrDefault(item => item.FileName.StartsWith(sprite));
+
             return furniItem;
         }
 
