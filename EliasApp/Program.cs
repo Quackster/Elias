@@ -368,6 +368,23 @@ namespace EliasApp
             if (furniItem == null)
                 furniItem = ItemList.FirstOrDefault(item => item.FileName.StartsWith(sprite));
 
+            if (furniItem == null)
+            {
+                return new FurniItem()
+                {
+                    Type = "s",
+                    SpriteId = 0,
+                    FileName = sprite,
+                    Revision = "",
+                    Unknown = "",
+                    Length = 1,
+                    Width = 1,
+                    Colour = "",
+                    Name = "",
+                    Description = "",
+                };
+            }
+
             return furniItem;
         }
 
