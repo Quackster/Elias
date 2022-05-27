@@ -30,9 +30,10 @@ namespace EliasLibrary
         public string OUTPUT_PATH;
         public string DIRECTOR_PATH;
         public string DIRECTOR_PROGRAM;
+
         public bool GenerateSmallModernFurni;
         public bool GenerateSmallFurni;
-
+        public bool EmergencyFix;
         public bool HasGraphicsTag;
 
         public Dictionary<int, List<string>> Symbols;
@@ -50,7 +51,7 @@ namespace EliasLibrary
             get { return Path.Combine(CAST_PATH, "images"); }
         }
 
-        public Elias(bool IsWallItem, string sprite, string fileName, int X, int Y, string FFDEC_PATH, string DIRECTOR_PATH, bool generateSmallModernFurni, bool generateSmallFurni)
+        public Elias(bool IsWallItem, string sprite, string fileName, int X, int Y, string FFDEC_PATH, string DIRECTOR_PATH, bool generateSmallModernFurni, bool generateSmallFurni, bool EmergencyFix)
         {
             this.IsWallItem = IsWallItem;
             this.Sprite = sprite;
@@ -64,6 +65,8 @@ namespace EliasLibrary
             this.OUTPUT_PATH = Path.Combine(this.DIRECTOR_PATH, "temp");
             this.Assets = new List<EliasAsset>();
             this.Symbols = new Dictionary<int, List<string>>();
+            this.EmergencyFix = EmergencyFix;
+            this.Logging = new EliasLogging();
 
             this.GenerateSmallModernFurni = generateSmallModernFurni;
             this.GenerateSmallFurni = generateSmallFurni;
@@ -130,6 +133,8 @@ namespace EliasLibrary
                 GenerateMissingImages();
                 //TryRemoveGraphicsTag();
                 RunEliasDirector();
+
+                filesWritten.Add("hh_furni_xx_s_" + Sprite + ".cct");
             }
             else
             {
@@ -206,10 +211,14 @@ namespace EliasLibrary
 
                         File.WriteAllText(regPointFile, "0,0");
 
-                        Console.WriteLine("Generating: " + newFile);
+                        //Console.WriteLine("Generating: " + newFile);
+
+                        if (File.Exists(newFile))
+                            File.Delete(newFile);
 
                         Bitmap bmp = new Bitmap(1, 1);
                         bmp.Save(newFile, ImageFormat.Png);
+                        bmp.Dispose();
                     }
                 }
                 else
@@ -228,19 +237,23 @@ namespace EliasLibrary
 
                         if (!File.Exists(newFile))
                         {
+
+                            //if (!File.Exists(newFile))
                             string regPointFile = Path.Combine(this.IMAGE_PATH, Path.GetFileNameWithoutExtension(file).Replace("_b_", "_a_") + ".txt");
 
                             File.WriteAllText(regPointFile, "0,0");
-
-                            Console.WriteLine("Generating: " + newFile);
+                            //Console.WriteLine("Generating: " + newFile);
 
                             Bitmap bmp = new Bitmap(1, 1);
                             bmp.Save(newFile, ImageFormat.Png);
+                            bmp.Dispose();
                         }
                     }
                 }
 
-                var dataPath = Path.Combine(this.CAST_PATH, this.Sprite + ".data");
+                //AssetUtil.FlipAllMembers(this);
+
+                var dataPath = Path.Combine(this.CAST_PATH, ((this.IsSmallFurni ? "s_" : "") + this.Sprite) + ".data");
                 var data = File.Exists(dataPath) ? File.ReadAllText(dataPath) : "";
 
                 if (data.Length == 0)
@@ -255,7 +268,7 @@ namespace EliasLibrary
                         }
 
                         string layer = Path.GetFileNameWithoutExtension(file).Split('_')[Path.GetFileNameWithoutExtension(file).Split('_').Length - 2];
-                        
+
                         if (!layers.Contains(layer) && layer != "sd")
                         {
                             layers.Add(layer);
@@ -286,6 +299,107 @@ namespace EliasLibrary
                     output.Append("]\r");
 
                     File.WriteAllText(dataPath, output.ToString());
+                }
+                else
+                {
+                    List<string> missingLayers = new List<string>();
+                    StringBuilder output = new StringBuilder();
+
+                    foreach (var file in Directory.GetFiles(this.IMAGE_PATH))
+                    {
+                        if (Path.GetExtension(file) != ".png" || Path.GetFileNameWithoutExtension(file).EndsWith("_small"))
+                        {
+                            continue;
+                        }
+
+                        string layer = Path.GetFileNameWithoutExtension(file).Split('_')[Path.GetFileNameWithoutExtension(file).Split('_').Length - 2];
+
+                        if (!missingLayers.Contains(layer) && layer != "sd")
+                        {
+                            if (data.Contains(layer + ":"))
+                                continue;
+
+                            missingLayers.Add(layer);
+                        }
+                    }
+
+                    /*if (missingLayers.Count == 1 && missingLayers.Contains("a"))
+                    {
+                        foreach (string line in data.Split('\r'))
+                        {
+                            if (line.StartsWith("b:"))
+                            {
+                                data = data.Replace("layers:[\r", "layers:[\r" + line.Replace("b:", "a:") + "\r");
+                                break;
+                            }
+                        }
+                    }*/
+
+                    int animations = this.CountStates();
+                    string states = "";
+
+                    for (int i = 0; i < animations; i++)
+                    {
+                        states += "[ frames:[ 0 ] ], ";
+                    }
+
+                    if (states.Length > 0)
+                    {
+                        states = states.Substring(0, states.Length - 2);
+                    }
+
+                    int k = 0;
+                    foreach (string layer in missingLayers)
+                    {
+                        output.Append(layer + ": [ " + states + " ]");
+
+                        if (data.Contains("frames"))
+                        {
+                            output.Append(",");
+                        }
+
+                        output.Append("\r");
+                    }
+
+                    data = data.Replace("layers:[\r", "layers:[\r" + output.ToString());
+                    File.WriteAllText(dataPath, data);
+                }
+
+                // cull the herd! aka remove spare "a" frames
+                foreach (var file in Directory.GetFiles(this.IMAGE_PATH))
+                {
+                    if (Path.GetExtension(file) != ".png" || Path.GetFileNameWithoutExtension(file).EndsWith("_small"))
+                    {
+                        continue;
+                    }
+
+                    string layer = Path.GetFileNameWithoutExtension(file).Split('_')[Path.GetFileNameWithoutExtension(file).Split('_').Length - 2];
+
+                    if (layer == "sd")
+                    {
+                        continue;
+                    }
+
+                    if (layer != "a")
+                    {
+                        continue;
+                    }
+
+                    if (Path.GetFileNameWithoutExtension(file).EndsWith("a_0"))
+                    {
+                        continue;
+                    }
+
+                    var directory = new FileInfo(file).DirectoryName;
+
+                    var picture = Path.Combine(directory, Path.GetFileNameWithoutExtension(file) + ".png");
+                    var points = Path.Combine(directory, Path.GetFileNameWithoutExtension(file) + ".txt");
+
+                    if (File.Exists(picture))
+                        File.Delete(picture);
+
+                    if (File.Exists(points))
+                        File.Delete(points);
                 }
             }
         }
@@ -340,7 +454,7 @@ namespace EliasLibrary
                 if (!IsSmallFurni && node.OuterXml.Contains("_32_"))
                     continue;
 
-                var eliasAlias = new EliasAsset(this, node);
+                var eliasAlias = new EliasAsset(this, node, EmergencyFix);
                 eliasAlias.Parse();
 
                 if (eliasAlias.ShockwaveAssetName == null && !eliasAlias.IsIcon && !eliasAlias.IsShadow)
@@ -514,7 +628,7 @@ namespace EliasLibrary
                         string[] sourceData = asset.ShockwaveSourceAliasName.Replace(Sprite + "_", "").Split('_');
                         string sourceMember = Sprite + "_" + sourceData[0] + "_" + sourceData[1] + "_" + sourceData[2] + "_" + sourceData[3] + "_" + sourceData[4];
 
-                        var newAsset = new EliasAsset(this, asset.Node);
+                        var newAsset = new EliasAsset(this, asset.Node, EmergencyFix);
                         newAsset.Parse();
                         newAsset.IsMemberAlias = true;
                         newAsset.ShockwaveAssetName = (member + "_0");
@@ -819,7 +933,7 @@ namespace EliasLibrary
             //File.WriteAllText(Path.Combine(CAST_PATH, ((this.IsSmallFurni ? "s_" : "") + this.Sprite) + ".props"), sections.Count > 0 ? "[" + string.Join(", ", sections) + "]" : "");
         }
 
-        private void GenerateAnimations()
+        private void GenerateAnimations(Dictionary<string, EliasAnimation> addIfNotExists = null)
         {
             char[] alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToLower().ToCharArray();
             var xmlData = BinaryDataUtil.SolveFile(this, this.OUTPUT_PATH, "visualization");
@@ -913,6 +1027,17 @@ namespace EliasLibrary
                 }
             }
 
+            if (addIfNotExists != null)
+            {
+                foreach (var kvp in addIfNotExists)
+                {
+                    if (sections.ContainsKey(kvp.Key))
+                        continue;
+
+                    sections.Add(kvp.Key, kvp.Value);
+                }
+            }
+
             var states = "";
 
             for (int i = 0; i < animations; i++)
@@ -925,6 +1050,14 @@ namespace EliasLibrary
                 stringBuilder.Append("[\r");
                 stringBuilder.Append("states:[" + states.TrimEnd(",".ToCharArray()) + "],\r");
                 stringBuilder.Append("layers:[\r");
+
+                foreach (char letter in alphabet)
+                {
+                    if (Assets.Count(asset => !asset.IsIcon && !asset.IsShadow && asset.FlashAssetName.Contains("_" + Convert.ToString(letter) + "_")) == 0)
+                    {
+                        sections.Remove(Convert.ToString(letter));
+                    }
+                }
 
                 int e = 0;
                 foreach (var animation in sections)
@@ -1010,6 +1143,62 @@ namespace EliasLibrary
             {
                 File.WriteAllText(Path.Combine(CAST_PATH, "asset.index"), "[#id: \"" + ((this.IsSmallFurni ? "s_" : "") + this.Sprite) + "\", #classes: [\"Active Object Class\",  \"Active Object Extension Class\"]]");
             }
+        }
+
+        public int CountStates()
+        {
+            char[] alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToLower().ToCharArray();
+            var xmlData = BinaryDataUtil.SolveFile(this, this.OUTPUT_PATH, "visualization");
+
+            var animations = 0;
+            var sections = new SortedDictionary<string, EliasAnimation>();
+
+            if (xmlData == null)
+            {
+                return animations;
+            }
+
+            XmlNodeList frames = null;
+
+            if (!IsDownscaled)
+            {
+                frames = xmlData.SelectNodes("//visualizationData/visualization[@size='" + (IsSmallFurni ? "32" : "64") + "']/animations/animation/animationLayer/frameSequence/frame");
+            }
+            else
+            {
+                frames = xmlData.SelectNodes("//visualizationData/visualization[@size='64']/animations/animation/animationLayer/frameSequence/frame");
+            }
+
+            int highestAnimationLayer = 0;
+
+            for (int i = 0; i < frames.Count; i++)
+            {
+                var frame = frames.Item(i);
+
+                var animationLayer = frame.ParentNode.ParentNode;
+                int letterPosition = int.Parse(animationLayer.Attributes.GetNamedItem("id").InnerText);
+
+                if (letterPosition < 0 || letterPosition > alphabet.Length)
+                {
+                    continue;
+                }
+
+                var animationLetter = Convert.ToString(alphabet[int.Parse(animationLayer.Attributes.GetNamedItem("id").InnerText)]);
+
+                highestAnimationLayer = int.Parse(animationLayer.Attributes.GetNamedItem("id").InnerText) + 1;
+
+                var animation = frame.ParentNode.ParentNode.ParentNode;
+                var animationId = int.Parse(animation.Attributes.GetNamedItem("id").InnerText);
+
+                var castAnimationId = animationId + 1;
+
+                if (castAnimationId > animations)
+                {
+                    animations = castAnimationId;
+                }
+            }
+
+            return animations;
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.IO;
 using EliasLibrary;
 
@@ -6,6 +7,37 @@ namespace Elias.Utilities
 {
     class AssetUtil
     {
+        public static void FlipAllMembers(EliasLibrary.Elias elias)
+        {
+            BinaryDataUtil.ReplaceFiles(elias.CAST_PATH, "leftwall", "testwall");
+            BinaryDataUtil.ReplaceFiles(elias.CAST_PATH, "rightwall", "leftwall");
+            BinaryDataUtil.ReplaceFiles(elias.CAST_PATH, "testwall", "rightwall");
+
+            foreach (string file in Directory.GetFiles(elias.CAST_PATH, "*", SearchOption.AllDirectories))
+            {
+                if (Path.GetExtension(file) != ".txt" || !Path.GetFileName(file).Contains("leftwall"))
+                {
+                    continue;
+                }
+
+                string picture = file.Replace(".txt", ".png");
+
+                if (File.Exists(picture))
+                {                    
+                    string[] existingCoordinateData = File.ReadAllText(file).Split(',');
+                    int X = int.Parse(existingCoordinateData[0]);
+
+                    var bitmap1 = (Bitmap)Bitmap.FromFile(picture);
+                    bitmap1.RotateFlip(RotateFlipType.Rotate180FlipY);
+                    bitmap1.Save(picture);
+                    X = bitmap1.Width - X;
+                    bitmap1.Dispose();
+
+                    File.WriteAllText(file, X + "," + existingCoordinateData[1]);
+                }
+            }
+        }
+
         public static string ConvertFlashName(EliasLibrary.Elias elias, string name)
         {
             var fileName = name;

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EliasApp
+namespace EliasLibrary
 {
     public class EliasLogging : ILogging
     {
