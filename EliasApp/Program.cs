@@ -5,6 +5,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
+using System.Text.RegularExpressions;
 
 namespace EliasApp
 {
@@ -178,13 +179,33 @@ namespace EliasApp
                 }
                 else
                 {
-                    var officialFileContents = File.ReadAllText(furnidataPath);
-                    officialFileContents = officialFileContents.Replace("]]\n[[", "],[");
-                    var officialFurnidataList = JsonConvert.DeserializeObject<List<string[]>>(officialFileContents);
+                    var fileContents = File.ReadAllText(furnidataPath);
+                    fileContents = fileContents.Substring(1, fileContents.Length - 2);
 
-                    foreach (var stringArray in officialFurnidataList)
+                    string[] chunks = Regex.Split(fileContents, "\n\r{1,}|\n{1,}|\r{1,}", RegexOptions.Multiline);
+                    foreach (string chunk in chunks)
                     {
-                        ItemList.Add(new FurniItem(stringArray));
+                        MatchCollection collection = Regex.Matches(chunk, @"\[+?((.)*?)\]");
+
+                        foreach (Match item in collection)
+                        {
+                            string itemData = item.Value;
+
+                            try
+                            {
+                                List<string> splitted = new List<string>();
+
+                                itemData = itemData.Substring(1, itemData.Length - 2);
+                                itemData = itemData.Replace("\",\"", "\"|\"");
+
+                                string[] splitData = itemData.Split('|').Select(x => x.Length > 1 ? x.Substring(1, x.Length - 2) : string.Empty).ToArray();
+                                ItemList.Add(new FurniItem(splitData));
+                            }
+                            catch (Exception ex)
+                            {
+                                return;
+                            }
+                        }
                     }
                 }
 
@@ -366,7 +387,14 @@ namespace EliasApp
                 furniItem = ItemList.FirstOrDefault(item => item.FileName == sprite.Remove(sprite.Length - "_campaign".Length));
 
             if (furniItem == null)
-                furniItem = ItemList.FirstOrDefault(item => item.FileName.StartsWith(sprite));
+            {
+                Console.WriteLine("Failed to find class data for " + sprite + ", type furni to base this furni from instead.");
+                string template = Console.ReadLine();
+                furniItem = ItemList.FirstOrDefault(item => item.FileName == template);
+
+                furniItem = new FurniItem(furniItem.RawData);
+                furniItem.FileName = sprite;
+            }
 
             if (furniItem == null)
             {
