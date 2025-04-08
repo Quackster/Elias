@@ -1,4 +1,4 @@
-﻿using EliasApp.Utilities;
+using EliasApp.Utilities;
 using Newtonsoft.Json;
 using System;
 using System.Linq;
@@ -12,6 +12,7 @@ namespace EliasApp
 {
     public class FurniItem
     {
+        public string Alias;
         public string Type;
         public int SpriteId;
         public string FileName;
@@ -82,6 +83,7 @@ namespace EliasApp
         private static List<FurniItem> ItemList = new List<FurniItem>();
 
         private static List<string> QueuedFurniture = new List<string>();
+        private static Dictionary<string, FurniItem> AliasFurniture = new Dictionary<string, FurniItem>();
         private static List<string> ConvertedFurniture = new List<string>();
 
         static void Main(string[] args)
@@ -237,8 +239,41 @@ namespace EliasApp
 
                     if (furniItem == null)
                     {
-                        Logging.Log(ConsoleColor.Red, "No furnidata entry found for item: " + sprite);
-                        QueuedFurniture.Remove(file);
+                        if (furniItem == null)
+                        {
+                            Console.WriteLine("Failed to find class data for " + sprite + ", type the furni class to base this furni from instead.");
+                            string template = Console.ReadLine();
+                            furniItem = ItemList.FirstOrDefault(item => item.FileName == template);
+
+                            furniItem = new FurniItem(furniItem.RawData);
+                            furniItem.Alias = template;
+                            furniItem.FileName = sprite;
+
+                            AliasFurniture[sprite] = furniItem;
+                        }
+                        else
+                        {
+
+                            //if (furniItem == null)
+                            //{
+                            //    fur new FurniItem()
+                            //    {
+                            //        Type = "s",
+                            //        SpriteId = 0,
+                            //        FileName = sprite,
+                            //        Revision = "",
+                            //        Unknown = "",
+                            //        Length = 1,
+                            //        Width = 1,
+                            //        Colour = "",
+                            //        Name = "",
+                            //        Description = "",
+                            //    };
+                            //}
+
+                            Logging.Log(ConsoleColor.Red, "No furnidata entry found for item: " + sprite);
+                            QueuedFurniture.Remove(file);
+                        }
                     }
                 }
 
@@ -286,14 +321,17 @@ namespace EliasApp
 
                 var className = itemNode.Attributes.GetNamedItem("classname").InnerText;
 
-                var length = itemNode.ChildNodes.Item(2).InnerText;
-                var width = itemNode.ChildNodes.Item(3).InnerText;
+                var length = itemNode.SelectNodes("xdim")[0]?.InnerText ?? "1";
+                var width = itemNode.SelectNodes("ydim")[0]?.InnerText ?? "1";
+
+
 
                 FurniItem furniItem = new FurniItem();
                 furniItem.Length = int.Parse(length);
                 furniItem.Width = int.Parse(width);
                 furniItem.Type = "S";
                 furniItem.FileName = className;
+                furniItem.Description = itemNode.SelectNodes("description")[0]?.InnerText ?? "";
                 ItemList.Add(furniItem);
             }
 
@@ -319,7 +357,7 @@ namespace EliasApp
         private static void ConvertFile(string file, string ffdecPath, string directorPath, string cctPath)
         {
             var sprite = Path.GetFileNameWithoutExtension(file);
-            var furniItem = ResolveFurni(sprite);
+            var furniItem = ResolveFurni(sprite) ?? AliasFurniture[sprite];
 
             int X = 1;
             int Y = 1;
@@ -386,33 +424,6 @@ namespace EliasApp
 
             if (furniItem == null && sprite.EndsWith("_campaign"))
                 furniItem = ItemList.FirstOrDefault(item => item.FileName == sprite.Remove(sprite.Length - "_campaign".Length));
-
-            if (furniItem == null)
-            {
-                Console.WriteLine("Failed to find class data for " + sprite + ", type furni to base this furni from instead.");
-                string template = Console.ReadLine();
-                furniItem = ItemList.FirstOrDefault(item => item.FileName == template);
-
-                furniItem = new FurniItem(furniItem.RawData);
-                furniItem.FileName = sprite;
-            }
-
-            if (furniItem == null)
-            {
-                return new FurniItem()
-                {
-                    Type = "s",
-                    SpriteId = 0,
-                    FileName = sprite,
-                    Revision = "",
-                    Unknown = "",
-                    Length = 1,
-                    Width = 1,
-                    Colour = "",
-                    Name = "",
-                    Description = "",
-                };
-            }
 
             return furniItem;
         }
